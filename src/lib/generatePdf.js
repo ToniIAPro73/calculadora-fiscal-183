@@ -89,6 +89,23 @@ function drawTableRow(doc, x, y, widths, values, fill, textColor, bold = false) 
   doc.text(values[2], x + widths[0] + widths[1] + widths[2] / 2, y + 4.6, { align: 'center' });
 }
 
+function drawFooter(doc, pageWidth, pageHeight, margin, fileOwnerLine, refNum) {
+  doc.setDrawColor(...C.lightGray);
+  doc.line(margin, pageHeight - 16, pageWidth - margin, pageHeight - 16);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.6);
+  doc.setTextColor(...C.gray);
+  doc.text('TaxNomad · Calculadora de Residencia Fiscal · regla183.com', margin, pageHeight - 11);
+  doc.text(fileOwnerLine, margin, pageHeight - 7.2);
+  doc.text(refNum, pageWidth - margin, pageHeight - 11, { align: 'right' });
+}
+
+function addReportPage(doc, pageWidth, pageHeight, margin, fileOwnerLine, refNum) {
+  drawFooter(doc, pageWidth, pageHeight, margin, fileOwnerLine, refNum);
+  doc.addPage();
+  return 24;
+}
+
 export async function generateTaxReport({
   name,
   taxId,
@@ -117,45 +134,50 @@ export async function generateTaxReport({
   const overlapSummaryDays = exampleMode ? 5 : overlapDeduction;
   const identifierLabel = documentType === 'nie' ? 'NIE' : 'Pasaporte';
   const fileOwnerLine = `${reportOwner.name} · ${reportOwner.nif} · ${reportOwner.email}`;
+  const headerHeight = exampleMode ? 30 : 34;
+  const footerReserveY = H - 42;
 
   let y = 0;
 
   doc.setFillColor(...C.blue);
-  doc.rect(0, 0, W, 34, 'F');
+  doc.rect(0, 0, W, headerHeight, 'F');
 
-  doc.addImage(brandLogoDataUrl, 'PNG', M, 6.5, 22, 16.8);
+  const logoY = exampleMode ? 5.4 : 6.5;
+  const logoW = exampleMode ? 20 : 22;
+  const logoH = exampleMode ? 15.3 : 16.8;
+  doc.addImage(brandLogoDataUrl, 'PNG', M, logoY, logoW, logoH);
   doc.setTextColor(...C.white);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
-  doc.text('TaxNomad', M + 28, 16);
+  doc.text('TaxNomad', M + 28, exampleMode ? 14.6 : 16);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7.5);
   doc.setTextColor(208, 227, 255);
-  doc.text('Calculadora de Residencia Fiscal · Regla de los 183 Días', M + 28, 22);
+  doc.text('Calculadora de Residencia Fiscal · Regla de los 183 Días', M + 28, exampleMode ? 19.8 : 22);
 
   if (exampleMode) {
-    drawPill(doc, W - M - 34, 8, 'EJEMPLO', C.gold, C.white, 18);
+    drawPill(doc, W - M - 34, 6.2, 'EJEMPLO', C.gold, C.white, 18);
   }
 
   doc.setFontSize(7.5);
   doc.setTextColor(208, 227, 255);
-  doc.text(`Generado: ${format(new Date(), 'dd/MM/yyyy')}`, W - M, 15.8, { align: 'right' });
-  doc.text(`Ref: ${refNum}`, W - M, 21.8, { align: 'right' });
+  doc.text(`Generado: ${format(new Date(), 'dd/MM/yyyy')}`, W - M, exampleMode ? 15 : 15.8, { align: 'right' });
+  doc.text(`Ref: ${refNum}`, W - M, exampleMode ? 20.4 : 21.8, { align: 'right' });
 
-  y = 44;
+  y = headerHeight + 10;
 
   if (exampleMode) {
     doc.setFillColor(255, 247, 237);
     doc.setDrawColor(251, 146, 60);
-    doc.roundedRect(M, y - 6, CW, 16, 3, 3, 'FD');
+    doc.roundedRect(M, y - 4, CW, 14, 3, 3, 'FD');
     doc.setTextColor(194, 65, 12);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8.5);
-    doc.text('Informe de ejemplo con datos ficticios', M + 4, y + 0.2);
+    doc.text('Informe de ejemplo con datos ficticios', M + 4, y + 0.5);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7.4);
-    doc.text('Los días solapados se descuentan automáticamente del total único.', M + 4, y + 5.2);
-    y += 20;
+    doc.text('Los días solapados se descuentan automáticamente del total único.', M + 4, y + 5.6);
+    y += 18;
   }
 
   doc.setTextColor(...C.dark);
@@ -353,11 +375,26 @@ export async function generateTaxReport({
     : `A la fecha de generación del presente informe, ${name} ha permanecido ${totalDays} días en territorio español durante el ejercicio fiscal 2026, lo que representa el ${pct.toFixed(1)}% del límite de 183 días establecido por el artículo 9 de la Ley 35/2006 del IRPF. Con la información facilitada y descontando los solapes entre períodos, no se supera el umbral de permanencia exigido para la residencia fiscal habitual en España por el criterio de los 183 días.`;
 
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
+  doc.setFontSize(7.7);
   doc.setTextColor(...C.dark);
   const cLines = doc.splitTextToSize(conclusion, CW);
+  const legalBlockHeight = 26;
+  const conclusionHeight = cLines.length * 4.2 + 6;
+
+  if (y + conclusionHeight + legalBlockHeight > footerReserveY) {
+    y = addReportPage(doc, W, H, M, fileOwnerLine, refNum);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...C.blue);
+    doc.text('CONCLUSIÓN', M, y);
+    y += 5;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.7);
+    doc.setTextColor(...C.dark);
+  }
+
   doc.text(cLines, M, y);
-  y += cLines.length * 4.5 + 6;
+  y += cLines.length * 4.2 + 6;
 
   doc.setFillColor(...C.lightGray);
   doc.roundedRect(M, y, CW, 22, 3, 3, 'F');
@@ -371,14 +408,7 @@ export async function generateTaxReport({
   doc.text(dLines, M + 4, y + 10);
   y += 26;
 
-  doc.setDrawColor(...C.lightGray);
-  doc.line(M, H - 16, W - M, H - 16);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6.6);
-  doc.setTextColor(...C.gray);
-  doc.text('TaxNomad · Calculadora de Residencia Fiscal · regla183.com', M, H - 11);
-  doc.text(fileOwnerLine, M, H - 7.2);
-  doc.text(refNum, W - M, H - 11, { align: 'right' });
+  drawFooter(doc, W, H, M, fileOwnerLine, refNum);
 
   return doc;
 }
