@@ -9,32 +9,33 @@ import ProgressBar from '@/components/ProgressBar.jsx';
 import SummaryCard from '@/components/SummaryCard.jsx';
 import DataAuthoritySection from '@/components/DataAuthoritySection.jsx';
 import AdPlaceholder from '@/components/AdPlaceholder.jsx';
-import StripePaymentButton from '@/components/StripePaymentButton.jsx';
+import UserDetailsModal from '@/components/UserDetailsModal.jsx';
 import { useLanguage } from '@/hooks/useLanguage.js';
 import { mergeDateRanges, calculateUniqueDays } from '@/lib/dateRangeMerger.js';
+import { Shield } from 'lucide-react';
 
 const TaxNomadCalculator = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [selectedRanges, setSelectedRanges] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [userData, setUserData] = useState({ name: '', taxId: '' });
 
-  // --- Lógica de Gestión de Fechas ---
+  // Lógica de cálculo
+  const { merged } = mergeDateRanges(selectedRanges);
+  const totalDays = calculateUniqueDays(merged);
+  const LIMIT = 183;
+  const remaining = Math.max(LIMIT - totalDays, 0);
+  const percentage = Math.min((totalDays / LIMIT) * 100, 100);
+
+  const statusObj = totalDays <= 150 ? { color: 'safe', label: t('progress.safe') } :
+                    totalDays <= 183 ? { color: 'warning', label: t('progress.approaching') } :
+                    { color: 'destructive', label: t('progress.over') };
+
   const handleAddRange = (range) => {
     const updatedRanges = [...selectedRanges, range];
-    
-    // Verificamos solapamientos para avisar al usuario
-    const rawTotal = updatedRanges.reduce((sum, r) => sum + r.days, 0);
-    const { merged } = mergeDateRanges(updatedRanges);
-    const mergedTotal = calculateUniqueDays(merged);
-
-    if (mergedTotal < rawTotal) {
-      toast.info(t('toast.overlap'), {
-        duration: 5000,
-      });
-    } else {
-      toast.success(t('toast.rangeAdded'));
-    }
-
     setSelectedRanges(updatedRanges);
+    toast.success(t('toast.rangeAdded'));
   };
 
   const handleRemoveRange = (index) => {
@@ -42,94 +43,87 @@ const TaxNomadCalculator = () => {
     toast.success(t('toast.rangeRemoved'));
   };
 
-  // --- Cálculos de Métricas ---
-  const { merged } = mergeDateRanges(selectedRanges);
-  const totalDays = calculateUniqueDays(merged);
-  
-  const LIMIT = 183;
-  const remaining = Math.max(LIMIT - totalDays, 0);
-  const percentage = Math.min((totalDays / LIMIT) * 100, 100);
+  const handleConfirmPurchase = () => {
+    setIsProcessing(true);
+    
+    // SALTÁNDONOS STRIPE - Simulación de generación y descarga
+    toast.success("¡Pago Omitido para Test!", {
+      description: "Generando informe para " + userData.name
+    });
 
-  const getStatusObj = () => {
-    if (totalDays <= 150) return { color: 'safe', label: t('progress.safe') };
-    if (totalDays <= 183) return { color: 'warning', label: t('progress.approaching') };
-    return { color: 'destructive', label: t('progress.over') };
-  };
-
-  const statusObj = getStatusObj();
-
-  // --- Función de Navegación al Pago (Header Action) ---
-  const scrollToPayment = () => {
-    const element = document.getElementById('payment-section');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // Feedback visual para el usuario
-      toast.success(t('stats.totalDays') + ": " + totalDays, {
-        description: "Ready to generate your Audit-Ready report."
-      });
-    }
+    setTimeout(() => {
+      // Función para descargar un "Reporte" en formato texto/HTML 
+      // (En producción aquí usarías jsPDF)
+      const reportContent = `
+        TAX NOMAD REPORT 2026
+        ---------------------
+        NAME: ${userData.name}
+        TAX ID: ${userData.taxId}
+        TOTAL DAYS IN SPAIN: ${totalDays}
+        STATUS: ${statusObj.label}
+        ---------------------
+        Verified by TaxNomad Calculator Engine.
+      `;
+      
+      const blob = new Blob([reportContent], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `TaxReport_${userData.name.replace(/\s+/g, '_')}.txt`;
+      link.click();
+      
+      setIsProcessing(false);
+      setIsModalOpen(false);
+      toast.success("Informe descargado correctamente.");
+    }, 1500);
   };
 
   return (
     <>
       <Helmet>
         <title>{t('meta.title')}</title>
-        <meta name="description" content={t('meta.description')} />
       </Helmet>
 
       <div className="min-h-screen bg-background flex flex-col">
-        {/* Header con lógica de descarga integrada */}
-        <Header totalDays={totalDays} onDownload={scrollToPayment} />
+        <Header totalDays={totalDays} onOpenModal={() => setIsModalOpen(true)} />
 
-        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
-          <div className="layout-60-40">
-            {/* Columna Izquierda: Entrada de datos y Lista */}
-            <div className="layout-60">
+        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+          <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex-1 space-y-8">
+              <div className="space-y-4">
+                <h2 className="text-4xl font-black tracking-tight">{t('header.title')}</h2>
+                <p className="text-muted-foreground text-lg">{t('header.subtitle')}</p>
+              </div>
+
               <DateRangeSelector onAddRange={handleAddRange} />
-              
-              <RangeList 
-                ranges={selectedRanges} 
-                onRemoveRange={handleRemoveRange} 
-              />
-              
+              <RangeList ranges={selectedRanges} onRemoveRange={handleRemoveRange} />
               <ProgressBar totalDays={totalDays} />
-
-              <AdPlaceholder orientation="horizontal" />
-              
               <DataAuthoritySection />
             </div>
 
-            {/* Columna Derecha: Resumen y Pago */}
-            <div className="layout-40">
-              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-6">
-                <SummaryCard 
-                  title={t('stats.totalDays')} 
-                  value={totalDays} 
-                  status={statusObj} 
-                />
-                <SummaryCard 
-                  title={t('stats.remainingDays')} 
-                  value={remaining} 
-                  status={statusObj} 
-                />
-                <SummaryCard 
-                  title={t('stats.limitUsage')} 
-                  value={`${percentage.toFixed(1)}%`} 
-                  status={statusObj} 
-                />
-              </div>
-
-              <AdPlaceholder orientation="vertical" />
+            <div className="w-full lg:w-80 shrink-0 space-y-6">
+              <SummaryCard title={t('stats.totalDays')} value={totalDays} status={statusObj} />
+              <SummaryCard title={t('stats.remainingDays')} value={remaining} status={statusObj} />
+              <SummaryCard title={t('stats.limitUsage')} value={`${percentage.toFixed(1)}%`} status={statusObj} />
               
-              {/* Sección de Pago con ID para el scroll del Header */}
-              <div id="payment-section" className="mt-8 transition-all">
-                <StripePaymentButton />
+              <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 text-[11px] text-muted-foreground flex gap-3">
+                <Shield className="w-4 h-4 text-primary shrink-0" />
+                <p><strong>Audit-Ready:</strong> Reporte generado bajo estándares de cumplimiento de la UE.</p>
               </div>
             </div>
           </div>
         </main>
-
+        
         <Footer />
+
+        <UserDetailsModal 
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleConfirmPurchase}
+          userData={userData}
+          setUserData={setUserData}
+          isLoading={isProcessing}
+        />
       </div>
     </>
   );

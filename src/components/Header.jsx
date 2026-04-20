@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Globe, Moon, Sun, Shield, FileDown } from 'lucide-react';
+import { Globe, Moon, Sun, Shield, FileDown, Eye, Lock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/useTheme";
 import { useLanguage } from "@/hooks/useLanguage";
 
-const Header = ({ totalDays = 0, onDownload }) => {
+const Header = ({ totalDays = 0, onOpenModal }) => {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { language, setLanguage } = useLanguage();
@@ -15,54 +15,77 @@ const Header = ({ totalDays = 0, onDownload }) => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
+        <div className="flex h-16 items-center justify-between gap-4">
+          
+          {/* Logo y Nombre - Siempre Visibles */}
           <div 
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center gap-2 cursor-pointer shrink-0"
             onClick={() => navigate('/')}
           >
-            <Shield className="w-5 h-5 text-primary" />
-            <span className="text-lg font-bold tracking-tight hidden xs:block">
+            <Shield className="w-7 h-7 text-primary shrink-0" />
+            <span className="text-xl font-black tracking-tighter text-foreground">
               Tax<span className="text-primary">Nomad</span>
             </span>
           </div>
 
-          {/* Acciones Centrales/Derecha */}
+          {/* Grupo de Acciones */}
           <div className="flex items-center gap-2">
+            
+            {/* Botón de Preview (Ejemplo) */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.open('/example-report.pdf', '_blank')}
+              className="hidden md:flex text-muted-foreground hover:text-primary gap-2 font-semibold"
+            >
+              <Eye className="w-4 h-4" />
+              {language === 'es' ? 'Ver Ejemplo' : 'View Example'}
+            </Button>
+
+            {/* Botón de Generación Directa / Pago */}
             <Button 
-              onClick={onDownload}
+              onClick={onOpenModal}
               disabled={!canDownload}
-              className={`rounded-full h-9 transition-all gap-2 shadow-lg ${
+              className={`rounded-full h-10 transition-all gap-2 shadow-lg border-b-2 active:border-b-0 active:translate-y-0.5 ${
                 canDownload 
-                ? 'bg-primary hover:bg-primary/90 shadow-primary/20 px-4 sm:px-6' 
-                : 'bg-muted text-muted-foreground opacity-50 px-3'
+                ? 'bg-primary hover:bg-primary/90 border-primary-foreground/20 shadow-primary/20 px-4 sm:px-6' 
+                : 'bg-muted text-muted-foreground opacity-50 px-3 cursor-not-allowed'
               }`}
             >
               <FileDown className="w-4 h-4" />
-              <span className="hidden sm:inline font-bold">
-                {language === 'es' ? 'Descargar PDF' : 'Download PDF'}
+              <span className="font-bold flex items-center gap-1.5 text-sm">
+                <span className="hidden sm:inline">
+                  {language === 'es' ? 'Generar PDF' : 'Generate PDF'}
+                </span>
+                <span className="bg-black/20 px-2 py-0.5 rounded-md text-[10px]">
+                  9,99€
+                </span>
               </span>
+              <Lock className="w-3 h-3 opacity-50 hidden xs:block" />
             </Button>
 
-            <div className="h-6 w-[1px] bg-border mx-1" />
+            <div className="h-6 w-[1px] bg-border mx-1 hidden xs:block" />
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setLanguage(language === 'es' ? 'en' : 'es')}
-              className="rounded-full h-8 w-8 sm:h-9 sm:w-9"
-            >
-              <Globe className="h-4 w-4" />
-            </Button>
+            {/* Selectores */}
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setLanguage(language === 'es' ? 'en' : 'es')}
+                className="rounded-full h-9 w-9"
+              >
+                <Globe className="h-4 w-4" />
+              </Button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              className="rounded-full h-8 w-8 sm:h-9 sm:w-9"
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                className="rounded-full h-9 w-9"
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
