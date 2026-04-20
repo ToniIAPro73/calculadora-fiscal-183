@@ -1,13 +1,13 @@
-
 import React, { createContext, useState, useEffect } from 'react';
 import { translations } from '@/lib/translations.js';
 
 export const I18nContext = createContext();
 
-export const LanguageProvider = ({ children }) => {
+export const I18nProvider = ({ children }) => {
   const [language, setLanguage] = useState(() => {
+    // Primero miramos si hay algo guardado, si no, ponemos 'en' por defecto
     const savedLang = localStorage.getItem('language');
-    return savedLang || 'en';
+    return savedLang || 'en'; 
   });
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export const LanguageProvider = ({ children }) => {
       if (value && value[k]) {
         value = value[k];
       } else {
-        return key; // Fallback to key if translation missing
+        return key;
       }
     }
     return value;
