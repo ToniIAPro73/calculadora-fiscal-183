@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   Dot,
   PencilLine,
+  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -268,11 +269,14 @@ const DateRangeSelector = ({
       </Card>
 
       <Dialog open={open} onOpenChange={(nextOpen) => (nextOpen ? setOpen(true) : closeModal())}>
-        <DialogContent className="h-[calc(100vh-1rem)] max-h-[calc(100vh-1rem)] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] gap-0 overflow-hidden rounded-[28px] border-border/80 p-0 sm:h-auto sm:max-h-[92vh] sm:max-w-5xl">
+        <DialogContent
+          showClose={false}
+          className="h-[calc(100vh-1rem)] max-h-[calc(100vh-1rem)] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] gap-0 overflow-hidden rounded-[28px] border-border/80 p-0 sm:h-auto sm:max-h-[92vh] sm:max-w-[1140px]"
+        >
           <div className="flex h-full flex-col">
             <DialogHeader className="border-b border-border/70 px-5 py-5 sm:px-7">
               <div className="flex items-start justify-between gap-4">
-                <div className="space-y-2 text-left">
+                <div className="space-y-2 text-left pr-2">
                   <DialogTitle className="text-xl font-bold tracking-tight sm:text-2xl">
                     {t('dateSelector.modalTitle')}
                   </DialogTitle>
@@ -281,17 +285,39 @@ const DateRangeSelector = ({
                   </DialogDescription>
                 </div>
 
-                {isEditing && (
+                <div className="flex items-center gap-2">
+                  {isEditing && (
+                    <div className="hidden sm:inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      <PencilLine className="h-3.5 w-3.5" />
+                      {t('dateSelector.editRange')}
+                    </div>
+                  )}
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={closeModal}
+                    className="h-10 w-10 rounded-full border border-border/70 bg-background/70 hover:bg-accent"
+                    aria-label={t('dateSelector.cancel')}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {isEditing && (
+                <div className="mt-3 sm:hidden">
                   <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                     <PencilLine className="h-3.5 w-3.5" />
                     {t('dateSelector.editRange')}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </DialogHeader>
 
             <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
-              <div className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
+              <div className="grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
                 <div className="space-y-4">
                   <div className="rounded-[22px] border border-border/70 bg-muted/30 p-4">
                     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
@@ -368,6 +394,7 @@ const DateRangeSelector = ({
                     selected={rangePreview}
                     numberOfMonths={monthCount}
                     defaultMonth={draftStart || exerciseStart}
+                    weekStartsOn={language === 'es' ? 1 : 0}
                     onDayClick={handleDayClick}
                     onDayMouseEnter={(day) => {
                       if (selectingEnd) {
@@ -378,7 +405,7 @@ const DateRangeSelector = ({
                     startMonth={exerciseStart}
                     endMonth={exerciseEnd}
                     showOutsideDays={false}
-                    className="mx-auto"
+                    className="mx-auto w-full [--cell-size:2.5rem]"
                     modifiers={{
                       occupied: (date) => occupiedDayKeys.has(toDayKey(date)),
                       outOfExercise: (date) => isOutsideExercise(date, exerciseStart, exerciseEnd),
@@ -388,16 +415,26 @@ const DateRangeSelector = ({
                       outOfExercise: 'opacity-30',
                     }}
                     classNames={{
-                      months: 'flex flex-col gap-6 lg:flex-row',
-                      month: 'rounded-2xl border border-border/60 bg-background p-3 shadow-sm',
-                      month_caption: 'mb-3',
-                      day: 'p-1',
-                      day_button: 'h-10 w-10 rounded-xl text-sm font-medium',
+                      root: 'w-full',
+                      months: 'grid grid-cols-1 gap-4 xl:grid-cols-2',
+                      month: 'min-w-0 rounded-2xl border border-border/60 bg-background p-3 shadow-sm',
+                      nav: 'absolute left-3 right-3 top-3 flex items-center justify-between',
+                      button_previous: 'h-9 w-9 rounded-full border border-border/70 bg-background/90 text-foreground shadow-sm hover:bg-accent',
+                      button_next: 'h-9 w-9 rounded-full border border-border/70 bg-background/90 text-foreground shadow-sm hover:bg-accent',
+                      month_caption: 'mb-4 flex h-10 items-center justify-center rounded-2xl bg-muted/35 px-12',
+                      caption_label: 'text-base font-semibold tracking-tight capitalize',
+                      table: 'w-full border-collapse table-fixed',
+                      weekdays: 'table-row',
+                      weekday: 'pb-2 text-center text-[0.78rem] font-medium uppercase tracking-[0.12em] text-muted-foreground',
+                      week: 'table-row',
+                      day: 'p-0 text-center align-middle',
+                      day_button: 'h-11 w-11 rounded-xl text-sm font-medium',
                       range_start: 'bg-primary/15 rounded-2xl',
                       range_middle: 'bg-primary/10',
                       range_end: 'bg-primary/15 rounded-2xl',
                       today: 'rounded-xl border border-primary/30 bg-primary/5 text-primary',
                       disabled: 'text-muted-foreground',
+                      hidden: 'invisible',
                     }}
                   />
 
