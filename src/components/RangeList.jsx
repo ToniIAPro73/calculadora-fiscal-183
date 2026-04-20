@@ -1,23 +1,25 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { CalendarDays, PencilLine, Trash2 } from 'lucide-react';
+import { CalendarBlank, PencilSimpleLine, Trash } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLanguage } from '@/hooks/useLanguage.js';
 
 const RangeList = ({ ranges, onRemoveRange, onEditRange }) => {
   const { t } = useLanguage();
 
   return (
-    <Card className="overflow-hidden rounded-[24px] border-border/70 bg-card shadow-sm">
-      <CardHeader className="border-b border-border/60 bg-muted/20">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <CalendarDays className="h-5 w-5 text-primary" />
+    <div className="double-shell">
+      <div className="double-shell-core overflow-hidden">
+      <div className="border-b border-border/60 px-6 py-5">
+        <div className="flex items-center gap-3 text-lg">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
+            <CalendarBlank size={18} weight="light" className="text-primary" />
+          </div>
           {t('rangeList.title')}
-        </CardTitle>
-      </CardHeader>
+        </div>
+      </div>
 
-      <CardContent className="p-0">
+      <div className="p-0">
         {ranges.length === 0 ? (
           <div className="px-6 py-10 text-center text-sm text-muted-foreground">
             {t('rangeList.empty')}
@@ -31,7 +33,7 @@ const RangeList = ({ ranges, onRemoveRange, onEditRange }) => {
               >
                 <div className="min-w-0 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary">
+                    <span className="rounded-full border border-primary/15 bg-primary/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
                       {range.days} {range.days === 1 ? t('dateSelector.day') : t('dateSelector.days')}
                     </span>
                   </div>
@@ -70,7 +72,7 @@ const RangeList = ({ ranges, onRemoveRange, onEditRange }) => {
                     onClick={() => onEditRange(index)}
                     className="rounded-full"
                   >
-                    <PencilLine className="h-4 w-4" />
+                    <PencilSimpleLine size={15} weight="bold" />
                     {t('rangeList.edit')}
                   </Button>
                   <Button
@@ -80,7 +82,7 @@ const RangeList = ({ ranges, onRemoveRange, onEditRange }) => {
                     onClick={() => onRemoveRange(index)}
                     className="rounded-full text-muted-foreground hover:text-destructive"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash size={15} weight="bold" />
                     {t('rangeList.delete')}
                   </Button>
                 </div>
@@ -88,8 +90,9 @@ const RangeList = ({ ranges, onRemoveRange, onEditRange }) => {
             ))}
           </ul>
         )}
-      </CardContent>
-    </Card>
+      </div>
+      </div>
+    </div>
   );
 };
 

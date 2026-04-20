@@ -13,13 +13,13 @@ import {
 } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import {
+  CalendarBlank,
   CalendarPlus,
-  CalendarRange,
-  CheckCircle2,
-  Dot,
-  PencilLine,
+  CheckCircle,
+  Circle,
+  PencilSimpleLine,
   X,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
@@ -309,19 +309,20 @@ const DateRangeSelector = ({
 
   return (
     <>
-      <Card className="rounded-[24px] border-border/70 bg-gradient-to-br from-card via-card to-muted/30 shadow-sm">
-        <CardContent className="p-6">
+      <Card className="rounded-[32px] border-border/60 bg-transparent shadow-none">
+        <CardContent className="double-shell p-1.5">
+          <div className="double-shell-core p-6">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                <CalendarRange className="h-3.5 w-3.5" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+                <CalendarBlank className="h-3.5 w-3.5" weight="light" />
                 {savedRangeCountLabel}
               </div>
               <div>
-                <h3 className="text-xl font-bold tracking-tight text-foreground">
+                <h3 className="text-2xl font-[620] tracking-[-0.05em] text-foreground">
                   {t('dateSelector.title')}
                 </h3>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-2 max-w-[56ch] text-sm leading-7 text-muted-foreground">
                   {t('dateSelector.description')}
                 </p>
               </div>
@@ -329,11 +330,14 @@ const DateRangeSelector = ({
 
             <Button
               onClick={openCreateModal}
-              className="h-12 rounded-full px-5 text-sm font-semibold shadow-md shadow-primary/15"
+              className="group h-12 gap-3 px-2 pl-5 text-sm font-semibold"
             >
-              <CalendarPlus className="h-4 w-4" />
-              {ranges.length > 0 ? t('dateSelector.addAnotherRange') : t('dateSelector.title')}
+              <span>{ranges.length > 0 ? t('dateSelector.addAnotherRange') : t('dateSelector.title')}</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/15 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1 group-hover:-translate-y-[1px]">
+                <CalendarPlus className="h-4 w-4" weight="bold" />
+              </span>
             </Button>
+          </div>
           </div>
         </CardContent>
       </Card>
@@ -358,7 +362,7 @@ const DateRangeSelector = ({
                 <div className="flex items-center gap-2">
                   {isEditing && (
                     <div className="hidden sm:inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                      <PencilLine className="h-3.5 w-3.5" />
+                      <PencilSimpleLine className="h-3.5 w-3.5" weight="bold" />
                       {t('dateSelector.editRange')}
                     </div>
                   )}
@@ -379,7 +383,7 @@ const DateRangeSelector = ({
               {isEditing && (
                 <div className="mt-3 sm:hidden">
                   <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                    <PencilLine className="h-3.5 w-3.5" />
+                    <PencilSimpleLine className="h-3.5 w-3.5" weight="bold" />
                     {t('dateSelector.editRange')}
                   </div>
                 </div>
@@ -427,7 +431,7 @@ const DateRangeSelector = ({
 
                   <div className="space-y-3 rounded-[22px] border border-border/70 bg-card p-4">
                     <div className="inline-flex items-center gap-2 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-foreground">
-                      <Dot className="h-4 w-4" />
+                      <Circle className="h-3.5 w-3.5" weight="fill" />
                       {selectingEnd
                         ? t('dateSelector.helperEnd')
                         : canSubmit
@@ -548,7 +552,7 @@ const DateRangeSelector = ({
                   disabled={!canSubmit}
                   className="h-11 rounded-full px-5 font-semibold shadow-md shadow-primary/15"
                 >
-                  <CheckCircle2 className="h-4 w-4" />
+                  <CheckCircle className="h-4 w-4" weight="bold" />
                   {isEditing ? t('dateSelector.confirmEdit') : t('dateSelector.addRange')}
                 </Button>
               </div>
