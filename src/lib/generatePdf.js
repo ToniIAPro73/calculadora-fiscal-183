@@ -89,6 +89,10 @@ function drawTableRow(doc, x, y, widths, values, fill, textColor, bold = false) 
   doc.text(values[2], x + widths[0] + widths[1] + widths[2] / 2, y + 4.6, { align: 'center' });
 }
 
+function estimateBlockHeight(lineCount, lineHeight, extra = 0) {
+  return lineCount * lineHeight + extra;
+}
+
 function drawFooter(doc, pageWidth, pageHeight, margin, fileOwnerLine, refNum) {
   doc.setDrawColor(...C.lightGray);
   doc.line(margin, pageHeight - 16, pageWidth - margin, pageHeight - 16);
@@ -142,9 +146,9 @@ export async function generateTaxReport({
   doc.setFillColor(...C.blue);
   doc.rect(0, 0, W, headerHeight, 'F');
 
-  const logoY = exampleMode ? 5.4 : 6.5;
-  const logoW = exampleMode ? 20 : 22;
-  const logoH = exampleMode ? 15.3 : 16.8;
+  const logoY = exampleMode ? 4.8 : 6.5;
+  const logoW = exampleMode ? 24 : 22;
+  const logoH = exampleMode ? 18.4 : 16.8;
   doc.addImage(brandLogoDataUrl, 'PNG', M, logoY, logoW, logoH);
   doc.setTextColor(...C.white);
   doc.setFont('helvetica', 'bold');
@@ -156,7 +160,7 @@ export async function generateTaxReport({
   doc.text('Calculadora de Residencia Fiscal · Regla de los 183 Días', M + 28, exampleMode ? 19.8 : 22);
 
   if (exampleMode) {
-    drawPill(doc, W - M - 34, 6.2, 'EJEMPLO', C.gold, C.white, 18);
+    drawPill(doc, (W - 22) / 2, 3.8, 'EJEMPLO', C.gold, C.white, 22);
   }
 
   doc.setFontSize(7.5);
@@ -361,38 +365,32 @@ export async function generateTaxReport({
     y += 16;
   }
 
+  const conclusion = totalDays > 183
+    ? `A la fecha de generación del presente informe, ${name} ha permanecido ${totalDays} días en territorio español durante el ejercicio fiscal 2026, SUPERANDO el límite de 183 días establecido por el artículo 9 de la Ley 35/2006 del IRPF. Esta circunstancia podría determinar la residencia fiscal habitual en España. Se recomienda consultar urgentemente con un asesor fiscal.`
+    : `A la fecha de generación del presente informe, ${name} ha permanecido ${totalDays} días en territorio español durante el ejercicio fiscal 2026, lo que representa el ${pct.toFixed(1)}% del límite de 183 días establecido por el artículo 9 de la Ley 35/2006 del IRPF. Con la información facilitada y descontando los solapes entre períodos, no se supera el umbral de permanencia exigido para la residencia fiscal habitual en España por el criterio de los 183 días.`;
+
+  const cLines = doc.splitTextToSize(conclusion, CW);
+  const legalBlockHeight = 26;
+  const conclusionHeadingHeight = 12;
+  const conclusionHeight = estimateBlockHeight(cLines.length, 4.2, 6);
+
+  if (y + conclusionHeadingHeight + conclusionHeight + legalBlockHeight > footerReserveY) {
+    y = addReportPage(doc, W, H, M, fileOwnerLine, refNum);
+  }
+
   doc.setDrawColor(...C.lightGray);
   doc.line(M, y, W - M, y);
   y += 7;
+
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8.5);
   doc.setTextColor(...C.blue);
   doc.text('CONCLUSIÓN', M, y);
   y += 5;
 
-  const conclusion = totalDays > 183
-    ? `A la fecha de generación del presente informe, ${name} ha permanecido ${totalDays} días en territorio español durante el ejercicio fiscal 2026, SUPERANDO el límite de 183 días establecido por el artículo 9 de la Ley 35/2006 del IRPF. Esta circunstancia podría determinar la residencia fiscal habitual en España. Se recomienda consultar urgentemente con un asesor fiscal.`
-    : `A la fecha de generación del presente informe, ${name} ha permanecido ${totalDays} días en territorio español durante el ejercicio fiscal 2026, lo que representa el ${pct.toFixed(1)}% del límite de 183 días establecido por el artículo 9 de la Ley 35/2006 del IRPF. Con la información facilitada y descontando los solapes entre períodos, no se supera el umbral de permanencia exigido para la residencia fiscal habitual en España por el criterio de los 183 días.`;
-
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7.7);
   doc.setTextColor(...C.dark);
-  const cLines = doc.splitTextToSize(conclusion, CW);
-  const legalBlockHeight = 26;
-  const conclusionHeight = cLines.length * 4.2 + 6;
-
-  if (y + conclusionHeight + legalBlockHeight > footerReserveY) {
-    y = addReportPage(doc, W, H, M, fileOwnerLine, refNum);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.5);
-    doc.setTextColor(...C.blue);
-    doc.text('CONCLUSIÓN', M, y);
-    y += 5;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.7);
-    doc.setTextColor(...C.dark);
-  }
-
   doc.text(cLines, M, y);
   y += cLines.length * 4.2 + 6;
 
