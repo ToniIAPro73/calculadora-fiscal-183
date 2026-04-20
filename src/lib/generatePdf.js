@@ -155,7 +155,7 @@ export async function generateTaxReport({
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7.4);
     doc.text('Los días solapados se descuentan automáticamente del total único.', M + 4, y + 5.2);
-    y += 14;
+    y += 20;
   }
 
   doc.setTextColor(...C.dark);
