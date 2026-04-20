@@ -5,9 +5,8 @@ export const I18nContext = createContext();
 
 export const I18nProvider = ({ children }) => {
   const [language, setLanguage] = useState(() => {
-    // Primero miramos si hay algo guardado, si no, ponemos 'en' por defecto
     const savedLang = localStorage.getItem('language');
-    return savedLang || 'en'; 
+    return savedLang || 'en';
   });
 
   useEffect(() => {

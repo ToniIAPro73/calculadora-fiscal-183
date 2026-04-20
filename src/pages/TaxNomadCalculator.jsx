@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { toast } from 'sonner';
@@ -18,10 +17,11 @@ const TaxNomadCalculator = () => {
   const { t } = useLanguage();
   const [selectedRanges, setSelectedRanges] = useState([]);
 
+  // --- Lógica de Gestión de Fechas ---
   const handleAddRange = (range) => {
     const updatedRanges = [...selectedRanges, range];
     
-    // Check if adding this range causes an overlap
+    // Verificamos solapamientos para avisar al usuario
     const rawTotal = updatedRanges.reduce((sum, r) => sum + r.days, 0);
     const { merged } = mergeDateRanges(updatedRanges);
     const mergedTotal = calculateUniqueDays(merged);
@@ -42,7 +42,7 @@ const TaxNomadCalculator = () => {
     toast.success(t('toast.rangeRemoved'));
   };
 
-  // Compute calculated metrics
+  // --- Cálculos de Métricas ---
   const { merged } = mergeDateRanges(selectedRanges);
   const totalDays = calculateUniqueDays(merged);
   
@@ -58,6 +58,18 @@ const TaxNomadCalculator = () => {
 
   const statusObj = getStatusObj();
 
+  // --- Función de Navegación al Pago (Header Action) ---
+  const scrollToPayment = () => {
+    const element = document.getElementById('payment-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Feedback visual para el usuario
+      toast.success(t('stats.totalDays') + ": " + totalDays, {
+        description: "Ready to generate your Audit-Ready report."
+      });
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -66,11 +78,12 @@ const TaxNomadCalculator = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background flex flex-col">
-        <Header />
+        {/* Header con lógica de descarga integrada */}
+        <Header totalDays={totalDays} onDownload={scrollToPayment} />
 
         <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
           <div className="layout-60-40">
-            {/* Left Column: 60% */}
+            {/* Columna Izquierda: Entrada de datos y Lista */}
             <div className="layout-60">
               <DateRangeSelector onAddRange={handleAddRange} />
               
@@ -86,7 +99,7 @@ const TaxNomadCalculator = () => {
               <DataAuthoritySection />
             </div>
 
-            {/* Right Column: 40% */}
+            {/* Columna Derecha: Resumen y Pago */}
             <div className="layout-40">
               <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-6">
                 <SummaryCard 
@@ -108,7 +121,10 @@ const TaxNomadCalculator = () => {
 
               <AdPlaceholder orientation="vertical" />
               
-              <StripePaymentButton />
+              {/* Sección de Pago con ID para el scroll del Header */}
+              <div id="payment-section" className="mt-8 transition-all">
+                <StripePaymentButton />
+              </div>
             </div>
           </div>
         </main>
