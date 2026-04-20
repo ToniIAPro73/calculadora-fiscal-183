@@ -4,12 +4,12 @@ import { Globe, Moon, Sun, FileDown, Eye, Lock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/useTheme";
 import { useLanguage } from "@/hooks/useLanguage";
-import Logo from '@/components/Logo';
+import BrandLogo from '@/components/BrandLogo';
 
-const Header = ({ totalDays = 0, onOpenModal }) => {
+const Header = ({ totalDays = 0, onOpenModal, onOpenExample }) => {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
 
   const canDownload = totalDays > 0;
 
@@ -23,7 +23,7 @@ const Header = ({ totalDays = 0, onOpenModal }) => {
             className="flex items-center gap-2.5 cursor-pointer shrink-0"
             onClick={() => navigate('/')}
           >
-            <Logo size={30} />
+            <BrandLogo className="h-[30px] w-[30px] rounded-[9px]" />
             <span className="text-xl font-black tracking-tighter text-foreground">
               Tax<span className="text-primary">Nomad</span>
             </span>
@@ -32,15 +32,17 @@ const Header = ({ totalDays = 0, onOpenModal }) => {
           {/* Actions */}
           <div className="flex items-center gap-2">
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.open('/example-report.pdf', '_blank')}
-              className="hidden md:flex text-muted-foreground hover:text-primary gap-2 font-semibold"
-            >
-              <Eye className="w-4 h-4" />
-              {language === 'es' ? 'Ver Ejemplo' : 'View Example'}
-            </Button>
+            {onOpenExample && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onOpenExample}
+                className="hidden md:flex text-muted-foreground hover:text-primary gap-2 font-semibold"
+              >
+                <Eye className="w-4 h-4" />
+                {t('actions.viewExample')}
+              </Button>
+            )}
 
             <Button
               onClick={onOpenModal}

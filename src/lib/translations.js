@@ -20,7 +20,9 @@ export const translations = {
     rangeList: {
       title: "Your Logged Periods",
       empty: "No periods logged yet. Add your first date range above.",
-      delete: "Delete range"
+      delete: "Delete range",
+      overlapLabel: "Overlaps detected",
+      overlapTooltip: "This period contains overlapping days. The app excluded them from the total.",
     },
     progress: {
       title: "Progress to 183-day limit",
@@ -35,13 +37,27 @@ export const translations = {
       status: "Status",
     },
     actions: {
-      downloadPdf: "Download Audit-Ready PDF - 9.99 €"
+      downloadPdf: "Download Audit-Ready PDF - 9.99 €",
+      viewExample: "View example"
     },
     toast: {
       overlap: "Note: Overlapping days detected and excluded for accuracy",
       rangeAdded: "Date range added",
       rangeRemoved: "Date range removed",
       stripeMock: "Stripe Integration Detected. Awaiting API keys to process real payment."
+    },
+    userDetails: {
+      title: "Report Details",
+      description: "Enter your details to personalize the official PDF.",
+      nameLabel: "Full name",
+      documentLabel: "Document type",
+      documentTypePassport: "Passport",
+      documentTypeNie: "NIE",
+      taxIdLabel: "Passport / NIE number",
+      taxIdPlaceholder: "e.g. X1234567Z",
+      note: "DNI is not supported. Use Passport or NIE.",
+      confirm: "Proceed to payment",
+      redirecting: "Redirecting...",
     },
     ads: {
       advertisement: "Advertisement"
@@ -99,7 +115,9 @@ export const translations = {
     rangeList: {
       title: "Tus Periodos Registrados",
       empty: "Aún no hay periodos registrados. Añade tu primer rango de fechas arriba.",
-      delete: "Eliminar rango"
+      delete: "Eliminar rango",
+      overlapLabel: "Solapes detectados",
+      overlapTooltip: "Este periodo tiene días solapados. La app no los ha tenido en cuenta para el total.",
     },
     progress: {
       title: "Progreso hacia el límite de 183 días",
@@ -114,13 +132,27 @@ export const translations = {
       status: "Estado",
     },
     actions: {
-      downloadPdf: "Descargar PDF Listo para Auditoría - 9.99 €"
+      downloadPdf: "Descargar PDF Listo para Auditoría - 9.99 €",
+      viewExample: "Ver ejemplo"
     },
     toast: {
       overlap: "Nota: Días superpuestos detectados y excluidos para mayor precisión",
       rangeAdded: "Rango de fechas añadido",
       rangeRemoved: "Rango de fechas eliminado",
       stripeMock: "Integración de Stripe detectada. Esperando claves API para procesar el pago real."
+    },
+    userDetails: {
+      title: "Datos del Informe",
+      description: "Introduce tus datos para personalizar el PDF oficial.",
+      nameLabel: "Nombre completo",
+      documentLabel: "Tipo de documento",
+      documentTypePassport: "Pasaporte",
+      documentTypeNie: "NIE",
+      taxIdLabel: "Número de Pasaporte / NIE",
+      taxIdPlaceholder: "Ej. X1234567Z",
+      note: "DNI no está disponible. Usa Pasaporte o NIE.",
+      confirm: "Ir al pago",
+      redirecting: "Redirigiendo...",
     },
     ads: {
       advertisement: "Anuncio"

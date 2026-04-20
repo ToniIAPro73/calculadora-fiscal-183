@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, Download, ArrowLeft, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Logo from '@/components/Logo';
+import BrandLogo from '@/components/BrandLogo';
 import { generateTaxReport } from '@/lib/generatePdf';
 
 const PaymentSuccess = () => {
@@ -18,7 +18,7 @@ const PaymentSuccess = () => {
         const data = JSON.parse(raw);
         setSession(data);
         // Auto-download the PDF
-        downloadPdf(data);
+        void downloadPdf(data);
         // Clean up session data after use
         sessionStorage.removeItem('taxnomad_session');
       } catch {
@@ -31,11 +31,12 @@ const PaymentSuccess = () => {
     }
   }, []);
 
-  const downloadPdf = (data) => {
+  const downloadPdf = async (data) => {
     try {
-      const doc = generateTaxReport({
+      const doc = await generateTaxReport({
         name: data.name,
         taxId: data.taxId,
+        documentType: data.documentType || 'passport',
         totalDays: data.totalDays,
         ranges: data.ranges || [],
         language: 'es',
@@ -55,7 +56,7 @@ const PaymentSuccess = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6 px-4">
-        <Logo size={48} />
+        <BrandLogo className="h-12 w-12 rounded-2xl" />
         <h1 className="text-2xl font-black text-foreground">Sesión expirada</h1>
         <p className="text-muted-foreground text-center max-w-sm">
           No se encontró una sesión de pago activa. Si ya pagaste, contacta con soporte.
@@ -78,7 +79,7 @@ const PaymentSuccess = () => {
               <CheckCircle2 className="w-10 h-10 text-green-600" />
             </div>
             <div className="absolute -bottom-1 -right-1">
-              <Logo size={28} />
+              <BrandLogo className="h-7 w-7 rounded-lg shadow-sm" />
             </div>
           </div>
           <div>

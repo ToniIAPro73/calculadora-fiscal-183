@@ -1,13 +1,19 @@
 
-import { differenceInDays, max } from 'date-fns';
+import { differenceInDays, eachDayOfInterval, isWithinInterval, max } from 'date-fns';
 
 /**
  * Merges overlapping or contiguous date ranges
  * @param {Array<{start: Date, end: Date, days: number}>} ranges 
- * @returns {{merged: Array<{start: Date, end: Date, days: number}>, hasOverlap: boolean}}
+ * @returns {{
+ *   merged: Array<{start: Date, end: Date, days: number}>,
+ *   hasOverlap: boolean,
+ *   annotatedRanges: Array<{start: Date, end: Date, days: number, overlapDays: number}>
+ * }}
  */
 export const mergeDateRanges = (ranges) => {
-  if (!ranges || ranges.length === 0) return { merged: [], hasOverlap: false };
+  if (!ranges || ranges.length === 0) {
+    return { merged: [], hasOverlap: false, annotatedRanges: [] };
+  }
 
   // Sort ranges chronologically by start date
   const sortedRanges = [...ranges].sort((a, b) => a.start.getTime() - b.start.getTime());
@@ -30,7 +36,20 @@ export const mergeDateRanges = (ranges) => {
     }
   }
 
-  return { merged, hasOverlap };
+  const annotatedRanges = ranges.map((range, index) => {
+    const overlapDays = eachDayOfInterval({ start: range.start, end: range.end }).reduce((count, day) => {
+      const overlapsWithAnotherRange = ranges.some((otherRange, otherIndex) => {
+        if (otherIndex === index) return false;
+        return isWithinInterval(day, { start: otherRange.start, end: otherRange.end });
+      });
+
+      return overlapsWithAnotherRange ? count + 1 : count;
+    }, 0);
+
+    return { ...range, overlapDays };
+  });
+
+  return { merged, hasOverlap, annotatedRanges };
 };
 
 /**

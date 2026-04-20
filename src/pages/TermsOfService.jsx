@@ -24,11 +24,6 @@ const TermsOfService = () => {
             </p>
           </div>
 
-          {/* TODO: Completar con datos reales antes de publicar */}
-          <div className="mb-10 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 text-sm">
-            <strong>⚠ Aviso de implementación:</strong> Sustituye los datos entre corchetes con tu información real (nombre/empresa, dirección, CIF/NIF, email) antes de publicar en producción.
-          </div>
-
           <div className="space-y-8 max-w-4xl">
 
             {/* 1. Identificación del prestador */}
@@ -43,11 +38,11 @@ const TermsOfService = () => {
                 En cumplimiento del artículo 10 de la Ley 34/2002, de Servicios de la Sociedad de la Información y Comercio Electrónico (LSSI-CE), se informa:
               </p>
               <ul className="space-y-1 text-sm text-foreground/80 pl-4 border-l-2 border-primary/20">
-                <li><strong>Titular:</strong> [Tu nombre completo o razón social]</li>
-                <li><strong>CIF / NIF:</strong> [XXXXXXXXX]</li>
-                <li><strong>Domicilio:</strong> [Dirección postal completa]</li>
-                <li><strong>Email de contacto:</strong> hola@taxnomad.app</li>
-                <li><strong>Sitio web:</strong> taxnomad.app</li>
+                <li><strong>Titular:</strong> Antonio Ballesteros Alonso</li>
+                <li><strong>NIF:</strong> 08997554T</li>
+                <li><strong>Domicilio:</strong> Carrer Miquel Rosselló i Alemany, 48 07015 Palma de Mallorca (España)</li>
+                <li><strong>Email de contacto:</strong> hola@regla183.com</li>
+                <li><strong>Sitio web:</strong> regla183.com</li>
               </ul>
             </section>
 
@@ -88,7 +83,7 @@ const TermsOfService = () => {
                   <strong>Al proceder al pago, el usuario consiente expresamente el inicio inmediato de la prestación y reconoce la pérdida del derecho de desistimiento</strong> en el momento de la descarga del PDF.
                 </p>
                 <p className="text-sm text-foreground/80 mt-3">
-                  No obstante, si el archivo PDF estuviera dañado o no pudiera descargarse por un error técnico imputable al servicio, el usuario podrá solicitar la regeneración del informe o el reembolso en <a href="mailto:soporte@taxnomad.app" className="underline text-primary">soporte@taxnomad.app</a> en un plazo de 48 horas.
+                  No obstante, si el archivo PDF estuviera dañado o no pudiera descargarse por un error técnico imputable al servicio, el usuario podrá solicitar la regeneración del informe o el reembolso en <a href="mailto:hola@regla183.com" className="underline text-primary">hola@regla183.com</a> en un plazo de 48 horas.
                 </p>
               </section>
 

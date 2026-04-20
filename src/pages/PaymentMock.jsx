@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, ShieldCheck, FileText, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Logo from '@/components/Logo';
+import BrandLogo from '@/components/BrandLogo';
 
 const PaymentMock = () => {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const PaymentMock = () => {
           {/* Left: Product summary */}
           <div className="md:w-5/12 bg-[#1a1f2e] text-white p-8 flex flex-col gap-6">
             <div className="flex items-center gap-3">
-              <Logo size={36} />
+              <BrandLogo className="h-9 w-9 rounded-xl" />
               <div>
                 <p className="font-black text-lg leading-tight">TaxNomad</p>
                 <p className="text-blue-300 text-xs">Informe de Residencia Fiscal</p>

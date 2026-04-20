@@ -39,7 +39,7 @@ const PrivacyPolicy = () => {
                   </li>
                   <li className="flex gap-3">
                     <Eye className="w-4 h-4 text-primary shrink-0" />
-                    <span><strong>Sin almacenamiento:</strong> Nombre y DNI solo se usan para generar el PDF y no se guardan.</span>
+                    <span><strong>Sin almacenamiento:</strong> Nombre e identificación solo se usan para generar el PDF y no se guardan.</span>
                   </li>
                   <li className="flex gap-3">
                     <Trash2 className="w-4 h-4 text-primary shrink-0" />
@@ -49,10 +49,9 @@ const PrivacyPolicy = () => {
                     <UserCheck className="w-4 h-4 text-primary shrink-0" />
                     <span><strong>Tus derechos:</strong> Acceso, rectificación y supresión disponibles en todo momento.</span>
                   </li>
-                  {/* TODO: reemplazar con tu email real */}
                   <li className="flex gap-3">
                     <Mail className="w-4 h-4 text-primary shrink-0" />
-                    <span><strong>Contacto DPO:</strong> <a href="mailto:privacidad@taxnomad.app" className="underline">privacidad@taxnomad.app</a></span>
+                    <span><strong>Contacto DPO:</strong> <a href="mailto:hola@regla183.com" className="underline">hola@regla183.com</a></span>
                   </li>
                 </ul>
               </div>
@@ -63,18 +62,14 @@ const PrivacyPolicy = () => {
 
               <section>
                 <h2 className="text-2xl font-bold text-foreground mb-4">1. Responsable del Tratamiento</h2>
-                {/* TODO: Completar con tu nombre/empresa, dirección y CIF/NIF antes de publicar */}
-                <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 text-sm mb-4">
-                  <strong>⚠ Aviso de implementación:</strong> Sustituye los datos entre corchetes con tu información real antes de publicar.
-                </div>
                 <p>
                   En cumplimiento del Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD), el Responsable del Tratamiento es:
                 </p>
                 <ul className="mt-3 space-y-1 text-sm list-none pl-4 border-l-2 border-primary/20">
-                  <li><strong>Nombre / Razón social:</strong> [Tu nombre o empresa]</li>
-                  <li><strong>Dirección:</strong> [Calle, Ciudad, País]</li>
-                  <li><strong>CIF / NIF:</strong> [XXXXXXXXX]</li>
-                  <li><strong>Email:</strong> privacidad@taxnomad.app</li>
+                  <li><strong>Nombre / Razón social:</strong> Antonio Ballesteros Alonso</li>
+                  <li><strong>Dirección:</strong> Carrer Miquel Rosselló i Alemany, 48 07015 Palma de Mallorca (España)</li>
+                  <li><strong>NIF:</strong> 08997554T</li>
+                  <li><strong>Email:</strong> hola@regla183.com</li>
                 </ul>
               </section>
 
@@ -87,7 +82,7 @@ const PrivacyPolicy = () => {
                   </div>
                   <div>
                     <strong className="block mb-1">2.2 Datos del informe PDF (usuarios de pago)</strong>
-                    <p>Para generar el informe personalizado recopilamos: nombre completo y número de identificación (DNI, NIE o pasaporte). Estos datos se usan exclusivamente para insertar tu información en el PDF generado y se eliminan de la memoria inmediatamente después.</p>
+                    <p>Para generar el informe personalizado recopilamos: nombre completo y número de identificación (pasaporte o NIE). Estos datos se usan exclusivamente para insertar tu información en el PDF generado y se eliminan de la memoria inmediatamente después.</p>
                     <p className="mt-2"><strong>Base jurídica:</strong> Art. 6.1.b RGPD — ejecución de contrato (prestación del servicio contratado).</p>
                   </div>
                   <div>
@@ -142,7 +137,7 @@ const PrivacyPolicy = () => {
                   ))}
                 </ul>
                 <p className="mt-4 text-sm">
-                  Para ejercer cualquiera de estos derechos, escríbenos a <a href="mailto:privacidad@taxnomad.app" className="underline text-primary">privacidad@taxnomad.app</a> indicando el derecho que deseas ejercer y una copia de tu identificación.
+                  Para ejercer cualquiera de estos derechos, escríbenos a <a href="mailto:hola@regla183.com" className="underline text-primary">hola@regla183.com</a> indicando el derecho que deseas ejercer y una copia de tu identificación.
                 </p>
                 <p className="mt-3 text-sm">
                   Tienes derecho a presentar una reclamación ante la <strong>Agencia Española de Protección de Datos (AEPD)</strong> — <a href="https://www.aepd.es" className="underline text-primary" target="_blank" rel="noopener noreferrer">www.aepd.es</a> — si consideras que el tratamiento de tus datos no es conforme al RGPD.

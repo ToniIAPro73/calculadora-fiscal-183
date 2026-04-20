@@ -12,6 +12,8 @@ import DataAuthoritySection from '@/components/DataAuthoritySection.jsx';
 import UserDetailsModal from '@/components/UserDetailsModal.jsx';
 import { useLanguage } from '@/hooks/useLanguage.js';
 import { mergeDateRanges, calculateUniqueDays } from '@/lib/dateRangeMerger.js';
+import { buildExampleReportPayload } from '@/lib/reportMetadata.js';
+import { generateTaxReport } from '@/lib/generatePdf.js';
 import { Shield } from 'lucide-react';
 
 const TaxNomadCalculator = () => {
@@ -20,9 +22,9 @@ const TaxNomadCalculator = () => {
   const [selectedRanges, setSelectedRanges] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [userData, setUserData] = useState({ name: '', taxId: '' });
+  const [userData, setUserData] = useState({ name: '', documentType: 'passport', taxId: '' });
 
-  const { merged } = mergeDateRanges(selectedRanges);
+  const { merged, annotatedRanges } = mergeDateRanges(selectedRanges);
   const totalDays = calculateUniqueDays(merged);
   const LIMIT = 183;
   const remaining = Math.max(LIMIT - totalDays, 0);
@@ -44,16 +46,51 @@ const TaxNomadCalculator = () => {
     toast.success(t('toast.rangeRemoved'));
   };
 
+  const handleOpenExample = async () => {
+    const previewWindow = window.open('', '_blank', 'noopener,noreferrer');
+    const example = buildExampleReportPayload();
+
+    try {
+      const doc = await generateTaxReport({
+        name: example.name,
+        documentType: example.documentType,
+        taxId: example.taxId,
+        totalDays: example.totalDays,
+        ranges: example.ranges,
+        language,
+        exampleMode: true,
+      });
+
+      const blobUrl = doc.output('bloburl');
+
+      if (previewWindow) {
+        previewWindow.location.href = blobUrl;
+      } else {
+        window.open(blobUrl, '_blank', 'noopener,noreferrer');
+      }
+    } catch (error) {
+      previewWindow?.close();
+      toast.error('No se pudo generar el ejemplo del PDF.');
+      console.error('Example PDF generation error:', error);
+    }
+  };
+
   const handleConfirmPurchase = async () => {
     setIsProcessing(true);
 
     // Persist session data so payment & success pages can access it
     const sessionData = {
       name: userData.name,
+      documentType: userData.documentType,
       taxId: userData.taxId,
       totalDays,
       statusLabel: statusObj.label,
-      ranges: merged.map(r => ({
+      ranges: selectedRanges.map(r => ({
+        start: r.start instanceof Date ? r.start.toISOString() : r.start,
+        end:   r.end   instanceof Date ? r.end.toISOString()   : r.end,
+        days:  r.days,
+      })),
+      uniqueRanges: merged.map(r => ({
         start: r.start instanceof Date ? r.start.toISOString() : r.start,
         end:   r.end   instanceof Date ? r.end.toISOString()   : r.end,
         days:  r.days,
@@ -100,7 +137,11 @@ const TaxNomadCalculator = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background flex flex-col">
-        <Header totalDays={totalDays} onOpenModal={() => setIsModalOpen(true)} />
+        <Header
+          totalDays={totalDays}
+          onOpenModal={() => setIsModalOpen(true)}
+          onOpenExample={handleOpenExample}
+        />
 
         <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
           <div className="flex flex-col lg:flex-row gap-8">
@@ -111,7 +152,7 @@ const TaxNomadCalculator = () => {
               </div>
 
               <DateRangeSelector onAddRange={handleAddRange} />
-              <RangeList ranges={selectedRanges} onRemoveRange={handleRemoveRange} />
+              <RangeList ranges={annotatedRanges} onRemoveRange={handleRemoveRange} />
               <ProgressBar totalDays={totalDays} />
               <DataAuthoritySection />
             </div>
