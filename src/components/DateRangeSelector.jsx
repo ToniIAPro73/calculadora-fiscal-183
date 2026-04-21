@@ -12,11 +12,11 @@ import {
   startOfMonth,
   startOfYear,
   subMonths,
+  startOfDay,
+  isSameDay,
 } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import {
-  ArrowLeft,
-  ArrowRight,
   CalendarDots,
   CheckCircle,
   CornersOut,
@@ -68,10 +68,10 @@ const DateRangeSelector = ({
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
 
   const locale = language === 'es' ? es : enUS;
-  const today = useMemo(() => new Date(), []);
+  const today = useMemo(() => startOfDay(new Date()), []);
   const initialMonth = useMemo(() => startOfMonth(today), [today]);
-  const exerciseStart = useMemo(() => startOfYear(new Date()), []);
-  const exerciseEnd = useMemo(() => endOfYear(new Date()), []);
+  const exerciseStart = useMemo(() => startOfYear(today), []);
+  const exerciseEnd = useMemo(() => endOfYear(today), []);
   
   const premiumCopy = useMemo(() => (
     language === 'es'
@@ -99,28 +99,24 @@ const DateRangeSelector = ({
   useEffect(() => {
     const mediaQuery = window.matchMedia('(min-width: 1024px)');
     const syncMonths = () => setMonthCount(mediaQuery.matches ? 2 : 1);
-
     syncMonths();
     mediaQuery.addEventListener('change', syncMonths);
-
     return () => mediaQuery.removeEventListener('change', syncMonths);
   }, []);
 
+  // Sincronización al entrar en modo edición
   useEffect(() => {
-    if (!isEditing || !isOpen) return;
-
-    if (!currentEditingRange) {
-      onEditingHandled?.();
-      return;
+    if (isOpen && currentEditingRange) {
+      const s = startOfDay(new Date(currentEditingRange.start));
+      const e = startOfDay(new Date(currentEditingRange.end));
+      setDraftStart(s);
+      setDraftEnd(e);
+      setStartInput(toInputValue(s));
+      setEndInput(toInputValue(e));
+      setHoverDate(null);
+      setVisibleMonth(startOfMonth(s));
     }
-
-    setDraftStart(currentEditingRange.start);
-    setDraftEnd(currentEditingRange.end);
-    setStartInput(toInputValue(currentEditingRange.start));
-    setEndInput(toInputValue(currentEditingRange.end));
-    setHoverDate(null);
-    setVisibleMonth(startOfMonth(currentEditingRange.start));
-  }, [currentEditingRange, isEditing, isOpen, onEditingHandled]);
+  }, [isOpen, currentEditingRange]);
 
   const occupiedRanges = useMemo(
     () => ranges.filter((_, index) => index !== editingRangeIndex),
@@ -131,7 +127,10 @@ const DateRangeSelector = ({
     const keys = new Set();
     occupiedRanges.forEach((range) => {
       try {
-        eachDayOfInterval({ start: range.start, end: range.end }).forEach((day) => {
+        eachDayOfInterval({ 
+          start: startOfDay(new Date(range.start)), 
+          end: startOfDay(new Date(range.end)) 
+        }).forEach((day) => {
           keys.add(toDayKey(day));
         });
       } catch (e) {
@@ -143,39 +142,37 @@ const DateRangeSelector = ({
 
   const validationMessage = useMemo(() => {
     if (!draftStart && !draftEnd && !startInput && !endInput) return null;
-
     if (!draftStart) return t('dateSelector.validationMissingStart');
     if (!draftEnd) return t('dateSelector.validationMissingEnd');
-
     if (isOutsideExercise(draftStart, exerciseStart, exerciseEnd) || isOutsideExercise(draftEnd, exerciseStart, exerciseEnd)) {
       return t('dateSelector.validationOutsideExercise');
     }
-
     if (isBefore(draftEnd, draftStart)) {
       return t('dateSelector.validationOrder');
     }
-
     if (rangeContainsOccupiedDays(draftStart, draftEnd, occupiedDayKeys)) {
       return t('dateSelector.validationOverlap');
     }
-
     return null;
   }, [draftEnd, draftStart, endInput, exerciseEnd, exerciseStart, occupiedDayKeys, startInput, t]);
 
   const rangePreview = useMemo(() => {
     if (!draftStart) return undefined;
-
-    if (draftEnd && !isBefore(draftEnd, draftStart) && !rangeContainsOccupiedDays(draftStart, draftEnd, occupiedDayKeys)) {
+    
+    // Prioridad 1: Rango completo (Inicio + Fin)
+    if (draftEnd) {
       return { from: draftStart, to: draftEnd };
     }
 
-    if (hoverDate && !draftEnd && canBuildRange(draftStart, hoverDate, exerciseStart, exerciseEnd, occupiedDayKeys)) {
-      const [from, to] = normalizeBounds(draftStart, hoverDate);
+    // Prioridad 2: Preview con Hover
+    if (hoverDate) {
+      const [from, to] = isAfter(draftStart, hoverDate) ? [hoverDate, draftStart] : [draftStart, hoverDate];
       return { from, to };
     }
 
+    // Prioridad 3: Solo inicio
     return { from: draftStart, to: draftStart };
-  }, [draftEnd, draftStart, exerciseEnd, exerciseStart, hoverDate, occupiedDayKeys]);
+  }, [draftEnd, draftStart, hoverDate]);
 
   const canSubmit = !validationMessage && draftStart && draftEnd;
   const selectingEnd = Boolean(draftStart && !draftEnd);
@@ -199,30 +196,33 @@ const DateRangeSelector = ({
     onEditingHandled?.();
   };
 
-  const syncDraftDates = (nextStart, nextEnd) => {
-    setDraftStart(nextStart);
-    setDraftEnd(nextEnd);
-    setStartInput(toInputValue(nextStart));
-    setEndInput(toInputValue(nextEnd));
-  };
-
   const handleDayClick = (day) => {
-    if (isDayDisabled(day)) return;
+    const clickedDay = startOfDay(day);
+    if (isDayDisabled(clickedDay)) return;
 
     if (!draftStart || draftEnd) {
-      syncDraftDates(day, null);
+      setDraftStart(clickedDay);
+      setDraftEnd(null);
+      setStartInput(toInputValue(clickedDay));
+      setEndInput('');
       setHoverDate(null);
       return;
     }
 
-    const [nextStart, nextEnd] = normalizeBounds(draftStart, day);
+    const [nextStart, nextEnd] = isAfter(draftStart, clickedDay) 
+      ? [clickedDay, draftStart] 
+      : [draftStart, clickedDay];
     
-    // Check if the range built by swapping contains occupied days
     if (rangeContainsOccupiedDays(nextStart, nextEnd, occupiedDayKeys)) {
-      // If click was before start and swap causes overlap, we just start fresh with the new day
-      syncDraftDates(day, null);
+      setDraftStart(clickedDay);
+      setDraftEnd(null);
+      setStartInput(toInputValue(clickedDay));
+      setEndInput('');
     } else {
-      syncDraftDates(nextStart, nextEnd);
+      setDraftStart(nextStart);
+      setDraftEnd(nextEnd);
+      setStartInput(toInputValue(nextStart));
+      setEndInput(toInputValue(nextEnd));
     }
     setHoverDate(null);
   };
@@ -231,9 +231,10 @@ const DateRangeSelector = ({
     setStartInput(value);
     const parsedDate = parseInputDate(value);
     if (parsedDate && !isOutsideExercise(parsedDate, exerciseStart, exerciseEnd)) {
-      setDraftStart(parsedDate);
-      setVisibleMonth(startOfMonth(parsedDate));
-      if (draftEnd && isBefore(draftEnd, parsedDate)) {
+      const d = startOfDay(parsedDate);
+      setDraftStart(d);
+      setVisibleMonth(startOfMonth(d));
+      if (draftEnd && isBefore(draftEnd, d)) {
         setDraftEnd(null);
         setEndInput('');
       }
@@ -246,8 +247,9 @@ const DateRangeSelector = ({
     setEndInput(value);
     const parsedDate = parseInputDate(value);
     if (parsedDate && !isOutsideExercise(parsedDate, exerciseStart, exerciseEnd)) {
-      setDraftEnd(parsedDate);
-      setVisibleMonth(startOfMonth(parsedDate));
+      const d = startOfDay(parsedDate);
+      setDraftEnd(d);
+      setVisibleMonth(startOfMonth(d));
     } else {
       setDraftEnd(null);
     }
@@ -269,8 +271,9 @@ const DateRangeSelector = ({
   };
 
   const isDayDisabled = (date) => {
-    if (isOutsideExercise(date, exerciseStart, exerciseEnd)) return true;
-    if (occupiedDayKeys.has(toDayKey(date))) return true;
+    const d = startOfDay(date);
+    if (isOutsideExercise(d, exerciseStart, exerciseEnd)) return true;
+    if (occupiedDayKeys.has(toDayKey(d))) return true;
     return false;
   };
 
@@ -283,7 +286,7 @@ const DateRangeSelector = ({
         >
           {/* Header */}
           <DialogHeader className="shrink-0 border-b border-white/5 bg-gradient-to-b from-white/[0.03] to-transparent px-6 py-5 sm:px-8 sm:py-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="space-y-1 text-left">
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
                   <CalendarDots size={14} weight="fill" />
@@ -296,20 +299,33 @@ const DateRangeSelector = ({
                   {t('dateSelector.modalDescription')}
                 </DialogDescription>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={closeModal}
-                className="h-10 w-10 rounded-full bg-white/5 hover:bg-white/10"
-              >
-                <X size={20} weight="bold" />
-              </Button>
+
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-2xl border border-white/5 bg-white/[0.02] px-5 py-3 sm:px-6">
+                <div className="flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-widest text-white/50">
+                  <div className="h-3 w-3 rounded-full bg-primary ring-4 ring-primary/20" />
+                  {t('dateSelector.activeRange')}
+                </div>
+                <div className="flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-widest text-white/50">
+                  <div className="flex h-3 w-3 items-center justify-center rounded-full bg-white/10 ring-4 ring-white/5">
+                    <div className="h-1.5 w-[1px] rotate-45 bg-white/40" />
+                    <div className="h-1.5 w-[1px] -rotate-45 bg-white/40" />
+                  </div>
+                  {t('dateSelector.usedDates')}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={closeModal}
+                  className="ml-2 h-8 w-8 rounded-full bg-white/5 hover:bg-white/10"
+                >
+                  <X size={16} weight="bold" />
+                </Button>
+              </div>
             </div>
           </DialogHeader>
 
           {/* Body */}
           <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
-            {/* Left Column: Inputs & Info */}
             <div className="w-full border-b border-white/5 bg-[#0b1222]/50 p-6 sm:p-8 lg:w-[340px] lg:border-b-0 lg:border-r">
               <div className="space-y-6">
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
@@ -361,66 +377,29 @@ const DateRangeSelector = ({
                     </div>
                   )}
                 </div>
-
-                <div className="hidden lg:block space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Leyenda</h4>
-                  <div className="grid gap-3">
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <div className="h-4 w-4 rounded-full bg-primary" />
-                      {t('dateSelector.activeRange')}
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <div className="h-4 w-4 rounded-full bg-white/10 border border-white/10" />
-                      {t('dateSelector.usedDates')}
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
-            {/* Right Column: Calendar */}
             <div className="flex flex-1 flex-col overflow-hidden bg-[#090e1a]">
-              {/* Calendar Header / Nav */}
               <div className="flex items-center justify-between border-b border-white/5 px-6 py-4 sm:px-8">
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setVisibleMonth(subMonths(visibleMonth, 1))}
-                    disabled={previousMonthDisabled}
-                    className="h-9 w-9 rounded-full p-0"
-                  >
-                    <ArrowLeft size={18} weight="bold" />
-                  </Button>
-                  <div className="flex gap-2">
-                    {visibleMonths.map((m, i) => (
-                      <span key={i} className="text-sm font-bold text-white sm:text-base">
-                        {format(m, 'MMMM yyyy', { locale })}
-                        {i === 0 && monthCount > 1 && <span className="mx-2 opacity-20">/</span>}
-                      </span>
-                    ))}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setVisibleMonth(addMonths(visibleMonth, 1))}
-                    disabled={nextMonthDisabled}
-                    className="h-9 w-9 rounded-full p-0"
-                  >
-                    <ArrowRight size={18} weight="bold" />
-                  </Button>
+                <div className="flex gap-4">
+                  {visibleMonths.map((m, i) => (
+                    <span key={i} className="text-sm font-bold text-white sm:text-base">
+                      {format(m, 'MMMM yyyy', { locale })}
+                      {i === 0 && monthCount > 1 && <span className="mx-2 opacity-20">/</span>}
+                    </span>
+                  ))}
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setVisibleMonth(initialMonth)}
-                  className="hidden h-9 rounded-full border-white/10 bg-white/5 px-4 text-xs font-bold uppercase tracking-widest sm:flex"
+                  className="h-9 rounded-full border-white/10 bg-white/5 px-4 text-xs font-bold uppercase tracking-widest sm:flex"
                 >
                   {premiumCopy.jumpToToday}
                 </Button>
               </div>
 
-              {/* Calendar Grid */}
               <div className="flex-1 overflow-y-auto p-4 sm:p-8">
                 <Calendar
                   mode="range"
@@ -431,7 +410,7 @@ const DateRangeSelector = ({
                   onMonthChange={setVisibleMonth}
                   weekStartsOn={language === 'es' ? 1 : 0}
                   onDayClick={handleDayClick}
-                  onDayMouseEnter={(day) => selectingEnd && setHoverDate(day)}
+                  onDayMouseEnter={(day) => selectingEnd && setHoverDate(startOfDay(day))}
                   disabled={isDayDisabled}
                   startMonth={exerciseStart}
                   endMonth={exerciseEnd}
@@ -441,7 +420,7 @@ const DateRangeSelector = ({
                     occupied: (date) => occupiedDayKeys.has(toDayKey(date)),
                   }}
                   modifiersClassNames={{
-                    occupied: 'opacity-40 cursor-not-allowed grayscale pointer-events-none',
+                    occupied: 'occupied-day opacity-100 grayscale-0 pointer-events-none',
                   }}
                   classNames={{
                     root: "w-full",
@@ -459,9 +438,9 @@ const DateRangeSelector = ({
                     day: cn(
                       "h-full w-full p-0 font-medium transition-all duration-200 rounded-xl flex items-center justify-center hover:bg-white/10 hover:text-white"
                     ),
-                    range_start: "bg-primary text-primary-foreground rounded-xl !opacity-100",
-                    range_end: "bg-primary text-primary-foreground rounded-xl !opacity-100",
-                    range_middle: "bg-primary/20 text-primary !rounded-none",
+                    range_start: "bg-primary text-primary-foreground rounded-xl !opacity-100 ring-4 ring-primary/30 z-10",
+                    range_end: "bg-primary text-primary-foreground rounded-xl !opacity-100 ring-4 ring-primary/30 z-10",
+                    range_middle: "bg-primary/20 text-primary !rounded-none opacity-100",
                     selected: "opacity-100",
                     today: "bg-white/5 text-primary border border-primary/20 font-bold",
                     outside: "text-muted-foreground/30 opacity-50",
@@ -473,12 +452,14 @@ const DateRangeSelector = ({
             </div>
           </div>
 
-          {/* Footer */}
           <DialogFooter className="shrink-0 border-t border-white/5 bg-[#0b1222] px-6 py-4 sm:px-8 sm:py-6 sm:flex-row sm:items-center sm:justify-between">
             <Button
               variant="ghost"
-              onClick={() => setResetConfirmOpen(true)}
-              className="hidden h-11 rounded-full px-6 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:bg-white/5 sm:flex"
+              onClick={() => {
+                resetDraft();
+                setResetConfirmOpen(false);
+              }}
+              className="h-11 rounded-full px-6 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:bg-white/5"
             >
               <CornersOut className="mr-2" size={18} />
               {t('dateSelector.reset')}
@@ -529,6 +510,16 @@ const DateRangeSelector = ({
           </AlertDialogFooterActions>
         </AlertDialogContent>
       </AlertDialog>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .occupied-day button {
+          background: rgba(255, 255, 255, 0.05) !important;
+          color: rgba(255, 255, 255, 0.35) !important;
+          text-decoration: line-through;
+          cursor: not-allowed !important;
+          border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+      `}} />
     </>
   );
 };
@@ -549,27 +540,22 @@ function parseInputDate(value) {
   return isValid(parsedDate) ? parsedDate : null;
 }
 
-function normalizeBounds(firstDate, secondDate) {
-  return isAfter(firstDate, secondDate)
-    ? [secondDate, firstDate]
-    : [firstDate, secondDate];
-}
-
 function isOutsideExercise(date, exerciseStart, exerciseEnd) {
   return isBefore(date, exerciseStart) || isAfter(date, exerciseEnd);
 }
 
 function rangeContainsOccupiedDays(start, end, occupiedDayKeys) {
-  const [safeStart, safeEnd] = normalizeBounds(start, end);
-  return eachDayOfInterval({ start: safeStart, end: safeEnd }).some((day) =>
-    occupiedDayKeys.has(toDayKey(day)),
-  );
-}
-
-function canBuildRange(start, end, exerciseStart, exerciseEnd, occupiedDayKeys) {
-  return !isOutsideExercise(start, exerciseStart, exerciseEnd)
-    && !isOutsideExercise(end, exerciseStart, exerciseEnd)
-    && !rangeContainsOccupiedDays(start, end, occupiedDayKeys);
+  if (!start || !end) return false;
+  try {
+    const s = startOfDay(new Date(start));
+    const e = startOfDay(new Date(end));
+    const [safeStart, safeEnd] = isAfter(s, e) ? [e, s] : [s, e];
+    return eachDayOfInterval({ start: safeStart, end: safeEnd }).some((day) =>
+      occupiedDayKeys.has(toDayKey(day)),
+    );
+  } catch (e) {
+    return false;
+  }
 }
 
 export default DateRangeSelector;
