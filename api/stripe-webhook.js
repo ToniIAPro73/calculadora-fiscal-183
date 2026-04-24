@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { updateReportPaymentStatus } from './_lib/report-store.js';
+import { recordOperationalError, recordOperationalEvent } from './_lib/telemetry.js';
 
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -51,11 +52,10 @@ export default async function handler(req, res) {
           paymentStatus: session.payment_status === 'paid' ? 'paid' : 'completed',
           customerEmail: session.customer_details?.email ?? null,
         });
-        console.log('Stripe webhook: checkout.session.completed', {
+        recordOperationalEvent('webhook_checkout_completed', {
           id: session.id,
-          client_reference_id: session.client_reference_id,
           payment_status: session.payment_status,
-          metadata: session.metadata,
+          reportKey: session.metadata?.report_key ?? null,
         });
         break;
       }
@@ -67,9 +67,9 @@ export default async function handler(req, res) {
           paymentStatus: 'expired',
           customerEmail: session.customer_details?.email ?? null,
         });
-        console.log('Stripe webhook: checkout.session.expired', {
+        recordOperationalEvent('webhook_checkout_expired', {
           id: session.id,
-          client_reference_id: session.client_reference_id,
+          reportKey: session.metadata?.report_key ?? null,
         });
         break;
       }
@@ -81,19 +81,19 @@ export default async function handler(req, res) {
           paymentStatus: 'failed',
           customerEmail: paymentIntent.receipt_email ?? null,
         });
-        console.log('Stripe webhook: payment_intent.payment_failed', {
+        recordOperationalEvent('webhook_payment_failed', {
           id: paymentIntent.id,
-          metadata: paymentIntent.metadata,
+          reportKey: paymentIntent.metadata?.report_key ?? null,
         });
         break;
       }
       default:
-        console.log('Stripe webhook: unhandled event type', event.type);
+        recordOperationalEvent('webhook_unhandled_event', { eventType: event.type });
     }
 
     return res.status(200).json({ received: true });
   } catch (error) {
-    console.error('Stripe webhook verification failed:', error.message);
+    recordOperationalError('webhook_verification_failed', error);
     return res.status(400).json({ error: 'Invalid webhook signature' });
   }
 }

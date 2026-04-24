@@ -26,6 +26,7 @@ import { generateTaxReport } from '@/lib/generatePdf.js';
 const TaxNomadCalculator = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
+  const [fiscalYear, setFiscalYear] = useState(() => new Date().getFullYear());
   const [selectedRanges, setSelectedRanges] = useState([]);
   const [editingRangeIndex, setEditingRangeIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,6 +64,18 @@ const TaxNomadCalculator = () => {
     setIsRangeModalOpen(true);
   };
 
+  const handleFiscalYearChange = (event) => {
+    const nextYear = Number(event.target.value);
+
+    if (!Number.isInteger(nextYear) || nextYear < 1900 || nextYear > 2100 || nextYear === fiscalYear) {
+      return;
+    }
+
+    setFiscalYear(nextYear);
+    setSelectedRanges([]);
+    setEditingRangeIndex(null);
+  };
+
   const handleUpdateRange = (index, nextRange) => {
     setSelectedRanges(prev => prev.map((range, currentIndex) => (
       currentIndex === index ? nextRange : range
@@ -81,6 +94,7 @@ const TaxNomadCalculator = () => {
         taxId: example.taxId,
         totalDays: example.totalDays,
         ranges: example.ranges,
+        fiscalYear: example.fiscalYear,
         language,
         exampleMode: true,
       });
@@ -110,6 +124,7 @@ const TaxNomadCalculator = () => {
       taxId: userData.taxId,
       totalDays,
       statusLabel: statusObj.label,
+      fiscalYear,
       ranges: selectedRanges.map(r => ({
         start: r.start instanceof Date ? r.start.toISOString() : r.start,
         end:   r.end   instanceof Date ? r.end.toISOString()   : r.end,
@@ -133,6 +148,7 @@ const TaxNomadCalculator = () => {
           taxId:       userData.taxId,
           totalDays,
           statusLabel: statusObj.label,
+          fiscalYear,
           ranges: selectedRanges.map(r => ({
             start: r.start instanceof Date ? r.start.toISOString() : r.start,
             end:   r.end   instanceof Date ? r.end.toISOString()   : r.end,
@@ -168,6 +184,7 @@ const TaxNomadCalculator = () => {
       </Helmet>
 
       <DateRangeSelector
+        fiscalYear={fiscalYear}
         ranges={selectedRanges}
         onAddRange={handleAddRange}
         onUpdateRange={handleUpdateRange}
@@ -237,6 +254,25 @@ const TaxNomadCalculator = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+
+                <div className="double-shell reveal-surface">
+                  <div className="double-shell-core flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">Ejercicio fiscal</p>
+                      <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                        Cambiar el ejercicio limpia los rangos para evitar mezclar periodos fiscales.
+                      </p>
+                    </div>
+                    <input
+                      type="number"
+                      min="1900"
+                      max="2100"
+                      value={fiscalYear}
+                      onChange={handleFiscalYearChange}
+                      className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 text-base font-semibold text-foreground outline-none focus:ring-2 focus:ring-primary/30 sm:w-36"
+                    />
+                  </div>
                 </div>
 
                 <div className="double-shell reveal-surface">

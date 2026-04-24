@@ -37,9 +37,10 @@ const PaymentSuccess = () => {
   const bootstrapPaymentState = async () => {
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get('session_id');
+    const deliveryToken = params.get('delivery_token');
 
     if (sessionId) {
-      await verifyStripeSession(sessionId);
+      await verifyStripeSession(sessionId, deliveryToken);
       return;
     }
 
@@ -81,9 +82,17 @@ const PaymentSuccess = () => {
     }
   };
 
-  const verifyStripeSession = async (sessionId) => {
+  const verifyStripeSession = async (sessionId, deliveryToken) => {
+    if (!deliveryToken) {
+      setError(true);
+      setStatusMessage('Falta el token de entrega del informe.');
+      return;
+    }
+
     try {
-      const response = await fetch(`/api/checkout-session-status?session_id=${encodeURIComponent(sessionId)}`);
+      const response = await fetch(
+        `/api/checkout-session-status?session_id=${encodeURIComponent(sessionId)}&delivery_token=${encodeURIComponent(deliveryToken)}`,
+      );
       if (!response.ok) {
         throw new Error('Verification request failed');
       }
@@ -105,6 +114,7 @@ const PaymentSuccess = () => {
             name: reportPayload.name || localSession.name,
             taxId: reportPayload.taxId || localSession.taxId,
             documentType: reportPayload.documentType || localSession.documentType,
+            fiscalYear: Number(reportPayload.fiscalYear || localSession.fiscalYear || new Date().getFullYear()),
             totalDays: Number(reportPayload.totalDays || localSession.totalDays),
             statusLabel: reportPayload.statusLabel || localSession.statusLabel,
             ranges: normalizedReportRanges.length > 0
@@ -115,6 +125,7 @@ const PaymentSuccess = () => {
             name: reportPayload.name,
             taxId: reportPayload.taxId,
             documentType: reportPayload.documentType || 'passport',
+            fiscalYear: Number(reportPayload.fiscalYear || new Date().getFullYear()),
             totalDays: Number(reportPayload.totalDays || 0),
             statusLabel: reportPayload.statusLabel,
             ranges: normalizedReportRanges,
@@ -144,10 +155,11 @@ const PaymentSuccess = () => {
         documentType: data.documentType || 'passport',
         totalDays: data.totalDays,
         ranges: data.ranges || [],
+        fiscalYear: data.fiscalYear || new Date().getFullYear(),
         language: 'es',
       });
       const safeName = (data.name || 'informe').replace(/\s+/g, '_');
-      doc.save(`TaxNomad_Informe_${safeName}_2026.pdf`);
+      doc.save(`TaxNomad_Informe_${safeName}_${data.fiscalYear || new Date().getFullYear()}.pdf`);
       setDownloaded(true);
       setStatusMessage('PDF descargado automáticamente.');
     } catch (err) {
@@ -208,7 +220,7 @@ const PaymentSuccess = () => {
           <div className="rounded-2xl border border-border bg-muted/30 p-6 text-left space-y-3">
             <div className="flex items-center gap-2 text-sm font-bold text-foreground">
               <FileText className="w-4 h-4 text-primary" />
-              Informe de Residencia Fiscal 2026
+              Informe de Residencia Fiscal {session.fiscalYear || new Date().getFullYear()}
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">

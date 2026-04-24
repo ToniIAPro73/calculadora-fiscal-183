@@ -54,7 +54,7 @@ const PaymentMock = () => {
                 <FileText className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-semibold">Informe PDF Premium</p>
-                  <p className="text-xs text-gray-400">Regla de los 183 días · 2026</p>
+                  <p className="text-xs text-gray-400">Regla de los 183 días · {session?.fiscalYear || new Date().getFullYear()}</p>
                 </div>
               </div>
               {session && (
@@ -162,7 +162,7 @@ const PaymentMock = () => {
       </div>
 
       <p className="text-center text-xs text-gray-400 py-6">
-        TaxNomad · Calculadora de Residencia Fiscal 2026
+        TaxNomad · Calculadora de Residencia Fiscal {session?.fiscalYear || new Date().getFullYear()}
       </p>
     </div>
   );

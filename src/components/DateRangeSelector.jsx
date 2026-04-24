@@ -49,6 +49,7 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/useLanguage.js';
 
 const DateRangeSelector = ({
+  fiscalYear = new Date().getFullYear(),
   ranges,
   onAddRange,
   onUpdateRange,
@@ -69,9 +70,11 @@ const DateRangeSelector = ({
 
   const locale = language === 'es' ? es : enUS;
   const today = useMemo(() => startOfDay(new Date()), []);
-  const initialMonth = useMemo(() => startOfMonth(today), [today]);
-  const exerciseStart = useMemo(() => startOfYear(today), []);
-  const exerciseEnd = useMemo(() => endOfYear(today), []);
+  const initialMonth = useMemo(() => {
+    return today.getFullYear() === fiscalYear ? startOfMonth(today) : startOfMonth(new Date(fiscalYear, 0, 1));
+  }, [fiscalYear, today]);
+  const exerciseStart = useMemo(() => startOfYear(new Date(fiscalYear, 0, 1)), [fiscalYear]);
+  const exerciseEnd = useMemo(() => endOfYear(new Date(fiscalYear, 0, 1)), [fiscalYear]);
   
   const premiumCopy = useMemo(() => (
     language === 'es'
