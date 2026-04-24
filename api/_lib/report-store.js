@@ -25,9 +25,12 @@ async function ensureSchema() {
         name TEXT NOT NULL,
         tax_id TEXT NOT NULL,
         document_type TEXT NOT NULL,
+        fiscal_year INTEGER NOT NULL DEFAULT 2026,
         total_days INTEGER NOT NULL,
         status_label TEXT,
         ranges_json JSONB NOT NULL DEFAULT '[]'::jsonb,
+        delivery_token_hash TEXT,
+        delivery_token_expires_at TIMESTAMPTZ,
         payment_status TEXT NOT NULL DEFAULT 'pending',
         customer_email TEXT,
         paid_at TIMESTAMPTZ,
@@ -35,6 +38,14 @@ async function ensureSchema() {
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
     `);
+    schemaReadyPromise = schemaReadyPromise.then(() => sql.query(`
+      ALTER TABLE premium_reports
+      ADD COLUMN IF NOT EXISTS fiscal_year INTEGER NOT NULL DEFAULT 2026;
+      ALTER TABLE premium_reports
+      ADD COLUMN IF NOT EXISTS delivery_token_hash TEXT;
+      ALTER TABLE premium_reports
+      ADD COLUMN IF NOT EXISTS delivery_token_expires_at TIMESTAMPTZ;
+    `));
   }
 
   await schemaReadyPromise;
@@ -53,9 +64,12 @@ function mapRowToReport(row) {
     name: row.name,
     taxId: row.tax_id,
     documentType: row.document_type,
+    fiscalYear: row.fiscal_year,
     totalDays: row.total_days,
     statusLabel: row.status_label,
     ranges: Array.isArray(row.ranges_json) ? row.ranges_json : [],
+    deliveryTokenHash: row.delivery_token_hash,
+    deliveryTokenExpiresAt: row.delivery_token_expires_at,
     paymentStatus: row.payment_status,
     customerEmail: row.customer_email,
     paidAt: row.paid_at,
@@ -71,9 +85,12 @@ export async function createDraftReport({
   name,
   taxId,
   documentType,
+  fiscalYear,
   totalDays,
   statusLabel,
   ranges,
+  deliveryTokenHash = null,
+  deliveryTokenExpiresAt = null,
 }) {
   await ensureSchema();
   const sql = getSql();
@@ -87,12 +104,15 @@ export async function createDraftReport({
         name,
         tax_id,
         document_type,
+        fiscal_year,
         total_days,
         status_label,
         ranges_json,
+        delivery_token_hash,
+        delivery_token_expires_at,
         payment_status
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CAST($9 AS jsonb), 'pending')
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CAST($10 AS jsonb), $11, $12, 'pending')
       RETURNING *
     `,
     [
@@ -102,9 +122,12 @@ export async function createDraftReport({
       name,
       taxId,
       documentType,
+      fiscalYear,
       totalDays,
       statusLabel,
       JSON.stringify(ranges ?? []),
+      deliveryTokenHash,
+      deliveryTokenExpiresAt,
     ],
   );
 
@@ -142,6 +165,10 @@ export async function updateReportPaymentStatus({
   paymentStatus,
   customerEmail = null,
 }) {
+  if (!reportKey && !stripeSessionId) {
+    throw new Error('reportKey or stripeSessionId is required to update payment status');
+  }
+
   await ensureSchema();
   const sql = getSql();
 
@@ -154,8 +181,8 @@ export async function updateReportPaymentStatus({
         customer_email = COALESCE($5, customer_email),
         paid_at = CASE WHEN $4 = 'paid' THEN COALESCE(paid_at, NOW()) ELSE paid_at END,
         updated_at = NOW()
-      WHERE report_key = COALESCE($1, report_key)
-         OR stripe_session_id = COALESCE($2, stripe_session_id)
+      WHERE ($1 IS NOT NULL AND report_key = $1)
+         OR ($2 IS NOT NULL AND stripe_session_id = $2)
       RETURNING *
     `,
     [reportKey, stripeSessionId, stripePaymentIntentId, paymentStatus, customerEmail],

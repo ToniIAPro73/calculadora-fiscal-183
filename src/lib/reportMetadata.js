@@ -9,6 +9,7 @@ export const buildExampleReportPayload = () => ({
   name: 'Alex Rivera',
   documentType: 'passport',
   taxId: 'X1234567Z',
+  fiscalYear: 2026,
   totalDays: 54,
   ranges: [
     { start: new Date('2026-01-05'), end: new Date('2026-01-20'), days: 16 },
