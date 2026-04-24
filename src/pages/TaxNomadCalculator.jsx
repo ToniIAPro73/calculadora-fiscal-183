@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Helmet } from 'react-helmet';
-import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -18,11 +17,11 @@ import DateRangeSelector from '@/components/DateRangeSelector.jsx';
 import RangeList from '@/components/RangeList.jsx';
 import ProgressBar from '@/components/ProgressBar.jsx';
 import DataAuthoritySection from '@/components/DataAuthoritySection.jsx';
-import UserDetailsModal from '@/components/UserDetailsModal.jsx';
 import { useLanguage } from '@/hooks/useLanguage.js';
 import { mergeDateRanges, calculateUniqueDays } from '@/lib/dateRangeMerger.js';
 import { buildExampleReportPayload } from '@/lib/reportMetadata.js';
-import { generateTaxReport } from '@/lib/generatePdf.js';
+
+const UserDetailsModal = lazy(() => import('@/components/UserDetailsModal.jsx'));
 
 const TaxNomadCalculator = () => {
   const { t, language } = useLanguage();
@@ -89,6 +88,7 @@ const TaxNomadCalculator = () => {
     const example = buildExampleReportPayload();
 
     try {
+      const { generateTaxReport } = await import('@/lib/generatePdf.js');
       const doc = await generateTaxReport({
         name: example.name,
         documentType: example.documentType,
@@ -209,12 +209,7 @@ const TaxNomadCalculator = () => {
         <main className="flex-1">
           <section className="premium-section pb-6 pt-6 md:pt-10">
             <div className="grid items-start gap-6">
-              <motion.div
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                transition={{ duration: 0.35, ease: 'easeOut' }}
-                className="space-y-6"
-              >
+              <div className="space-y-6 animate-fade-in-up">
                 <div className="trust-panel p-5 sm:p-7">
                   <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px] xl:items-end">
                     <div className="space-y-4">
@@ -397,21 +392,23 @@ const TaxNomadCalculator = () => {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </section>
         </main>
 
         <Footer />
 
-        <UserDetailsModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onConfirm={handleConfirmPurchase}
-          userData={userData}
-          setUserData={setUserData}
-          isLoading={isProcessing}
-        />
+        <Suspense fallback={null}>
+          <UserDetailsModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleConfirmPurchase}
+            userData={userData}
+            setUserData={setUserData}
+            isLoading={isProcessing}
+          />
+        </Suspense>
       </div>
     </>
   );
