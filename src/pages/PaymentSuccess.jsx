@@ -114,8 +114,10 @@ const PaymentSuccess = () => {
         ? {
             ...localSession,
             name: reportPayload.name || localSession.name,
+            email: reportPayload.email || localSession.email,
             taxId: reportPayload.taxId || localSession.taxId,
             documentType: reportPayload.documentType || localSession.documentType,
+            language: reportPayload.language || localSession.language || language,
             fiscalYear: Number(reportPayload.fiscalYear || localSession.fiscalYear || new Date().getFullYear()),
             totalDays: Number(reportPayload.totalDays || localSession.totalDays),
             statusLabel: reportPayload.statusLabel || localSession.statusLabel,
@@ -125,8 +127,10 @@ const PaymentSuccess = () => {
           }
         : {
             name: reportPayload.name,
+            email: reportPayload.email,
             taxId: reportPayload.taxId,
             documentType: reportPayload.documentType || 'passport',
+            language: reportPayload.language || language,
             fiscalYear: Number(reportPayload.fiscalYear || new Date().getFullYear()),
             totalDays: Number(reportPayload.totalDays || 0),
             statusLabel: reportPayload.statusLabel,
@@ -158,7 +162,7 @@ const PaymentSuccess = () => {
         totalDays: data.totalDays,
         ranges: data.ranges || [],
         fiscalYear: data.fiscalYear || new Date().getFullYear(),
-        language,
+        language: data.language || language,
       });
       const safeName = (data.name || 'informe').replace(/\s+/g, '_');
       doc.save(`TaxNomad_Informe_${safeName}_${data.fiscalYear || new Date().getFullYear()}.pdf`);
@@ -189,113 +193,113 @@ const PaymentSuccess = () => {
     );
   }
 
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-10">
-      <div className="w-full max-w-md space-y-6 text-center">
+  const statusLabel = session?.totalDays > 183
+    ? t('progress.over')
+    : session?.totalDays > 150
+      ? t('progress.approaching')
+      : t('progress.safe');
 
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative">
-            <div className="flex h-18 w-18 items-center justify-center rounded-xl border border-[hsl(var(--success)/0.2)] bg-[hsl(var(--success)/0.1)] p-5">
-              <CheckCircle2 className="h-10 w-10 text-[hsl(var(--success))]" />
+  return (
+    <div className="flex min-h-[100dvh] items-center justify-center overflow-hidden bg-background px-4 py-4">
+      <div className="grid w-full max-w-5xl gap-4 rounded-2xl border border-border bg-card p-4 shadow-2xl shadow-black/20 md:p-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-stretch">
+        <section className="flex min-h-0 flex-col justify-between rounded-xl border border-border bg-muted/25 p-5 text-left">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-[hsl(var(--success)/0.22)] bg-[hsl(var(--success)/0.1)]">
+                <CheckCircle2 className="h-7 w-7 text-[hsl(var(--success))]" />
+                <BrandLogo className="absolute -bottom-1 -right-2 h-5 w-auto drop-shadow-sm" />
+              </div>
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--success)/0.2)] bg-[hsl(var(--success)/0.1)] px-3 py-1 text-xs font-semibold text-[hsl(var(--success))]">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  {t('payment.verified')}
+                </div>
+                <h1 className="mt-3 text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+                  {t('payment.readyTitle')}
+                </h1>
+              </div>
             </div>
-            <div className="absolute -bottom-1 -right-1">
-              <BrandLogo className="h-7 w-auto drop-shadow-sm" />
-            </div>
-          </div>
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--success)/0.2)] bg-[hsl(var(--success)/0.1)] px-3 py-1 text-xs font-semibold text-[hsl(var(--success))]">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              {t('payment.verified')}
-            </div>
-            <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground">
-              {t('payment.readyTitle')}
-            </h1>
-            <p className="text-muted-foreground mt-2 max-w-sm">
+
+            <p className="max-w-md text-sm leading-6 text-muted-foreground md:text-base">
               {t('payment.readyDescription')}
             </p>
           </div>
-        </div>
 
-        {session && (
-          <div className="space-y-3 rounded-xl border border-border bg-card p-5 text-left">
-            <div className="flex items-center gap-2 text-sm font-bold text-foreground">
-              <FileText className="w-4 h-4 text-primary" />
-              {t('payment.reportTitle')} {session.fiscalYear || new Date().getFullYear()}
-            </div>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t('payment.holder')}</span>
-                <span className="font-semibold">{session.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t('payment.identification')}</span>
-                <span className="font-mono">{session.taxId}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t('payment.daysInSpain')}</span>
-                <span className="font-bold text-primary">{session.totalDays} {t('dateSelector.days')}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t('payment.status')}</span>
-                <span className={`font-bold ${
-                  session.totalDays > 183 ? 'text-red-500' :
-                  session.totalDays > 150 ? 'text-orange-500' : 'text-green-600'
-                }`}>
-                  {session.totalDays > 183 ? t('progress.over') :
-                   session.totalDays > 150 ? t('progress.approaching') : t('progress.safe')}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
+          <button
+            onClick={() => navigate('/')}
+            className="mt-5 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" /> {t('payment.backToCalculator')}
+          </button>
+        </section>
 
-        <div className="space-y-3 rounded-xl border border-border bg-muted/35 p-5 text-left">
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 rounded-md bg-primary/10 p-2 text-primary">
-              <Download className="h-4 w-4" />
+        <section className="grid min-h-0 gap-4 lg:grid-cols-[1fr_0.9fr]">
+          {session && (
+            <div className="rounded-xl border border-border bg-background/65 p-5 text-left">
+              <div className="flex items-center gap-2 text-sm font-bold text-foreground">
+                <FileText className="h-4 w-4 text-primary" />
+                {t('payment.reportTitle')} {session.fiscalYear || new Date().getFullYear()}
+              </div>
+              <div className="mt-5 grid gap-3 text-sm">
+                <div className="grid grid-cols-[0.8fr_1.2fr] items-start gap-4">
+                  <span className="text-muted-foreground">{t('payment.holder')}</span>
+                  <span className="text-right font-semibold leading-5 text-foreground">{session.name}</span>
+                </div>
+                <div className="grid grid-cols-[0.8fr_1.2fr] items-center gap-4">
+                  <span className="text-muted-foreground">{t('payment.identification')}</span>
+                  <span className="text-right font-mono text-foreground">{session.taxId}</span>
+                </div>
+                <div className="grid grid-cols-[0.8fr_1.2fr] items-center gap-4">
+                  <span className="text-muted-foreground">{t('payment.daysInSpain')}</span>
+                  <span className="text-right font-bold text-primary">{session.totalDays} {t('dateSelector.days')}</span>
+                </div>
+                <div className="grid grid-cols-[0.8fr_1.2fr] items-center gap-4">
+                  <span className="text-muted-foreground">{t('payment.status')}</span>
+                  <span className={`text-right font-bold ${
+                    session.totalDays > 183 ? 'text-red-500' :
+                    session.totalDays > 150 ? 'text-orange-500' : 'text-green-600'
+                  }`}>
+                    {statusLabel}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="space-y-1">
-              <p className="text-sm font-bold text-foreground">{t('payment.nextStep')}</p>
-              <p className="text-sm text-muted-foreground">
-                {t('payment.nextStepDescription')}
-              </p>
-            </div>
-          </div>
-        </div>
+          )}
 
-        {downloaded ? (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 rounded-xl border border-[hsl(var(--success)/0.2)] bg-[hsl(var(--success)/0.1)] p-3 text-sm text-[hsl(var(--success))]">
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
-              {statusMessage}
+          <div className="flex min-h-0 flex-col gap-4">
+            <div className="flex flex-1 items-start gap-3 rounded-xl border border-border bg-muted/30 p-5 text-left">
+              <div className="rounded-md bg-primary/10 p-2 text-primary">
+                <Download className="h-4 w-4" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-bold text-foreground">{t('payment.nextStep')}</p>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {t('payment.nextStepDescription')}
+                </p>
+              </div>
             </div>
+
+            {downloaded && (
+              <div className="flex items-center gap-2 rounded-xl border border-[hsl(var(--success)/0.2)] bg-[hsl(var(--success)/0.1)] p-3 text-sm font-medium text-[hsl(var(--success))]">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                {statusMessage}
+              </div>
+            )}
+
             <Button
               onClick={handleDownloadAgain}
-              variant="outline"
+              variant={downloaded ? 'outline' : 'default'}
               className="h-11 w-full rounded-md font-semibold gap-2"
             >
-              <Download className="w-4 h-4" /> {t('payment.downloadAgain')}
+              <Download className="h-4 w-4" />
+              {downloaded ? t('payment.downloadAgain') : t('payment.downloadPdf')}
             </Button>
+
+            <p className="text-center text-xs leading-5 text-muted-foreground">
+              {t('payment.safeStorage')}
+            </p>
           </div>
-        ) : (
-          <Button
-            onClick={handleDownloadAgain}
-            className="h-12 w-full rounded-md text-base font-bold gap-2"
-          >
-            <Download className="w-4 h-4" /> {t('payment.downloadPdf')}
-          </Button>
-        )}
-
-        <button
-          onClick={() => navigate('/')}
-          className="mx-auto flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="w-4 h-4" /> {t('payment.backToCalculator')}
-        </button>
-
-        <p className="text-xs text-muted-foreground">
-          {t('payment.safeStorage')}
-        </p>
+        </section>
       </div>
     </div>
   );

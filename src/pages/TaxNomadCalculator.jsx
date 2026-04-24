@@ -33,7 +33,7 @@ const TaxNomadCalculator = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRangeModalOpen, setIsRangeModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [userData, setUserData] = useState({ name: '', documentType: 'passport', taxId: '' });
+  const [userData, setUserData] = useState({ name: '', email: '', documentType: 'passport', taxId: '' });
 
   const { merged, annotatedRanges } = mergeDateRanges(selectedRanges);
   const totalDays = calculateUniqueDays(merged);
@@ -121,8 +121,10 @@ const TaxNomadCalculator = () => {
     // Persist session data so payment & success pages can access it
     const sessionData = {
       name: userData.name,
+      email: userData.email,
       documentType: userData.documentType,
       taxId: userData.taxId,
+      language,
       totalDays,
       statusLabel: statusObj.label,
       fiscalYear,
@@ -145,8 +147,10 @@ const TaxNomadCalculator = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name:        userData.name,
+          email:       userData.email,
           documentType: userData.documentType,
           taxId:       userData.taxId,
+          language,
           totalDays,
           statusLabel: statusObj.label,
           fiscalYear,

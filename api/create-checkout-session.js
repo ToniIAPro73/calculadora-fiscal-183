@@ -23,8 +23,10 @@ function buildClientReferenceId(taxId) {
 
 const checkoutPayloadSchema = z.object({
   name: z.string().trim().min(1).max(160),
+  email: z.string().trim().email().max(254),
   taxId: z.string().trim().min(1).max(64),
   documentType: z.enum(['passport', 'nie']).default('passport'),
+  language: z.enum(['es', 'en']).default('es'),
   fiscalYear: z.number().int().min(1900).max(2100).default(new Date().getFullYear()),
   statusLabel: z.string().max(80).optional().default(''),
   ranges: z.array(z.object({
@@ -48,7 +50,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid date ranges' });
   }
 
-  const { name, taxId, fiscalYear, statusLabel, documentType, ranges } = parsedPayload.data;
+  const { name, email, taxId, fiscalYear, statusLabel, documentType, language, ranges } = parsedPayload.data;
   const totalDays = fiscalSummary.totalDays;
 
   const stripeKey = process.env.STRIPE_SECRET_KEY;
@@ -88,8 +90,10 @@ export default async function handler(req, res) {
         source: 'regla183',
         productType: 'premium_report',
         name,
+        customerEmail: email,
         taxId,
         documentType: String(documentType || 'passport'),
+        language,
         fiscalYear,
         totalDays,
         statusLabel: String(statusLabel ?? ''),
@@ -100,6 +104,7 @@ export default async function handler(req, res) {
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
+        customer_email: email,
         line_items: [{ price: priceId, quantity: 1 }],
         mode: 'payment',
         success_url: `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}&delivery_token=${deliveryToken}`,
@@ -109,12 +114,14 @@ export default async function handler(req, res) {
           source: 'regla183',
           product_type: 'premium_report',
           report_key: reportKey,
+          report_language: language,
         },
         payment_intent_data: {
           metadata: {
             source: 'regla183',
             product_type: 'premium_report',
             report_key: reportKey,
+            report_language: language,
           },
         },
       });

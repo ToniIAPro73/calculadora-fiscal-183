@@ -25,6 +25,7 @@ async function ensureSchema() {
         name TEXT NOT NULL,
         tax_id TEXT NOT NULL,
         document_type TEXT NOT NULL,
+        language TEXT NOT NULL DEFAULT 'es',
         fiscal_year INTEGER NOT NULL DEFAULT 2026,
         total_days INTEGER NOT NULL,
         status_label TEXT,
@@ -39,6 +40,8 @@ async function ensureSchema() {
       );
     `);
     schemaReadyPromise = schemaReadyPromise.then(() => sql.query(`
+      ALTER TABLE premium_reports
+      ADD COLUMN IF NOT EXISTS language TEXT NOT NULL DEFAULT 'es';
       ALTER TABLE premium_reports
       ADD COLUMN IF NOT EXISTS fiscal_year INTEGER NOT NULL DEFAULT 2026;
       ALTER TABLE premium_reports
@@ -64,6 +67,7 @@ function mapRowToReport(row) {
     name: row.name,
     taxId: row.tax_id,
     documentType: row.document_type,
+    language: row.language ?? 'es',
     fiscalYear: row.fiscal_year,
     totalDays: row.total_days,
     statusLabel: row.status_label,
@@ -85,6 +89,8 @@ export async function createDraftReport({
   name,
   taxId,
   documentType,
+  language = 'es',
+  customerEmail = null,
   fiscalYear,
   totalDays,
   statusLabel,
@@ -104,15 +110,17 @@ export async function createDraftReport({
         name,
         tax_id,
         document_type,
+        language,
         fiscal_year,
         total_days,
         status_label,
         ranges_json,
         delivery_token_hash,
         delivery_token_expires_at,
-        payment_status
+        payment_status,
+        customer_email
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CAST($10 AS jsonb), $11, $12, 'pending')
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CAST($11 AS jsonb), $12, $13, 'pending', $14)
       RETURNING *
     `,
     [
@@ -122,12 +130,14 @@ export async function createDraftReport({
       name,
       taxId,
       documentType,
+      language,
       fiscalYear,
       totalDays,
       statusLabel,
       JSON.stringify(ranges ?? []),
       deliveryTokenHash,
       deliveryTokenExpiresAt,
+      customerEmail,
     ],
   );
 

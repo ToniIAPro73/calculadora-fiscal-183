@@ -58,8 +58,10 @@ describe('checkout-session-status', () => {
     mocks.getReportByStripeSessionId.mockResolvedValue({
       reportKey: 'report_123',
       name: 'Alex Rivera',
+      customerEmail: 'alex@example.com',
       taxId: 'X1234567Z',
       documentType: 'passport',
+      language: 'en',
       fiscalYear: 2027,
       totalDays: 10,
       statusLabel: 'Seguro',
@@ -97,8 +99,10 @@ describe('checkout-session-status', () => {
     expect(res.body.verified).toBe(true);
     expect(res.body.report_payload).toEqual({
       name: 'Alex Rivera',
+      email: 'alex@example.com',
       taxId: 'X1234567Z',
       documentType: 'passport',
+      language: 'en',
       fiscalYear: 2027,
       totalDays: 10,
       statusLabel: 'Seguro',

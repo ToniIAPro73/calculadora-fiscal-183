@@ -25,4 +25,21 @@ describe('generateTaxReport', () => {
 
     expect(doc.getNumberOfPages()).toBeGreaterThan(1);
   });
+
+  it('renders report copy in the requested language', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      language: 'en',
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 1) }],
+      brandLogoDataUrl: transparentPng,
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('FISCAL RESIDENCY REPORT');
+    expect(output).toContain('TAXPAYER DETAILS');
+    expect(output).not.toContain('INFORME DE RESIDENCIA FISCAL');
+  });
 });

@@ -71,8 +71,10 @@ export default async function handler(req, res) {
       metadata: session.metadata ?? {},
       report_payload: {
         name: report?.name ?? null,
+        email: report?.customerEmail ?? session.customer_details?.email ?? null,
         taxId: report?.taxId ?? null,
         documentType: report?.documentType ?? 'passport',
+        language: report?.language ?? session.metadata?.report_language ?? 'es',
         fiscalYear: report?.fiscalYear ?? null,
         totalDays: Number(report?.totalDays ?? 0),
         statusLabel: report?.statusLabel ?? null,
