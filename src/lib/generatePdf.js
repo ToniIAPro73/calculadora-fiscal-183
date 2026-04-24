@@ -1,9 +1,9 @@
 import { jsPDF } from 'jspdf';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { enUS, es } from 'date-fns/locale';
 import { reportOwner } from './reportMetadata.js';
 import { calculateFiscalSummary } from './fiscalSummary.js';
-import logoSource from '@/assets/logo.png';
+import logoSource from '@/assets/logo-header.webp';
 
 const C = {
   blue: [71, 100, 158],
@@ -19,10 +19,10 @@ const C = {
   gold: [245, 158, 11],
 };
 
-function statusInfo(totalDays) {
-  if (totalDays > 183) return { color: C.red, bg: [254, 226, 226], text: 'LÍMITE SUPERADO', badge: '⚠ LÍMITE SUPERADO' };
-  if (totalDays > 150) return { color: C.orange, bg: [254, 243, 199], text: 'ATENCIÓN', badge: '! ATENCIÓN' };
-  return { color: C.green, bg: [220, 252, 231], text: 'SEGURO', badge: '✓ SEGURO' };
+function statusInfo(totalDays, copy) {
+  if (totalDays > 183) return { color: C.red, bg: [254, 226, 226], text: copy.status.over };
+  if (totalDays > 150) return { color: C.orange, bg: [254, 243, 199], text: copy.status.warning };
+  return { color: C.green, bg: [220, 252, 231], text: copy.status.safe };
 }
 
 function buildDataUrlFromBlob(blob) {
@@ -77,21 +77,121 @@ function estimateBlockHeight(lineCount, lineHeight, extra = 0) {
   return lineCount * lineHeight + extra;
 }
 
-function drawFooter(doc, pageWidth, pageHeight, margin, fileOwnerLine, refNum) {
+function drawFooter(doc, pageWidth, pageHeight, margin, fileOwnerLine, refNum, copy) {
   doc.setDrawColor(...C.lightGray);
   doc.line(margin, pageHeight - 16, pageWidth - margin, pageHeight - 16);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(6.6);
   doc.setTextColor(...C.gray);
-  doc.text('TaxNomad · Calculadora de Residencia Fiscal · regla183.com', margin, pageHeight - 11);
+  doc.text(copy.footer, margin, pageHeight - 11);
   doc.text(fileOwnerLine, margin, pageHeight - 7.2);
   doc.text(refNum, pageWidth - margin, pageHeight - 11, { align: 'right' });
 }
 
-function addReportPage(doc, pageWidth, pageHeight, margin, fileOwnerLine, refNum) {
-  drawFooter(doc, pageWidth, pageHeight, margin, fileOwnerLine, refNum);
+function addReportPage(doc, pageWidth, pageHeight, margin, fileOwnerLine, refNum, copy) {
+  drawFooter(doc, pageWidth, pageHeight, margin, fileOwnerLine, refNum, copy);
   doc.addPage();
   return 24;
+}
+
+function getPdfCopy(language) {
+  if (language === 'en') {
+    return {
+      locale: enUS,
+      dateFormat: 'MMMM d, yyyy',
+      shortDateFormat: 'MM/dd/yyyy',
+      appSubtitle: 'Fiscal Residency Calculator · 183-Day Rule',
+      generated: 'Generated',
+      ref: 'Ref',
+      exampleBadge: 'EXAMPLE',
+      exampleTitle: 'Example report with fictional data',
+      exampleDescription: 'Overlapping days are automatically deducted from the unique total.',
+      title: 'FISCAL RESIDENCY REPORT',
+      fiscalSubtitle: (year) => `Fiscal Year ${year} · Art. 9 Spanish Personal Income Tax Law 35/2006 · 183-Day Rule`,
+      taxpayerSection: 'TAXPAYER DETAILS',
+      nameLabel: 'Name:',
+      passportLabel: 'Passport:',
+      nieLabel: 'NIE:',
+      generationDateLabel: 'Generation date:',
+      referenceLabel: 'Reference no.:',
+      summarySection: 'PHYSICAL PRESENCE SUMMARY IN SPAIN',
+      daysInSpain: 'DAYS IN SPAIN',
+      legalLimit: 'Legal limit (183 days):',
+      legalLimitValue: '183 days',
+      remainingDays: 'Remaining days:',
+      percentageUsed: 'Percentage used:',
+      periodsSection: 'DETAIL OF PERIODS IN SPAIN',
+      startDate: 'Start date',
+      endDate: 'End date',
+      days: 'Days',
+      noPeriods: 'No periods recorded.',
+      overlapShort: (days) => `${days} overlapping d.`,
+      totalUniqueDays: 'TOTAL UNIQUE DAYS IN SPAIN',
+      overlapTitle: 'Overlap handling',
+      overlapDescription: (overlapDays, totalDays) =>
+        `${overlapDays} duplicated day(s) have been discarded to obtain the unique total of ${totalDays} days in Spain.`,
+      conclusionHeading: 'CONCLUSION',
+      conclusion: ({ name, verifiedTotalDays, fiscalYear, pct }) => verifiedTotalDays > 183
+        ? `As of the generation date of this report, ${name} has remained in Spanish territory for ${verifiedTotalDays} days during fiscal year ${fiscalYear}, EXCEEDING the 183-day limit established by article 9 of Spanish Personal Income Tax Law 35/2006. This circumstance may determine habitual tax residency in Spain. Urgent consultation with a tax advisor is recommended.`
+        : `As of the generation date of this report, ${name} has remained in Spanish territory for ${verifiedTotalDays} days during fiscal year ${fiscalYear}, representing ${pct.toFixed(1)}% of the 183-day limit established by article 9 of Spanish Personal Income Tax Law 35/2006. Based on the information provided and after deducting overlaps between periods, the permanence threshold required for habitual tax residency in Spain under the 183-day criterion is not exceeded.`,
+      legalNoticeHeading: 'LEGAL NOTICE',
+      legalNotice: 'This document is an automatically generated data summary by TaxNomad and does not constitute official legal or tax advice. Validate this report with a qualified tax advisor before any administrative procedure or tax filing.',
+      footer: 'TaxNomad · Fiscal Residency Calculator · regla183.com',
+      status: {
+        over: 'LIMIT EXCEEDED',
+        warning: 'ATTENTION',
+        safe: 'SAFE',
+      },
+    };
+  }
+
+  return {
+    locale: es,
+    dateFormat: "dd 'de' MMMM 'de' yyyy",
+    shortDateFormat: 'dd/MM/yyyy',
+    appSubtitle: 'Calculadora de Residencia Fiscal · Regla de los 183 Días',
+    generated: 'Generado',
+    ref: 'Ref',
+    exampleBadge: 'EJEMPLO',
+    exampleTitle: 'Informe de ejemplo con datos ficticios',
+    exampleDescription: 'Los días solapados se descuentan automáticamente del total único.',
+    title: 'INFORME DE RESIDENCIA FISCAL',
+    fiscalSubtitle: (year) => `Ejercicio Fiscal ${year} · Art. 9 Ley 35/2006 IRPF · Regla de los 183 Días`,
+    taxpayerSection: 'DATOS DEL CONTRIBUYENTE',
+    nameLabel: 'Nombre:',
+    passportLabel: 'Pasaporte:',
+    nieLabel: 'NIE:',
+    generationDateLabel: 'Fecha de generación:',
+    referenceLabel: 'N.º de referencia:',
+    summarySection: 'RESUMEN DE PRESENCIA FÍSICA EN ESPAÑA',
+    daysInSpain: 'DÍAS EN ESPAÑA',
+    legalLimit: 'Límite legal (183 días):',
+    legalLimitValue: '183 días',
+    remainingDays: 'Días restantes:',
+    percentageUsed: 'Porcentaje utilizado:',
+    periodsSection: 'DETALLE DE PERÍODOS EN ESPAÑA',
+    startDate: 'Fecha de inicio',
+    endDate: 'Fecha de fin',
+    days: 'Días',
+    noPeriods: 'Sin períodos registrados.',
+    overlapShort: (days) => `${days} d. solap.`,
+    totalUniqueDays: 'TOTAL DÍAS ÚNICOS EN ESPAÑA',
+    overlapTitle: 'Tratamiento de solapes',
+    overlapDescription: (overlapDays, totalDays) =>
+      `Se han descartado ${overlapDays} día(s) duplicado(s) para obtener el total único de ${totalDays} días en España.`,
+    conclusionHeading: 'CONCLUSIÓN',
+    conclusion: ({ name, verifiedTotalDays, fiscalYear, pct }) => verifiedTotalDays > 183
+      ? `A la fecha de generación del presente informe, ${name} ha permanecido ${verifiedTotalDays} días en territorio español durante el ejercicio fiscal ${fiscalYear}, SUPERANDO el límite de 183 días establecido por el artículo 9 de la Ley 35/2006 del IRPF. Esta circunstancia podría determinar la residencia fiscal habitual en España. Se recomienda consultar urgentemente con un asesor fiscal.`
+      : `A la fecha de generación del presente informe, ${name} ha permanecido ${verifiedTotalDays} días en territorio español durante el ejercicio fiscal ${fiscalYear}, lo que representa el ${pct.toFixed(1)}% del límite de 183 días establecido por el artículo 9 de la Ley 35/2006 del IRPF. Con la información facilitada y descontando los solapes entre períodos, no se supera el umbral de permanencia exigido para la residencia fiscal habitual en España por el criterio de los 183 días.`,
+    legalNoticeHeading: 'AVISO LEGAL',
+    legalNotice: 'Este documento es un resumen de datos generado automáticamente por TaxNomad y no constituye asesoramiento legal ni fiscal oficial. Se recomienda validar este informe con un asesor fiscal colegiado antes de realizar cualquier trámite administrativo o declaración tributaria.',
+    footer: 'TaxNomad · Calculadora de Residencia Fiscal · regla183.com',
+    status: {
+      over: 'LÍMITE SUPERADO',
+      warning: 'ATENCIÓN',
+      safe: 'SEGURO',
+    },
+  };
 }
 
 export async function generateTaxReport({
@@ -105,6 +205,7 @@ export async function generateTaxReport({
   exampleMode = false,
   brandLogoDataUrl: providedBrandLogoDataUrl,
 }) {
+  const copy = getPdfCopy(language);
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const brandLogoDataUrl = providedBrandLogoDataUrl ?? await loadBrandLogoDataUrl();
   const summary = calculateFiscalSummary(ranges);
@@ -114,16 +215,16 @@ export async function generateTaxReport({
   const M = 18;
   const CW = W - 2 * M;
 
-  const status = statusInfo(verifiedTotalDays);
+  const status = statusInfo(verifiedTotalDays, copy);
   const remaining = Math.max(183 - verifiedTotalDays, 0);
   const pct = Math.min((verifiedTotalDays / 183) * 100, 100);
   const refNum = `TN-${format(new Date(), 'yyyyMMdd')}-${Math.floor(Math.random() * 9000 + 1000)}`;
-  const genDate = format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: es });
+  const genDate = format(new Date(), copy.dateFormat, { locale: copy.locale });
   const sortedRanges = [...summary.annotatedRanges].sort((a, b) => a.start.getTime() - b.start.getTime());
   const rawDays = sortedRanges.reduce((sum, range) => sum + range.days, 0);
   const overlapDeduction = Math.max(rawDays - verifiedTotalDays, 0);
   const overlapSummaryDays = exampleMode ? 5 : overlapDeduction;
-  const identifierLabel = documentType === 'nie' ? 'NIE' : 'Pasaporte';
+  const identifierLabel = documentType === 'nie' ? copy.nieLabel.replace(':', '') : copy.passportLabel.replace(':', '');
   const fileOwnerLine = `${reportOwner.name} · ${reportOwner.nif} · ${reportOwner.email}`;
   const headerHeight = exampleMode ? 30 : 34;
   const footerReserveY = H - 42;
@@ -138,7 +239,7 @@ export async function generateTaxReport({
   const logoW = exampleMode ? 24 : 22;
   const logoH = exampleMode ? 18.4 : 16.8;
   try {
-    doc.addImage(brandLogoDataUrl, 'PNG', M, logoY, logoW, logoH);
+    doc.addImage(brandLogoDataUrl, 'WEBP', M, logoY, logoW, logoH);
   } catch (error) {
     console.warn('PDF logo rendering skipped:', error.message);
   }
@@ -149,16 +250,16 @@ export async function generateTaxReport({
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7.5);
   doc.setTextColor(208, 227, 255);
-  doc.text('Calculadora de Residencia Fiscal · Regla de los 183 Días', M + 28, exampleMode ? 19.8 : 22);
+  doc.text(copy.appSubtitle, M + 28, exampleMode ? 19.8 : 22);
 
   if (exampleMode) {
-    drawPill(doc, (W - 22) / 2, 3.8, 'EJEMPLO', C.gold, C.white, 22);
+    drawPill(doc, (W - 22) / 2, 3.8, copy.exampleBadge, C.gold, C.white, 22);
   }
 
   doc.setFontSize(7.5);
   doc.setTextColor(208, 227, 255);
-  doc.text(`Generado: ${format(new Date(), 'dd/MM/yyyy')}`, W - M, exampleMode ? 15 : 15.8, { align: 'right' });
-  doc.text(`Ref: ${refNum}`, W - M, exampleMode ? 20.4 : 21.8, { align: 'right' });
+  doc.text(`${copy.generated}: ${format(new Date(), copy.shortDateFormat)}`, W - M, exampleMode ? 15 : 15.8, { align: 'right' });
+  doc.text(`${copy.ref}: ${refNum}`, W - M, exampleMode ? 20.4 : 21.8, { align: 'right' });
 
   y = headerHeight + 10;
 
@@ -169,22 +270,22 @@ export async function generateTaxReport({
     doc.setTextColor(194, 65, 12);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8.5);
-    doc.text('Informe de ejemplo con datos ficticios', M + 4, y + 0.5);
+    doc.text(copy.exampleTitle, M + 4, y + 0.5);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7.4);
-    doc.text('Los días solapados se descuentan automáticamente del total único.', M + 4, y + 5.6);
+    doc.text(copy.exampleDescription, M + 4, y + 5.6);
     y += 18;
   }
 
   doc.setTextColor(...C.dark);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
-  doc.text('INFORME DE RESIDENCIA FISCAL', M, y);
+  doc.text(copy.title, M, y);
   y += 6;
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(...C.gray);
-  doc.text(`Ejercicio Fiscal ${fiscalYear} · Art. 9 Ley 35/2006 IRPF · Regla de los 183 Días`, M, y);
+  doc.text(copy.fiscalSubtitle(fiscalYear), M, y);
   y += 6;
   doc.setDrawColor(...C.blue);
   doc.setLineWidth(0.5);
@@ -194,7 +295,7 @@ export async function generateTaxReport({
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8.5);
   doc.setTextColor(...C.blue);
-  doc.text('DATOS DEL CONTRIBUYENTE', M, y);
+  doc.text(copy.taxpayerSection, M, y);
   y += 5;
 
   doc.setFillColor(...C.lightGray);
@@ -211,12 +312,12 @@ export async function generateTaxReport({
     doc.text(value, x + 4 + doc.getTextWidth(label) + 3, rowY);
   };
 
-  row('Nombre:', name, M, y);
+  row(copy.nameLabel, name, M, y);
   row(`${identifierLabel}:`, taxId, M + CW / 2, y);
   y += 8;
-  row('Fecha de generación:', genDate, M, y);
+  row(copy.generationDateLabel, genDate, M, y);
   y += 8;
-  row('N.º de referencia:', refNum, M, y);
+  row(copy.referenceLabel, refNum, M, y);
   y += 12;
 
   doc.setDrawColor(...C.lightGray);
@@ -227,7 +328,7 @@ export async function generateTaxReport({
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8.5);
   doc.setTextColor(...C.blue);
-  doc.text('RESUMEN DE PRESENCIA FÍSICA EN ESPAÑA', M, y);
+  doc.text(copy.summarySection, M, y);
   y += 6;
 
   doc.setFillColor(...status.bg);
@@ -239,13 +340,13 @@ export async function generateTaxReport({
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);
   doc.setTextColor(...C.gray);
-  doc.text('DÍAS EN ESPAÑA', M + 28, y + 23, { align: 'center' });
+  doc.text(copy.daysInSpain, M + 28, y + 23, { align: 'center' });
 
   const sX = M + 63;
   [
-    ['Límite legal (183 días):', '183 días'],
-    ['Días restantes:', `${remaining} días`],
-    ['Porcentaje utilizado:', `${pct.toFixed(1)}%`],
+    [copy.legalLimit, copy.legalLimitValue],
+    [copy.remainingDays, `${remaining} ${copy.days.toLowerCase()}`],
+    [copy.percentageUsed, `${pct.toFixed(1)}%`],
   ].forEach(([label, val], i) => {
     const sY = y + 6 + i * 8;
     doc.setFont('helvetica', 'normal');
@@ -273,7 +374,7 @@ export async function generateTaxReport({
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8.5);
   doc.setTextColor(...C.blue);
-  doc.text('DETALLE DE PERÍODOS EN ESPAÑA', M, y);
+  doc.text(copy.periodsSection, M, y);
   y += 5;
 
   const colW = [CW * 0.38, CW * 0.38, CW * 0.24];
@@ -284,9 +385,9 @@ export async function generateTaxReport({
   doc.setTextColor(...C.white);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(7.5);
-  doc.text('Fecha de inicio', colX[0] + 3, y + 4.5);
-  doc.text('Fecha de fin', colX[1] + 3, y + 4.5);
-  doc.text('Días', colX[2] + colW[2] / 2, y + 4.5, { align: 'center' });
+  doc.text(copy.startDate, colX[0] + 3, y + 4.5);
+  doc.text(copy.endDate, colX[1] + 3, y + 4.5);
+  doc.text(copy.days, colX[2] + colW[2] / 2, y + 4.5, { align: 'center' });
   y += 7;
 
   if (sortedRanges.length === 0) {
@@ -295,20 +396,20 @@ export async function generateTaxReport({
     doc.setTextColor(...C.gray);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7.5);
-    doc.text('Sin períodos registrados.', M + 3, y + 5);
+    doc.text(copy.noPeriods, M + 3, y + 5);
     y += 8;
   } else {
     sortedRanges.forEach((range, i) => {
       if (y + 7 > tableFooterReserveY) {
-        y = addReportPage(doc, W, H, M, fileOwnerLine, refNum);
+        y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
         doc.setFillColor(...C.blue);
         doc.rect(M, y, CW, 7, 'F');
         doc.setTextColor(...C.white);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(7.5);
-        doc.text('Fecha de inicio', colX[0] + 3, y + 4.5);
-        doc.text('Fecha de fin', colX[1] + 3, y + 4.5);
-        doc.text('Días', colX[2] + colW[2] / 2, y + 4.5, { align: 'center' });
+        doc.text(copy.startDate, colX[0] + 3, y + 4.5);
+        doc.text(copy.endDate, colX[1] + 3, y + 4.5);
+        doc.text(copy.days, colX[2] + colW[2] / 2, y + 4.5, { align: 'center' });
         y += 7;
       }
 
@@ -336,7 +437,7 @@ export async function generateTaxReport({
         doc.setTextColor(146, 64, 14);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(6.2);
-        doc.text(`${overlapDays} d. solap.`, M + CW - 16.5, y + 4.35, { align: 'center' });
+        doc.text(copy.overlapShort(overlapDays), M + CW - 16.5, y + 4.35, { align: 'center' });
       }
 
       y += 7;
@@ -348,7 +449,7 @@ export async function generateTaxReport({
   doc.setTextColor(...C.blue);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
-  doc.text('TOTAL DÍAS ÚNICOS EN ESPAÑA', colX[0] + 3, y + 4.5);
+  doc.text(copy.totalUniqueDays, colX[0] + 3, y + 4.5);
   doc.text(String(verifiedTotalDays), colX[2] + colW[2] / 2, y + 4.5, { align: 'center' });
   y += 12;
 
@@ -359,20 +460,18 @@ export async function generateTaxReport({
     doc.setTextColor(154, 52, 18);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.4);
-    doc.text('Tratamiento de solapes', M + 4, y + 2.8);
+    doc.text(copy.overlapTitle, M + 4, y + 2.8);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7.2);
     doc.text(
-      `Se han descartado ${overlapSummaryDays} día(s) duplicado(s) para obtener el total único de ${verifiedTotalDays} días en España.`,
+      copy.overlapDescription(overlapSummaryDays, verifiedTotalDays),
       M + 4,
       y + 7.1,
     );
     y += 16;
   }
 
-  const conclusion = verifiedTotalDays > 183
-    ? `A la fecha de generación del presente informe, ${name} ha permanecido ${verifiedTotalDays} días en territorio español durante el ejercicio fiscal ${fiscalYear}, SUPERANDO el límite de 183 días establecido por el artículo 9 de la Ley 35/2006 del IRPF. Esta circunstancia podría determinar la residencia fiscal habitual en España. Se recomienda consultar urgentemente con un asesor fiscal.`
-    : `A la fecha de generación del presente informe, ${name} ha permanecido ${verifiedTotalDays} días en territorio español durante el ejercicio fiscal ${fiscalYear}, lo que representa el ${pct.toFixed(1)}% del límite de 183 días establecido por el artículo 9 de la Ley 35/2006 del IRPF. Con la información facilitada y descontando los solapes entre períodos, no se supera el umbral de permanencia exigido para la residencia fiscal habitual en España por el criterio de los 183 días.`;
+  const conclusion = copy.conclusion({ name, verifiedTotalDays, fiscalYear, pct });
 
   const cLines = doc.splitTextToSize(conclusion, CW);
   const legalBlockHeight = 26;
@@ -380,7 +479,7 @@ export async function generateTaxReport({
   const conclusionHeight = estimateBlockHeight(cLines.length, 4.2, 6);
 
   if (y + conclusionHeadingHeight + conclusionHeight + legalBlockHeight > footerReserveY) {
-    y = addReportPage(doc, W, H, M, fileOwnerLine, refNum);
+    y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
   }
 
   doc.setDrawColor(...C.lightGray);
@@ -390,7 +489,7 @@ export async function generateTaxReport({
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8.5);
   doc.setTextColor(...C.blue);
-  doc.text('CONCLUSIÓN', M, y);
+  doc.text(copy.conclusionHeading, M, y);
   y += 5;
 
   doc.setFont('helvetica', 'normal');
@@ -404,14 +503,14 @@ export async function generateTaxReport({
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(7.5);
   doc.setTextColor(...C.gray);
-  doc.text('AVISO LEGAL', M + 4, y + 5);
+  doc.text(copy.legalNoticeHeading, M + 4, y + 5);
   doc.setFont('helvetica', 'normal');
-  const disc = 'Este documento es un resumen de datos generado automáticamente por TaxNomad y no constituye asesoramiento legal ni fiscal oficial. Se recomienda validar este informe con un asesor fiscal colegiado antes de realizar cualquier trámite administrativo o declaración tributaria.';
+  const disc = copy.legalNotice;
   const dLines = doc.splitTextToSize(disc, CW - 8);
   doc.text(dLines, M + 4, y + 10);
   y += 26;
 
-  drawFooter(doc, W, H, M, fileOwnerLine, refNum);
+  drawFooter(doc, W, H, M, fileOwnerLine, refNum, copy);
 
   return doc;
 }

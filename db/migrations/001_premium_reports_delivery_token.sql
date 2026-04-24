@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS premium_reports (
   name TEXT NOT NULL,
   tax_id TEXT NOT NULL,
   document_type TEXT NOT NULL,
+  language TEXT NOT NULL DEFAULT 'es',
   fiscal_year INTEGER NOT NULL DEFAULT 2026,
   total_days INTEGER NOT NULL,
   status_label TEXT,
@@ -20,6 +21,9 @@ CREATE TABLE IF NOT EXISTS premium_reports (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE premium_reports
+ADD COLUMN IF NOT EXISTS language TEXT NOT NULL DEFAULT 'es';
 
 ALTER TABLE premium_reports
 ADD COLUMN IF NOT EXISTS fiscal_year INTEGER NOT NULL DEFAULT 2026;

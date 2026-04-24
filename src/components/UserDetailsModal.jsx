@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 
 const UserDetailsModal = ({ isOpen, onClose, onConfirm, userData, setUserData, isLoading }) => {
   const { language, t } = useLanguage();
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.email || '');
 
   const documentTypes = [
     { value: 'passport', label: t('userDetails.documentTypePassport') },
@@ -43,6 +44,19 @@ const UserDetailsModal = ({ isOpen, onClose, onConfirm, userData, setUserData, i
               value={userData.name}
               onChange={(e) => setUserData({ ...userData, name: e.target.value })}
               autoComplete="name"
+              className="h-11 rounded-md border-input bg-background"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase opacity-60">{t('userDetails.emailLabel')}</Label>
+            <Input
+              type="email"
+              inputMode="email"
+              placeholder={t('userDetails.emailPlaceholder')}
+              value={userData.email}
+              onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+              autoComplete="email"
+              aria-invalid={Boolean(userData.email) && !isEmailValid}
               className="h-11 rounded-md border-input bg-background"
             />
           </div>
@@ -90,7 +104,7 @@ const UserDetailsModal = ({ isOpen, onClose, onConfirm, userData, setUserData, i
         <DialogFooter>
           <Button
             onClick={onConfirm}
-            disabled={isLoading || !userData.name || !userData.taxId}
+            disabled={isLoading || !userData.name || !isEmailValid || !userData.taxId}
             className="h-12 w-full gap-2 text-base font-semibold"
           >
             <LockKey size={16} weight="bold" />

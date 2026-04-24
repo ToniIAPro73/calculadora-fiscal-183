@@ -1,5 +1,5 @@
 import React from 'react';
-import logoSource from '@/assets/logo.png';
+import logoSource from '@/assets/logo-header.webp';
 
 const BrandLogo = ({
   className = '',

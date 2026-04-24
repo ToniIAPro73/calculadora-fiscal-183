@@ -70,7 +70,9 @@ describe('create-checkout-session', () => {
         method: 'POST',
         body: {
           name: 'Alex Rivera',
+          email: 'alex@example.com',
           taxId: 'X1234567Z',
+          language: 'en',
           fiscalYear: 2026,
           totalDays: 999,
           ranges: [{ start: '2026-01-01', end: '2026-01-10', days: 999 }],
@@ -84,6 +86,8 @@ describe('create-checkout-session', () => {
     expect(mocks.createDraftReport).toHaveBeenCalledWith(
       expect.objectContaining({
         fiscalYear: 2026,
+        customerEmail: 'alex@example.com',
+        language: 'en',
         totalDays: 10,
         deliveryTokenHash: expect.any(String),
         deliveryTokenExpiresAt: expect.any(String),
@@ -91,7 +95,11 @@ describe('create-checkout-session', () => {
     );
     expect(mocks.stripeSessionCreate).toHaveBeenCalledWith(
       expect.objectContaining({
+        customer_email: 'alex@example.com',
         success_url: expect.stringContaining('delivery_token='),
+        metadata: expect.objectContaining({
+          report_language: 'en',
+        }),
       }),
     );
   });
@@ -105,6 +113,7 @@ describe('create-checkout-session', () => {
         method: 'POST',
         body: {
           name: 'Alex Rivera',
+          email: 'alex@example.com',
           taxId: 'X1234567Z',
           ranges: [{ start: '2026-01-10', end: '2026-01-01' }],
         },
