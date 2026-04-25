@@ -6,7 +6,7 @@ export function SeoAppSchema() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'Calculadora Nomada Fiscal 183 Dias',
+    name: 'Calculadora Nómada Fiscal 183 Días',
     alternateName: '183-Day Tax Nomad Calculator',
     applicationCategory: 'FinanceApplication',
     operatingSystem: 'Web',
