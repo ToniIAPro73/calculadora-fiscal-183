@@ -9,7 +9,7 @@ import { getCanonicalUrl, getDefaultUrl } from '@/lib/seo.js';
 const contentByLanguage = {
   es: {
     title: 'Política de Privacidad · TaxNomad',
-    description: 'Politica de privacidad para usuarios que calculan su residencia fiscal en Espana y la UE con la regla de 183 dias.',
+    description: 'Política de privacidad para usuarios que calculan su residencia fiscal en España y la UE con la regla de 183 días.',
     updatedAt: 'Última actualización: 20 de abril de 2026',
     heading: 'Política de Privacidad',
     intro: 'Transparencia total sobre el tratamiento de tus datos personales.',

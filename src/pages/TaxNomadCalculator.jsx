@@ -71,7 +71,7 @@ const TaxNomadCalculator = () => {
             t('authority.whatCountsList2'),
             t('authority.whatCountsList3'),
             t('authority.whatCountsList4'),
-          ].join(' '),
+          ].join('\n'),
         },
       },
       {
@@ -86,7 +86,7 @@ const TaxNomadCalculator = () => {
             t('authority.exceptionsList3'),
             t('authority.exceptionsList4'),
             t('authority.exceptionsList5'),
-          ].join(' '),
+          ].join('\n'),
         },
       },
     ],

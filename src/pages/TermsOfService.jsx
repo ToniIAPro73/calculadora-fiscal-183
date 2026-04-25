@@ -9,7 +9,7 @@ import { getCanonicalUrl, getDefaultUrl } from '@/lib/seo.js';
 const contentByLanguage = {
   es: {
     title: 'Términos de Servicio · TaxNomad',
-    description: 'Terminos legales de uso de la Calculadora Nomada Fiscal 183 Dias para residencia fiscal en Espana y la UE.',
+    description: 'Términos legales de uso de la Calculadora Nómada Fiscal 183 Días para residencia fiscal en España y la UE.',
     updatedAt: 'Última actualización: 20 de abril de 2026',
     heading: 'Términos de Servicio',
     intro: 'Condiciones legales de uso del servicio TaxNomad. Léelas antes de realizar cualquier compra.',
