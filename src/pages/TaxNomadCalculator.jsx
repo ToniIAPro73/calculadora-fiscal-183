@@ -17,6 +17,13 @@ import DateRangeSelector from '@/components/DateRangeSelector.jsx';
 import RangeList from '@/components/RangeList.jsx';
 import ProgressBar from '@/components/ProgressBar.jsx';
 import DataAuthoritySection from '@/components/DataAuthoritySection.jsx';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useLanguage } from '@/hooks/useLanguage.js';
 import { mergeDateRanges, calculateUniqueDays } from '@/lib/dateRangeMerger.js';
 import { buildExampleReportPayload } from '@/lib/reportMetadata.js';
@@ -109,17 +116,18 @@ const TaxNomadCalculator = () => {
     setIsRangeModalOpen(true);
   };
 
-  const handleFiscalYearChange = (event) => {
-    const nextYear = Number(event.target.value);
-
-    if (!Number.isInteger(nextYear) || nextYear < 1900 || nextYear > 2100 || nextYear === fiscalYear) {
-      return;
-    }
-
+  const handleFiscalYearChange = (value) => {
+    const nextYear = Number(value);
+    if (nextYear === fiscalYear) return;
     setFiscalYear(nextYear);
     setSelectedRanges([]);
     setEditingRangeIndex(null);
   };
+
+  const fiscalYearOptions = Array.from(
+    { length: new Date().getFullYear() - 2015 + 1 },
+    (_, i) => new Date().getFullYear() - i,
+  );
 
   const handleUpdateRange = (index, nextRange) => {
     setSelectedRanges(prev => prev.map((range, currentIndex) => (
@@ -289,16 +297,24 @@ const TaxNomadCalculator = () => {
                         {t('fiscalYear.label')}
                       </label>
                       <div className="mt-3 flex items-center gap-3">
-                        <input
-                          id="fiscal-year"
-                          type="number"
-                          inputMode="numeric"
-                          min="1900"
-                          max="2100"
-                          value={fiscalYear}
-                          onChange={handleFiscalYearChange}
-                          className="h-11 w-32 rounded-md border border-input bg-background px-3 text-base font-semibold text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/35"
-                        />
+                        <Select
+                          value={String(fiscalYear)}
+                          onValueChange={handleFiscalYearChange}
+                        >
+                          <SelectTrigger
+                            id="fiscal-year"
+                            className="h-11 w-36 rounded-md border-input bg-background text-base font-semibold text-foreground focus:ring-ring/35"
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {fiscalYearOptions.map((year) => (
+                              <SelectItem key={year} value={String(year)}>
+                                {year}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <p className="text-xs leading-5 text-muted-foreground">
                           {t('fiscalYear.helper')}
                         </p>
