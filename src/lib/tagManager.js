@@ -14,7 +14,7 @@ function ensureDataLayer() {
 }
 
 export function updateTagManagerConsent(status) {
-  if (typeof window === 'undefined') {
+  if (typeof window === 'undefined' || !status) {
     return;
   }
 
@@ -30,15 +30,16 @@ export function updateTagManagerConsent(status) {
   });
 
   window.dataLayer.push({
-    event: 'taxnomad_cookie_consent_update',
-    cookie_consent_status: status || 'unset',
-    analytics_storage: granted ? 'granted' : 'denied',
+    event: 'cookie_consent_update',
+    consent_status: status,
   });
 }
 
 export function syncStoredConsentToTagManager() {
-  const status = getCookieConsent()?.status ?? 'rejected';
-  updateTagManagerConsent(status);
+  const consent = getCookieConsent();
+  if (consent && consent.status) {
+    updateTagManagerConsent(consent.status);
+  }
 }
 
 export function trackVirtualPageView({ path, title, location, language }) {
