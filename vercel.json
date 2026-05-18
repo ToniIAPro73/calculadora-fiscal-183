@@ -1,4 +1,32 @@
 {
+  "headers": [
+    {
+      "source": "/llms.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    },
+    {
+      "source": "/openapi.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
+  ],
   "redirects": [
     {
       "source": "/:path*",
@@ -47,6 +75,26 @@
       "permanent": true
     },
     {
+      "source": "/legal-notice",
+      "destination": "/es/legal/",
+      "permanent": true
+    },
+    {
+      "source": "/legal-notice/",
+      "destination": "/es/legal/",
+      "permanent": true
+    },
+    {
+      "source": "/legal",
+      "destination": "/es/legal/",
+      "permanent": true
+    },
+    {
+      "source": "/legal/",
+      "destination": "/es/legal/",
+      "permanent": true
+    },
+    {
       "source": "/es/privacy",
       "destination": "/es/privacy/",
       "permanent": true
@@ -68,12 +116,22 @@
     },
     {
       "source": "/es/legal-notice",
-      "destination": "/es/legal-notice/",
+      "destination": "/es/legal/",
       "permanent": true
     },
     {
       "source": "/en/legal-notice",
-      "destination": "/en/legal-notice/",
+      "destination": "/en/legal/",
+      "permanent": true
+    },
+    {
+      "source": "/es/legal",
+      "destination": "/es/legal/",
+      "permanent": true
+    },
+    {
+      "source": "/en/legal",
+      "destination": "/en/legal/",
       "permanent": true
     },
     {
@@ -99,7 +157,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!api/|robots\\.txt|sitemap\\.xml|favicon\\.ico|favicon-16x16\\.png|favicon-32x32\\.png|apple-touch-icon\\.png|site\\.webmanifest|browserconfig\\.xml).*)",
+      "source": "/((?!api/|assets/|.*\\..*$).*)",
       "destination": "/index.html"
     }
   ]

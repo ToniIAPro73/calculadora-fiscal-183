@@ -47,7 +47,7 @@ const TaxNomadCalculator = () => {
   const LIMIT = 183;
   const remaining = Math.max(LIMIT - totalDays, 0);
   const percentage = Math.min((totalDays / LIMIT) * 100, 100);
-  const canonicalUrl = getCanonicalUrl(language);
+  const canonicalUrl = getCanonicalUrl(null); // Home page uses root canonical https://www.regla183.com/
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',

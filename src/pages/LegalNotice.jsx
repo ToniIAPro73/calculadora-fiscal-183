@@ -57,10 +57,10 @@ const LegalNotice = () => {
         <title>{content.title}</title>
         <meta name="description" content={content.description} />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href={getCanonicalUrl(language, '/legal-notice')} />
-        <link rel="alternate" hrefLang="es" href={getCanonicalUrl('es', '/legal-notice')} />
-        <link rel="alternate" hrefLang="en" href={getCanonicalUrl('en', '/legal-notice')} />
-        <link rel="alternate" hrefLang="x-default" href={getCanonicalUrl('es', '/legal-notice')} />
+        <link rel="canonical" href={getCanonicalUrl(language, '/legal')} />
+        <link rel="alternate" hrefLang="es" href={getCanonicalUrl('es', '/legal')} />
+        <link rel="alternate" hrefLang="en" href={getCanonicalUrl('en', '/legal')} />
+        <link rel="alternate" hrefLang="x-default" href={getCanonicalUrl('es', '/legal')} />
       </Helmet>
 
       <div className="min-h-screen bg-background flex flex-col">

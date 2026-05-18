@@ -51,12 +51,12 @@ function AppShell() {
           <Route path="/es/terms/" element={<TermsOfService />} />
           <Route path="/en/terms" element={<TermsOfService />} />
           <Route path="/en/terms/" element={<TermsOfService />} />
-          <Route path="/legal-notice" element={<LegalNotice />} />
-          <Route path="/legal-notice/" element={<LegalNotice />} />
-          <Route path="/es/legal-notice" element={<LegalNotice />} />
-          <Route path="/es/legal-notice/" element={<LegalNotice />} />
-          <Route path="/en/legal-notice" element={<LegalNotice />} />
-          <Route path="/en/legal-notice/" element={<LegalNotice />} />
+          <Route path="/legal" element={<LegalNotice />} />
+          <Route path="/legal/" element={<LegalNotice />} />
+          <Route path="/es/legal" element={<LegalNotice />} />
+          <Route path="/es/legal/" element={<LegalNotice />} />
+          <Route path="/en/legal" element={<LegalNotice />} />
+          <Route path="/en/legal/" element={<LegalNotice />} />
           <Route path="/cookies" element={<CookiePolicy />} />
           <Route path="/cookies/" element={<CookiePolicy />} />
           <Route path="/es/cookies" element={<CookiePolicy />} />

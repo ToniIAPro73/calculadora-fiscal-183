@@ -8,8 +8,15 @@ export function getLanguageFromPath(pathname = '') {
 }
 
 export function getCanonicalUrl(language = 'es', route = '/') {
+  const isHome = route === '/' || route === '';
+
+  // For the home page, if language is null or undefined, we return the absolute root
+  if (isHome && !language) {
+    return `${APP_ORIGIN}/`;
+  }
+
   const safeLanguage = LANGUAGES.includes(language) ? language : 'es';
-  const normalizedRoute = route === '/' ? '/' : `/${route.replace(/^\/+|\/+$/g, '')}/`;
+  const normalizedRoute = isHome ? '/' : `/${route.replace(/^\/+|\/+$/g, '')}/`;
 
   return `${APP_ORIGIN}/${safeLanguage}${normalizedRoute === '/' ? '/' : normalizedRoute}`;
 }
