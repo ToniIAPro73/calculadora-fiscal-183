@@ -10,7 +10,7 @@
 		"lint": "eslint . --quiet",
 		"lint:warn": "eslint .",
 		"test": "vitest run",
-		"postbuild": "node scripts/notify-indexnow.js"
+		"postbuild": "node scripts/prerender-seo.js && node scripts/notify-indexnow.js"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.2.2",
