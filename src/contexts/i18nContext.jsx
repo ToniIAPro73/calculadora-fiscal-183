@@ -1,16 +1,25 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { translations } from '@/lib/translations.js';
+import { getLanguageFromPath } from '@/lib/seo.js';
 
-export const I18nContext = createContext();
+export const LanguageContext = createContext();
 
 const isSupportedLanguage = (value) => value === 'es' || value === 'en';
 
-export const I18nProvider = ({ children, initialLanguage }) => {
+export const LanguageProvider = ({ children, initialLanguage }) => {
   const [language, setLanguage] = useState(() => {
+    // Priority 1: initialLanguage prop
     if (isSupportedLanguage(initialLanguage)) {
       return initialLanguage;
     }
 
+    // Priority 2: URL path detection
+    const urlLang = getLanguageFromPath(window.location.pathname);
+    if (isSupportedLanguage(urlLang)) {
+      return urlLang;
+    }
+
+    // Priority 3: localStorage
     const savedLang = localStorage.getItem('language');
     return isSupportedLanguage(savedLang) ? savedLang : 'es';
   });
@@ -46,8 +55,8 @@ export const I18nProvider = ({ children, initialLanguage }) => {
   };
 
   return (
-    <I18nContext.Provider value={{ language, setLanguage: updateLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage: updateLanguage, t }}>
       {children}
-    </I18nContext.Provider>
+    </LanguageContext.Provider>
   );
 };

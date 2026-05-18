@@ -1,14 +1,13 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import ScrollToTop from './components/ScrollToTop';
 import TagManagerManager from './components/TagManagerManager';
-import TaxNomadCalculator from './pages/TaxNomadCalculator';
+import HomePage from './pages/HomePage';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { I18nProvider } from './contexts/i18nContext';
+import { LanguageProvider } from './contexts/i18nContext';
 import { SeoAppSchema } from '@/components/SeoAppSchema';
 import CookieBanner from '@/components/CookieBanner';
-import { getLanguageFromPath } from '@/lib/seo.js';
 
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
@@ -17,69 +16,49 @@ const CookiePolicy = lazy(() => import('./pages/CookiePolicy'));
 const PaymentMock = lazy(() => import('./pages/PaymentMock'));
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
 
-function AppShell() {
-  const location = useLocation();
-  const initialLanguage = getLanguageFromPath(location.pathname);
-
-  return (
-    <I18nProvider initialLanguage={initialLanguage}>
-      <SeoAppSchema />
-      <TagManagerManager />
-      <ScrollToTop />
-      <Suspense fallback={null}>
-        <Routes>
-          <Route path="/" element={<TaxNomadCalculator />} />
-          <Route path="/calculator" element={<TaxNomadCalculator />} />
-          <Route path="/calculator/" element={<TaxNomadCalculator />} />
-          <Route path="/es" element={<TaxNomadCalculator />} />
-          <Route path="/es/" element={<TaxNomadCalculator />} />
-          <Route path="/en" element={<TaxNomadCalculator />} />
-          <Route path="/en/" element={<TaxNomadCalculator />} />
-          <Route path="/es/calculator" element={<TaxNomadCalculator />} />
-          <Route path="/es/calculator/" element={<TaxNomadCalculator />} />
-          <Route path="/en/calculator" element={<TaxNomadCalculator />} />
-          <Route path="/en/calculator/" element={<TaxNomadCalculator />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/privacy/" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="/terms/" element={<TermsOfService />} />
-          <Route path="/es/privacy" element={<PrivacyPolicy />} />
-          <Route path="/es/privacy/" element={<PrivacyPolicy />} />
-          <Route path="/en/privacy" element={<PrivacyPolicy />} />
-          <Route path="/en/privacy/" element={<PrivacyPolicy />} />
-          <Route path="/es/terms" element={<TermsOfService />} />
-          <Route path="/es/terms/" element={<TermsOfService />} />
-          <Route path="/en/terms" element={<TermsOfService />} />
-          <Route path="/en/terms/" element={<TermsOfService />} />
-          <Route path="/legal" element={<LegalNotice />} />
-          <Route path="/legal/" element={<LegalNotice />} />
-          <Route path="/es/legal" element={<LegalNotice />} />
-          <Route path="/es/legal/" element={<LegalNotice />} />
-          <Route path="/en/legal" element={<LegalNotice />} />
-          <Route path="/en/legal/" element={<LegalNotice />} />
-          <Route path="/cookies" element={<CookiePolicy />} />
-          <Route path="/cookies/" element={<CookiePolicy />} />
-          <Route path="/es/cookies" element={<CookiePolicy />} />
-          <Route path="/es/cookies/" element={<CookiePolicy />} />
-          <Route path="/en/cookies" element={<CookiePolicy />} />
-          <Route path="/en/cookies/" element={<CookiePolicy />} />
-          <Route path="/payment-mock" element={<PaymentMock />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="*" element={<TaxNomadCalculator />} />
-        </Routes>
-      </Suspense>
-      <CookieBanner />
-      <Toaster position="top-center" richColors />
-    </I18nProvider>
-  );
-}
-
 function App() {
   return (
     <ThemeProvider>
-      <Router>
-        <AppShell />
-      </Router>
+      <LanguageProvider>
+        <BrowserRouter>
+          <SeoAppSchema />
+          <TagManagerManager />
+          <ScrollToTop />
+          <Suspense fallback={null}>
+            <Routes>
+              {/* El root "/" renderiza la HomePage directamente (Español por defecto) */}
+              <Route path="/" element={<HomePage />} />
+              
+              {/* Redirección preventiva de "/es" a la raíz para evitar contenido duplicado */}
+              <Route path="/es" element={<Navigate to="/" replace />} />
+              
+              {/* Rutas de idioma alternativas (ej. Inglés) */}
+              <Route path="/en" element={<HomePage />} />
+              
+              {/* Rutas Legales en Español sin barra diagonal final */}
+              <Route path="/es/terms" element={<TermsOfService />} />
+              <Route path="/es/privacy" element={<PrivacyPolicy />} />
+              <Route path="/es/legal" element={<LegalNotice />} />
+              <Route path="/es/cookies" element={<CookiePolicy />} />
+              <Route path="/es/payment-success" element={<PaymentSuccess />} />
+              <Route path="/es/payment-mock" element={<PaymentMock />} />
+              
+              {/* Rutas Legales en Inglés sin barra diagonal final */}
+              <Route path="/en/terms" element={<TermsOfService />} />
+              <Route path="/en/privacy" element={<PrivacyPolicy />} />
+              <Route path="/en/legal" element={<LegalNotice />} />
+              <Route path="/en/cookies" element={<CookiePolicy />} />
+              <Route path="/en/payment-success" element={<PaymentSuccess />} />
+              <Route path="/en/payment-mock" element={<PaymentMock />} />
+              
+              {/* Ruta de respaldo segura hacia la raíz */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
+          <CookieBanner />
+          <Toaster position="top-center" richColors />
+        </BrowserRouter>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

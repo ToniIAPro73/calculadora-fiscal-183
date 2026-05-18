@@ -1,3 +1,5 @@
+import { translations } from './translations.js';
+
 export const APP_ORIGIN = 'https://www.regla183.com';
 
 export const LANGUAGES = ['es', 'en'];
@@ -15,12 +17,35 @@ export function getCanonicalUrl(language = 'es', route = '/') {
     return `${APP_ORIGIN}/`;
   }
 
-  const safeLanguage = LANGUAGES.includes(language) ? language : 'es';
-  const normalizedRoute = isHome ? '/' : `/${route.replace(/^\/+|\/+$/g, '')}/`;
+  // If language is provided but it's the default 'es' for home, we might want root as well
+  if (isHome && language === 'es') {
+    return `${APP_ORIGIN}/`;
+  }
 
-  return `${APP_ORIGIN}/${safeLanguage}${normalizedRoute === '/' ? '/' : normalizedRoute}`;
+  const safeLanguage = LANGUAGES.includes(language) ? language : 'es';
+  
+  // Clean path without trailing slash (except for root)
+  const cleanRoute = isHome ? '' : `/${route.replace(/^\/+|\/+$/g, '')}`;
+
+  return `${APP_ORIGIN}/${safeLanguage}${cleanRoute}`;
+}
+
+export function getSeoMetadata(lang, pageKey, path = '') {
+  const t = translations[lang] || translations.es;
+  
+  // Elimina la barra diagonal final si existe (excepto para la raíz "/")
+  const cleanPath = path === '/' ? '/' : path.replace(/\/$/, '');
+  const canonical = `https://www.regla183.com${cleanPath}`;
+
+  const meta = t.meta || {};
+
+  return {
+    title: meta.title,
+    description: meta.description,
+    canonical
+  };
 }
 
 export function getDefaultUrl() {
-  return `${APP_ORIGIN}/es/`;
+  return `${APP_ORIGIN}/`;
 }

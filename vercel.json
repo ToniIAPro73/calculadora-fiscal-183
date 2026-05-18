@@ -1,5 +1,28 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
     {
       "source": "/llms.txt",
       "headers": [
@@ -29,133 +52,48 @@
   ],
   "redirects": [
     {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "regla183.com"
-        }
-      ],
-      "destination": "https://www.regla183.com/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/",
-      "destination": "/es/",
-      "statusCode": 301
-    },
-    {
-      "source": "/privacy",
-      "destination": "/es/privacy/",
-      "permanent": true
-    },
-    {
-      "source": "/privacy/",
-      "destination": "/es/privacy/",
-      "permanent": true
-    },
-    {
-      "source": "/terms",
-      "destination": "/es/terms/",
-      "permanent": true
-    },
-    {
-      "source": "/terms/",
-      "destination": "/es/terms/",
-      "permanent": true
-    },
-    {
-      "source": "/calculator",
-      "destination": "/es/calculator/",
-      "permanent": true
-    },
-    {
-      "source": "/calculator/",
-      "destination": "/es/calculator/",
-      "permanent": true
-    },
-    {
-      "source": "/legal-notice",
-      "destination": "/es/legal/",
-      "permanent": true
-    },
-    {
-      "source": "/legal-notice/",
-      "destination": "/es/legal/",
-      "permanent": true
-    },
-    {
-      "source": "/legal",
-      "destination": "/es/legal/",
-      "permanent": true
-    },
-    {
-      "source": "/legal/",
-      "destination": "/es/legal/",
-      "permanent": true
-    },
-    {
-      "source": "/es/privacy",
-      "destination": "/es/privacy/",
-      "permanent": true
-    },
-    {
-      "source": "/en/privacy",
-      "destination": "/en/privacy/",
-      "permanent": true
-    },
-    {
-      "source": "/es/cookies",
-      "destination": "/es/cookies/",
-      "permanent": true
-    },
-    {
-      "source": "/en/cookies",
-      "destination": "/en/cookies/",
-      "permanent": true
-    },
-    {
-      "source": "/es/legal-notice",
-      "destination": "/es/legal/",
-      "permanent": true
-    },
-    {
-      "source": "/en/legal-notice",
-      "destination": "/en/legal/",
-      "permanent": true
-    },
-    {
-      "source": "/es/legal",
-      "destination": "/es/legal/",
-      "permanent": true
-    },
-    {
-      "source": "/en/legal",
-      "destination": "/en/legal/",
-      "permanent": true
-    },
-    {
-      "source": "/es/terms",
-      "destination": "/es/terms/",
-      "permanent": true
-    },
-    {
-      "source": "/en/terms",
-      "destination": "/en/terms/",
-      "permanent": true
-    },
-    {
-      "source": "/es/calculator",
-      "destination": "/es/calculator/",
-      "permanent": true
-    },
-    {
-      "source": "/en/calculator",
-      "destination": "/en/calculator/",
-      "permanent": true
+      "source": "/es",
+      "destination": "/",
+      "statusCode": 308
     }
   ],
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    },
+    {
+      "source": "/es/terms",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es/privacy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es/legal",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es/cookies",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es/payment-success",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es/payment-mock",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es/:path*",
+      "destination": "/index.html"
+    },
     {
       "source": "/((?!api/|assets/|.*\\..*$).*)",
       "destination": "/index.html"
