@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /llms.txt
-Disallow: /openapi.json
 
 Sitemap: https://www.regla183.com/sitemap.xml

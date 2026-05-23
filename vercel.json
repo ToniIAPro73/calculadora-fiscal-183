@@ -63,6 +63,26 @@
       "source": "/es",
       "destination": "/",
       "statusCode": 308
+    },
+    {
+      "source": "/es/privacy/",
+      "destination": "/es/privacy",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/terms/",
+      "destination": "/es/terms",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/privacy/",
+      "destination": "/en/privacy",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/terms/",
+      "destination": "/en/terms",
+      "statusCode": 301
     }
   ],
   "rewrites": [
