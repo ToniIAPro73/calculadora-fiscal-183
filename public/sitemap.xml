@@ -1,33 +1,144 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Homepage Espanol -->
   <url>
     <loc>https://www.regla183.com/</loc>
-    <lastmod>2026-05-18</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/"/>
   </url>
+  <!-- Homepage Ingles -->
+  <url>
+    <loc>https://www.regla183.com/en</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/"/>
+  </url>
+  <!-- Terminos - Espanol -->
   <url>
     <loc>https://www.regla183.com/es/terms</loc>
-    <lastmod>2026-05-18</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/terms"/>
   </url>
+  <!-- Terminos - Ingles -->
+  <url>
+    <loc>https://www.regla183.com/en/terms</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/terms"/>
+  </url>
+  <!-- Privacidad - Espanol -->
   <url>
     <loc>https://www.regla183.com/es/privacy</loc>
-    <lastmod>2026-05-18</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/privacy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/privacy"/>
   </url>
+  <!-- Privacidad - Ingles -->
+  <url>
+    <loc>https://www.regla183.com/en/privacy</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/privacy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/privacy"/>
+  </url>
+  <!-- Aviso Legal - Espanol -->
   <url>
     <loc>https://www.regla183.com/es/legal</loc>
-    <lastmod>2026-05-18</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/legal"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/legal"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/legal"/>
   </url>
+  <!-- Aviso Legal - Ingles -->
+  <url>
+    <loc>https://www.regla183.com/en/legal</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/legal"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/legal"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/legal"/>
+  </url>
+  <!-- Cookies - Espanol -->
   <url>
     <loc>https://www.regla183.com/es/cookies</loc>
-    <lastmod>2026-05-18</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/cookies"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/cookies"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/cookies"/>
+  </url>
+  <!-- Cookies - Ingles -->
+  <url>
+    <loc>https://www.regla183.com/en/cookies</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/cookies"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/cookies"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/cookies"/>
+  </url>
+  <!-- Guia Regla 183 - Espanol -->
+  <url>
+    <loc>https://www.regla183.com/es/guide</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/guide"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/guide"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/guide"/>
+  </url>
+  <!-- Guia Regla 183 - Ingles -->
+  <url>
+    <loc>https://www.regla183.com/en/guide</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/guide"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/guide"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/guide"/>
+  </url>
+  <!-- Sobre Nosotros - Espanol -->
+  <url>
+    <loc>https://www.regla183.com/es/about</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/about"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/about"/>
+  </url>
+  <!-- Sobre Nosotros - Ingles -->
+  <url>
+    <loc>https://www.regla183.com/en/about</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/about"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/about"/>
   </url>
 </urlset>

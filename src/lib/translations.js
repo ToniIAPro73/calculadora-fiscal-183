@@ -142,6 +142,10 @@ export const translations = {
       title: "183 Day Rule Spain Calculator | Tax Residency",
       description: "Calculate your tax residency in Spain using the 183-day rule.",
     },
+    nav: {
+      guide: "Guide",
+      about: "About",
+    },
     footer: {
       brand: "Tax Nomad Utility",
       tagline: "Professional-grade digital utilities for global remote workers. Precision-focused and audit-ready data processing.",
@@ -344,6 +348,10 @@ export const translations = {
     meta: {
       title: "Calculadora Regla 183 España | Residencia Fiscal",
       description: "Calcula si eres residente fiscal en España según la regla de los 183 días.",
+    },
+    nav: {
+      guide: "Guía",
+      about: "Sobre nosotros",
     },
     footer: {
       brand: "Tax Nomad Utility",

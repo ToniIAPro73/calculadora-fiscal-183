@@ -6,8 +6,8 @@ import TagManagerManager from './components/TagManagerManager';
 import HomePage from './pages/HomePage';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/i18nContext';
-import { SeoAppSchema } from '@/components/SeoAppSchema';
 import CookieBanner from '@/components/CookieBanner';
+import AnalyticsTracker from '@/components/AnalyticsTracker';
 
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
@@ -15,14 +15,16 @@ const LegalNotice = lazy(() => import('./pages/LegalNotice'));
 const CookiePolicy = lazy(() => import('./pages/CookiePolicy'));
 const PaymentMock = lazy(() => import('./pages/PaymentMock'));
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
+const GuidePage = lazy(() => import('./pages/GuidePage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
 
 function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
         <BrowserRouter>
-          <SeoAppSchema />
           <TagManagerManager />
+          <AnalyticsTracker />
           <ScrollToTop />
           <Suspense fallback={null}>
             <Routes>
@@ -50,6 +52,14 @@ function App() {
               <Route path="/en/cookies" element={<CookiePolicy />} />
               <Route path="/en/payment-success" element={<PaymentSuccess />} />
               <Route path="/en/payment-mock" element={<PaymentMock />} />
+
+              {/* Guía SEO - Contenido de valor para posicionamiento orgánico */}
+              <Route path="/es/guide" element={<GuidePage />} />
+              <Route path="/en/guide" element={<GuidePage />} />
+
+              {/* Sobre Nosotros - E-E-A-T para Google */}
+              <Route path="/es/about" element={<AboutPage />} />
+              <Route path="/en/about" element={<AboutPage />} />
               
               {/* Ruta de respaldo segura hacia la raíz */}
               <Route path="*" element={<Navigate to="/" replace />} />

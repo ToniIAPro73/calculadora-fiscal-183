@@ -9,18 +9,22 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'INDEXNOW_KEY not configured' });
   }
 
-  const host = 'regla183.com';
+  const host = 'www.regla183.com';
   const urls = [
-    `https://${host}/es/`,
-    `https://${host}/en/`,
-    `https://${host}/es/privacy/`,
-    `https://${host}/en/privacy/`,
-    `https://${host}/es/terms/`,
-    `https://${host}/en/terms/`,
-    `https://${host}/es/legal-notice/`,
-    `https://${host}/en/legal-notice/`,
-    `https://${host}/es/cookies/`,
-    `https://${host}/en/cookies/`,
+    'https://www.regla183.com/',
+    'https://www.regla183.com/en',
+    'https://www.regla183.com/es/privacy',
+    'https://www.regla183.com/en/privacy',
+    'https://www.regla183.com/es/terms',
+    'https://www.regla183.com/en/terms',
+    'https://www.regla183.com/es/legal',
+    'https://www.regla183.com/en/legal',
+    'https://www.regla183.com/es/cookies',
+    'https://www.regla183.com/en/cookies',
+    'https://www.regla183.com/es/guide',
+    'https://www.regla183.com/en/guide',
+    'https://www.regla183.com/es/about',
+    'https://www.regla183.com/en/about',
   ];
 
   const body = JSON.stringify({
