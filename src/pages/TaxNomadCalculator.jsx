@@ -28,6 +28,7 @@ import { useLanguage } from '@/hooks/useLanguage.js';
 import { mergeDateRanges, calculateUniqueDays } from '@/lib/dateRangeMerger.js';
 import { buildExampleReportPayload } from '@/lib/reportMetadata.js';
 import { getCanonicalUrl, getDefaultUrl } from '@/lib/seo.js';
+import { SeoAppSchema } from '@/components/SeoAppSchema';
 
 const UserDetailsModal = lazy(() => import('@/components/UserDetailsModal.jsx'));
 
@@ -48,6 +49,8 @@ const TaxNomadCalculator = () => {
   const remaining = Math.max(LIMIT - totalDays, 0);
   const percentage = Math.min((totalDays / LIMIT) * 100, 100);
   const canonicalUrl = getCanonicalUrl(null); // Home page uses root canonical https://www.regla183.com/
+
+  // SeoAppSchema is rendered only on the homepage for correct semantic markup
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -100,10 +103,18 @@ const TaxNomadCalculator = () => {
 
   const handleAddRange = (range) => {
     setSelectedRanges(prev => [...prev, range]);
+    // Track conversion event
+    if (typeof window.taxNomadTrack === 'function') {
+      window.taxNomadTrack('range_added', { total_ranges: selectedRanges.length + 1 });
+    }
   };
 
   const handleRemoveRange = (index) => {
     setSelectedRanges(prev => prev.filter((_, i) => i !== index));
+    // Track conversion event
+    if (typeof window.taxNomadTrack === 'function') {
+      window.taxNomadTrack('range_removed', { total_ranges: Math.max(selectedRanges.length - 1, 0) });
+    }
     setEditingRangeIndex((currentIndex) => {
       if (currentIndex === null) return null;
       if (currentIndex === index) return null;
@@ -170,6 +181,11 @@ const TaxNomadCalculator = () => {
 
   const handleConfirmPurchase = async () => {
     setIsProcessing(true);
+
+    // Track checkout initiated event
+    if (typeof window.taxNomadTrack === 'function') {
+      window.taxNomadTrack('checkout_initiated', { total_days: totalDays, price: '9.99', currency: 'EUR' });
+    }
 
     // Persist session data so payment & success pages can access it
     const sessionData = {
@@ -243,6 +259,7 @@ const TaxNomadCalculator = () => {
 
   return (
     <>
+      <SeoAppSchema />
       <Helmet>
         <title>{t('meta.title')}</title>
         <meta name="description" content={t('meta.description')} />

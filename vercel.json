@@ -75,6 +75,21 @@
       "statusCode": 301
     },
     {
+      "source": "/es/cookies/",
+      "destination": "/es/cookies",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/legal-notice",
+      "destination": "/es/legal",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/legal-notice/",
+      "destination": "/es/legal",
+      "statusCode": 301
+    },
+    {
       "source": "/en/privacy/",
       "destination": "/en/privacy",
       "statusCode": 301
@@ -82,6 +97,21 @@
     {
       "source": "/en/terms/",
       "destination": "/en/terms",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/cookies/",
+      "destination": "/en/cookies",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/legal-notice",
+      "destination": "/en/legal",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/legal-notice/",
+      "destination": "/en/legal",
       "statusCode": 301
     }
   ],
@@ -115,7 +145,11 @@
       "destination": "/index.html"
     },
     {
-      "source": "/es",
+      "source": "/es/guide",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es/about",
       "destination": "/index.html"
     },
     {

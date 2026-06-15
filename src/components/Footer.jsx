@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowUpRight, EnvelopeSimple, ShieldCheck } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -30,30 +31,30 @@ const Footer = () => {
             <h4 className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
               {t('footer.legalTitle')}
             </h4>
-            <a
-              href={`${langPrefix}/privacy/`}
+            <Link
+              to={`${langPrefix}/privacy`}
               className="inline-flex items-center gap-2 text-left text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
             >
               {t('footer.privacy')} <ArrowUpRight size={14} weight="bold" />
-            </a>
-            <a
-              href={`${langPrefix}/terms/`}
+            </Link>
+            <Link
+              to={`${langPrefix}/terms`}
               className="inline-flex items-center gap-2 text-left text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
             >
               {t('footer.terms')} <ArrowUpRight size={14} weight="bold" />
-            </a>
-            <a
-              href={`${langPrefix}/legal-notice/`}
+            </Link>
+            <Link
+              to={`${langPrefix}/legal`}
               className="inline-flex items-center gap-2 text-left text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
             >
               {t('footer.legalNotice')} <ArrowUpRight size={14} weight="bold" />
-            </a>
-            <a
-              href={`${langPrefix}/cookies/`}
+            </Link>
+            <Link
+              to={`${langPrefix}/cookies`}
               className="inline-flex items-center gap-2 text-left text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
             >
               {t('footer.cookies')} <ArrowUpRight size={14} weight="bold" />
-            </a>
+            </Link>
           </div>
 
           <div className="flex flex-col gap-3">

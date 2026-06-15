@@ -1,4 +1,9 @@
 User-agent: *
+Disallow: /openapi.json
+Disallow: /llms.txt
+Disallow: /IMPLEMENTACION.html
+Disallow: /es/payment-mock
+Disallow: /en/payment-mock
 Allow: /
 
 Sitemap: https://www.regla183.com/sitemap.xml

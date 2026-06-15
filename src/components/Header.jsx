@@ -1,9 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   ArrowUpRight,
+  BookOpen,
   FileArrowDown,
   GlobeHemisphereWest,
+  Info,
   LockKey,
   MoonStars,
   SunHorizon,
@@ -19,6 +21,7 @@ const Header = ({ totalDays = 0, onOpenModal, onOpenExample }) => {
   const { language, setLanguage, t } = useLanguage();
 
   const canDownload = totalDays > 0;
+  const langPrefix = language === 'en' ? '/en' : '/es';
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/92 px-4 backdrop-blur-md sm:px-6 lg:px-8">
@@ -36,6 +39,22 @@ const Header = ({ totalDays = 0, onOpenModal, onOpenExample }) => {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Navigation links - hidden on small screens */}
+            <nav className="hidden lg:flex items-center gap-1 mr-2">
+              <Link to={`${langPrefix}/guide`}>
+                <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5">
+                  <BookOpen size={16} weight="light" />
+                  {t('nav.guide')}
+                </Button>
+              </Link>
+              <Link to={`${langPrefix}/about`}>
+                <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5">
+                  <Info size={16} weight="light" />
+                  {t('nav.about')}
+                </Button>
+              </Link>
+            </nav>
+
             <Button
               onClick={onOpenModal}
               disabled={!canDownload}

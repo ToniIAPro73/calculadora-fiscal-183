@@ -8,12 +8,24 @@ if (!key) {
 }
 
 const payload = {
-  host: 'regla183.com',
+  host: 'www.regla183.com',
   key,
-  keyLocation: `https://regla183.com/${key}.txt`,
+  keyLocation: `https://www.regla183.com/${key}.txt`,
   urlList: [
-    'https://regla183.com/es/',
-    'https://regla183.com/en/',
+    'https://www.regla183.com/',
+    'https://www.regla183.com/en',
+    'https://www.regla183.com/es/privacy',
+    'https://www.regla183.com/en/privacy',
+    'https://www.regla183.com/es/terms',
+    'https://www.regla183.com/en/terms',
+    'https://www.regla183.com/es/legal',
+    'https://www.regla183.com/en/legal',
+    'https://www.regla183.com/es/cookies',
+    'https://www.regla183.com/en/cookies',
+    'https://www.regla183.com/es/guide',
+    'https://www.regla183.com/en/guide',
+    'https://www.regla183.com/es/about',
+    'https://www.regla183.com/en/about',
   ],
 };
 

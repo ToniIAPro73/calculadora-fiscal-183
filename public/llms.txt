@@ -15,7 +15,7 @@ Esta aplicación ayuda a nómadas digitales a calcular sus días de presencia f�
 - **Audit Ready**: Generates a PDF report summarizing unique stays for tax compliance purposes.
 
 ## API Access
-- **OpenAPI**: `https://regla183.com/openapi.json`
+- **OpenAPI**: `https://www.regla183.com/openapi.json`
 - **Calculation Endpoint**: `POST /api/calculate-residency`
 - **Format**: Accepts JSON with `fiscalYear` and `ranges: [{ "start": "YYYY-MM-DD", "end": "YYYY-MM-DD" }]`.
 - **Purpose**: Returns unique counted days, merged ranges, overlap annotations, remaining days before the 183-day threshold, and status (`safe`, `warning`, or `destructive`).
