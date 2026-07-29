@@ -29,7 +29,7 @@ const PaymentMock = () => {
     <>
       <Helmet>
         <title>Payment Mock - TaxNomad</title>
-        <meta name="robots" content="noindex,follow" />
+        <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <div className="flex min-h-screen flex-col bg-background">
         <div className="flex items-center justify-center gap-2 bg-[hsl(var(--warning))] py-2 text-center text-sm font-semibold text-[hsl(var(--warning-foreground))]">

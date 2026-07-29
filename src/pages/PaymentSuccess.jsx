@@ -184,7 +184,7 @@ const PaymentSuccess = () => {
       <>
         <Helmet>
           <title>Payment Status - TaxNomad</title>
-          <meta name="robots" content="noindex,follow" />
+          <meta name="robots" content="noindex, nofollow" />
         </Helmet>
         <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-4">
           <BrandLogo className="h-12 w-auto" />
@@ -210,7 +210,7 @@ const PaymentSuccess = () => {
     <>
       <Helmet>
         <title>Payment Success - TaxNomad</title>
-        <meta name="robots" content="noindex,follow" />
+        <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <div className="flex min-h-[100dvh] items-center justify-center overflow-hidden bg-background px-4 py-4">
       <div className="grid w-full max-w-5xl gap-4 rounded-2xl border border-border bg-card p-4 shadow-2xl shadow-black/20 md:p-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-stretch">

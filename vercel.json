@@ -65,9 +65,14 @@
       "statusCode": 308
     },
     {
-      "source": "/es/privacy/",
-      "destination": "/es/privacy",
-      "statusCode": 301
+      "source": "/es/",
+      "destination": "/",
+      "statusCode": 308
+    },
+    {
+      "source": "/en/",
+      "destination": "/en",
+      "statusCode": 308
     },
     {
       "source": "/es/terms/",
@@ -75,8 +80,58 @@
       "statusCode": 301
     },
     {
+      "source": "/es/privacy/",
+      "destination": "/es/privacy",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/legal/",
+      "destination": "/es/legal",
+      "statusCode": 301
+    },
+    {
       "source": "/es/cookies/",
       "destination": "/es/cookies",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/guide/",
+      "destination": "/es/guide",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/about/",
+      "destination": "/es/about",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/terms/",
+      "destination": "/en/terms",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/privacy/",
+      "destination": "/en/privacy",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/legal/",
+      "destination": "/en/legal",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/cookies/",
+      "destination": "/en/cookies",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/guide/",
+      "destination": "/en/guide",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/about/",
+      "destination": "/en/about",
       "statusCode": 301
     },
     {
@@ -87,21 +142,6 @@
     {
       "source": "/es/legal-notice/",
       "destination": "/es/legal",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/privacy/",
-      "destination": "/en/privacy",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/terms/",
-      "destination": "/en/terms",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/cookies/",
-      "destination": "/en/cookies",
       "statusCode": 301
     },
     {
@@ -121,20 +161,56 @@
       "destination": "/api/:path*"
     },
     {
+      "source": "/en",
+      "destination": "/en/index.html"
+    },
+    {
       "source": "/es/terms",
-      "destination": "/index.html"
+      "destination": "/es/terms/index.html"
     },
     {
       "source": "/es/privacy",
-      "destination": "/index.html"
+      "destination": "/es/privacy/index.html"
     },
     {
       "source": "/es/legal",
-      "destination": "/index.html"
+      "destination": "/es/legal/index.html"
     },
     {
       "source": "/es/cookies",
-      "destination": "/index.html"
+      "destination": "/es/cookies/index.html"
+    },
+    {
+      "source": "/es/guide",
+      "destination": "/es/guide/index.html"
+    },
+    {
+      "source": "/es/about",
+      "destination": "/es/about/index.html"
+    },
+    {
+      "source": "/en/terms",
+      "destination": "/en/terms/index.html"
+    },
+    {
+      "source": "/en/privacy",
+      "destination": "/en/privacy/index.html"
+    },
+    {
+      "source": "/en/legal",
+      "destination": "/en/legal/index.html"
+    },
+    {
+      "source": "/en/cookies",
+      "destination": "/en/cookies/index.html"
+    },
+    {
+      "source": "/en/guide",
+      "destination": "/en/guide/index.html"
+    },
+    {
+      "source": "/en/about",
+      "destination": "/en/about/index.html"
     },
     {
       "source": "/es/payment-success",
@@ -145,11 +221,11 @@
       "destination": "/index.html"
     },
     {
-      "source": "/es/guide",
+      "source": "/en/payment-success",
       "destination": "/index.html"
     },
     {
-      "source": "/es/about",
+      "source": "/en/payment-mock",
       "destination": "/index.html"
     },
     {

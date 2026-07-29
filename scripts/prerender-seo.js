@@ -1,6 +1,7 @@
 // Post-build script: generates static HTML per route with SEO tags pre-injected.
-// With cleanUrls:true in Vercel, dist/es/cookies/index.html is served directly
-// for /es/cookies — no JS execution needed for Google to read canonical tags.
+// vercel.json rewrites each public route (e.g. /es/terms) to its generated file
+// (dist/es/terms/index.html) — no JS execution needed for Google to read
+// canonical/hreflang tags or the static body links (#seo-content).
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -181,6 +182,27 @@ const routes = [
   },
 ];
 
+const NAV_LINKS = {
+  es: [
+    { href: '/', label: 'Inicio' },
+    { href: '/es/guide', label: 'Guía de la regla de los 183 días' },
+    { href: '/es/about', label: 'Sobre TaxNomad' },
+    { href: '/es/legal', label: 'Aviso legal' },
+    { href: '/es/privacy', label: 'Política de privacidad' },
+    { href: '/es/terms', label: 'Términos de servicio' },
+    { href: '/es/cookies', label: 'Política de cookies' },
+  ],
+  en: [
+    { href: '/en', label: 'Home' },
+    { href: '/en/guide', label: '183-day rule guide' },
+    { href: '/en/about', label: 'About TaxNomad' },
+    { href: '/en/legal', label: 'Legal notice' },
+    { href: '/en/privacy', label: 'Privacy policy' },
+    { href: '/en/terms', label: 'Terms of service' },
+    { href: '/en/cookies', label: 'Cookie policy' },
+  ],
+};
+
 const baseHtml = readFileSync(join(distDir, 'index.html'), 'utf-8');
 
 for (const route of routes) {
@@ -221,10 +243,44 @@ for (const route of routes) {
 
   html = html.replace('</head>', `${seoBlock}\n</head>`);
 
+  // Static body content: real h1/paragraph plus crawlable <a href> links.
+  // The React app removes this block on mount (see src/main.jsx), so it only
+  // exists in the pre-rendered HTML served to crawlers / no-JS clients.
+  const heading = route.title.split(/[·|]/)[0].trim();
+  const navLinks = NAV_LINKS[route.lang]
+    .map(link => `      <a href="${link.href}">${link.label}</a>`)
+    .join('\n');
+
+  const bodyBlock = [
+    `<div id="seo-content">`,
+    `  <main>`,
+    `    <h1>${heading}</h1>`,
+    `    <p>${route.description}</p>`,
+    `    <nav>`,
+    navLinks,
+    `    </nav>`,
+    `  </main>`,
+    `</div>`,
+  ].join('\n');
+
+  html = html.replace('<div id="root">', `${bodyBlock}\n<div id="root">`);
+
   const outputPath = join(distDir, route.distPath);
   mkdirSync(dirname(outputPath), { recursive: true });
   writeFileSync(outputPath, html, 'utf-8');
   console.log(`✓ Pre-rendered → dist/${route.distPath}`);
+}
+
+// Keep sitemap <lastmod> in sync with the real deploy date on every build.
+const today = new Date().toISOString().slice(0, 10);
+const sitemapPath = join(distDir, 'sitemap.xml');
+try {
+  const sitemap = readFileSync(sitemapPath, 'utf-8');
+  const updated = sitemap.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g, `<lastmod>${today}</lastmod>`);
+  writeFileSync(sitemapPath, updated, 'utf-8');
+  console.log(`✓ Sitemap lastmod updated → ${today}`);
+} catch {
+  console.warn('⚠ dist/sitemap.xml not found; skipping lastmod update.');
 }
 
 console.log(`\n✅ Pre-rendering complete: ${routes.length} routes generated.`);
