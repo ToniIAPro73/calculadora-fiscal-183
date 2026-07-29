@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
+import LegalRef from '@/components/LegalRef.jsx';
 import { getCanonicalUrl } from '@/lib/seo';
 
 const GuidePage = () => {
@@ -140,8 +141,11 @@ const GuidePage = () => {
             </h2>
             <p className="mb-4 leading-7 text-muted-foreground">
               {isEs
-                ? 'La regla de los 183 días es el criterio principal establecido en el artículo 9 de la Ley 35/2007 del Impuesto sobre la Renta de las Personas Físicas (LIRPF) para determinar la residencia fiscal en España. Según esta norma, una persona se considera residente fiscal en España cuando permanece más de 183 días durante el año natural en territorio español. Este criterio es aplicable tanto a ciudadanos españoles como extranjeros, y no depende de la nacionalidad sino de la presencia física efectiva en el país.'
-                : 'The 183-day rule is the main criterion established in Article 9 of Law 35/2007 on Personal Income Tax (LIRPF) to determine tax residency in Spain. Under this rule, a person is considered a tax resident in Spain when they spend more than 183 days during the calendar year in Spanish territory. This criterion applies to both Spanish citizens and foreigners, and does not depend on nationality but on effective physical presence in the country.'}
+                ? 'La regla de los 183 días es el criterio principal establecido en el artículo 9 de la Ley 35/2006 del Impuesto sobre la Renta de las Personas Físicas (LIRPF) para determinar la residencia fiscal en España. Según esta norma, una persona se considera residente fiscal en España cuando permanece más de 183 días durante el año natural en territorio español. Este criterio es aplicable tanto a ciudadanos españoles como extranjeros, y no depende de la nacionalidad sino de la presencia física efectiva en el país.'
+                : 'The 183-day rule is the main criterion established in Article 9 of Law 35/2006 on Personal Income Tax (LIRPF) to determine tax residency in Spain. Under this rule, a person is considered a tax resident in Spain when they spend more than 183 days during the calendar year in Spanish territory. This criterion applies to both Spanish citizens and foreigners, and does not depend on nationality but on effective physical presence in the country.'}
+            </p>
+            <p className="mb-4 text-xs">
+              <LegalRef refId="lirpf-art9" />
             </p>
             <p className="leading-7 text-muted-foreground">
               {isEs
@@ -303,7 +307,7 @@ const GuidePage = () => {
               {isEs ? 'Fuentes oficiales' : 'Official sources'}
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>{isEs ? 'Agencia Tributaria — Ley 35/2007, Artículo 9' : 'Agencia Tributaria — Law 35/2007, Article 9'}</li>
+              <li>{isEs ? 'Agencia Tributaria — Ley 35/2006, Artículo 9' : 'Agencia Tributaria — Law 35/2006, Article 9'}</li>
               <li>{isEs ? 'Comisión Europea — Fiscalidad y Unión Aduanera' : 'European Commission — Taxation and Customs Union'}</li>
               <li>{isEs ? 'OCDE — Modelo de Convenio Fiscal sobre la Renta y el Patrimonio' : 'OECD — Model Tax Convention on Income and on Capital'}</li>
             </ul>

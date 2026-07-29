@@ -2,6 +2,7 @@ import React from 'react';
 import { CheckCircle, Eraser, Scales, WarningCircle } from '@phosphor-icons/react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useLanguage } from '@/hooks/useLanguage.js';
+import LegalRef from '@/components/LegalRef.jsx';
 import {
   ECONOMIC_INTEREST_QUESTIONS,
   evaluateEconomicInterests,
@@ -57,6 +58,10 @@ const EconomicInterestsPanel = ({ answers, onChange, onReset }) => {
         <p className="text-sm leading-6 text-muted-foreground">
           {t('economicInterests.description')}
         </p>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+          <LegalRef refId="lirpf-art9" />
+          <LegalRef refId="dgt-intereses-economicos" />
+        </div>
       </div>
 
       <div className="mt-4 flex gap-3 rounded-lg border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.06)] px-3.5 py-2.5">

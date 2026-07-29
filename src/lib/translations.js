@@ -269,6 +269,9 @@ export const translations = {
       disclaimerTitle: "Disclaimer",
       disclaimerDesc: "This calculator is for informational purposes only and does not constitute legal or tax advice. Tax residency rules are complex and depend on multiple factors beyond just days of physical presence. Always consult with a qualified tax professional or legal advisor for guidance specific to your situation.",
     },
+    legalRefs: {
+      externalLinkSr: "(external link, opens in a new tab)",
+    },
     meta: {
       title: "183 Day Rule Spain Calculator | Tax Residency",
       description: "Calculate your tax residency in Spain using the 183-day rule.",
@@ -607,6 +610,9 @@ export const translations = {
       source2: "Comisión Europea - Fiscalidad y Unión Aduanera",
       disclaimerTitle: "Aviso legal",
       disclaimerDesc: "Esta calculadora es solo para fines informativos y no constituye asesoramiento legal o fiscal. Las reglas de residencia fiscal son complejas y dependen de múltiples factores más allá de los días de presencia física. Consulta siempre con un profesional fiscal cualificado o asesor legal para obtener orientación específica sobre tu situación.",
+    },
+    legalRefs: {
+      externalLinkSr: "(enlace externo, se abre en una pestaña nueva)",
     },
     meta: {
       title: "Calculadora Regla 183 España | Residencia Fiscal",

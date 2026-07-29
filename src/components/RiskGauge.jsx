@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, FilePdf } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage.js';
+import LegalRef from '@/components/LegalRef.jsx';
 import {
   DEFAULT_FISCAL_LIMIT,
   DEFAULT_WARNING_THRESHOLD,
@@ -194,6 +195,9 @@ const RiskGauge = ({
       )}
 
       <p className="mt-3 text-sm leading-6 text-muted-foreground">{explanation}</p>
+      <p className="mt-2 text-xs">
+        <LegalRef refId="lirpf-art9" />
+      </p>
 
       <div className="mt-4 border-t border-border/70 pt-4">
         <p className="field-label">{t('riskGauge.nextSteps')}</p>
