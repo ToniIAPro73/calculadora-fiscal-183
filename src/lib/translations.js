@@ -89,6 +89,14 @@ export const translations = {
       emptyHint: "No hypothetical stays yet. Add one to preview your projected position.",
       inactiveHint: "The scenario is off. Turn it on to compare against your current situation.",
     },
+    yearCalendar: {
+      eyebrow: "Annual heatmap",
+      title: "Fiscal year calendar",
+      description: "Every day of the year, colored by how it counts: in Spain, outside Spain, or as a hypothetical scenario stay.",
+      inSpain: "In Spain",
+      hypothetical: "Hypothetical stay",
+      outside: "Outside Spain",
+    },
     share: {
       button: "Share calculation",
       copied: "Link copied to clipboard. Anyone who opens it will see this calculation.",
@@ -381,6 +389,14 @@ export const translations = {
       withScenario: "Con escenario",
       emptyHint: "Aún no hay estancias hipotéticas. Añade una para previsualizar tu posición proyectada.",
       inactiveHint: "El escenario está desactivado. Actívalo para compararlo con tu situación actual.",
+    },
+    yearCalendar: {
+      eyebrow: "Mapa de calor anual",
+      title: "Calendario del año fiscal",
+      description: "Cada día del año coloreado según cómo cuenta: en España, fuera de España o como estancia hipotética del escenario.",
+      inSpain: "En España",
+      hypothetical: "Estancia hipotética",
+      outside: "Fuera de España",
     },
     share: {
       button: "Compartir cálculo",

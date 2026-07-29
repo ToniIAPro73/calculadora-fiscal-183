@@ -18,6 +18,7 @@ import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
 import DateRangeSelector from '@/components/DateRangeSelector.jsx';
 import RangeList from '@/components/RangeList.jsx';
+import YearCalendarHeatmap from '@/components/YearCalendarHeatmap.jsx';
 import ProgressBar from '@/components/ProgressBar.jsx';
 import RemainingDaysCountdown from '@/components/RemainingDaysCountdown.jsx';
 import RiskGauge from '@/components/RiskGauge.jsx';
@@ -595,6 +596,13 @@ const TaxNomadCalculator = () => {
                         </div>
                       </div>
                     )}
+
+                    <YearCalendarHeatmap
+                      fiscalYear={fiscalYear}
+                      realRanges={selectedRanges}
+                      scenarioRanges={scenarioRanges}
+                      scenarioActive={scenarioActive}
+                    />
 
                     <section
                       aria-labelledby="scenario-simulator-heading"
