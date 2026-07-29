@@ -24,6 +24,7 @@ import RemainingDaysCountdown from '@/components/RemainingDaysCountdown.jsx';
 import RiskGauge from '@/components/RiskGauge.jsx';
 import DataAuthoritySection from '@/components/DataAuthoritySection.jsx';
 import EconomicInterestsPanel from '@/components/EconomicInterestsPanel.jsx';
+import TaxTreatiesPanel from '@/components/TaxTreatiesPanel.jsx';
 import SavedScenariosPanel from '@/components/SavedScenariosPanel.jsx';
 import OnboardingWizard from '@/components/OnboardingWizard.jsx';
 import {
@@ -43,6 +44,11 @@ import {
   loadEconomicInterests,
   saveEconomicInterests,
 } from '@/lib/economicInterests.js';
+import {
+  clearSecondCountry,
+  loadSecondCountry,
+  saveSecondCountry,
+} from '@/lib/taxTreaties.js';
 import {
   loadScenarioState,
   loadSelectedFiscalYear,
@@ -87,6 +93,7 @@ const TaxNomadCalculator = () => {
   const [editingScenarioIndex, setEditingScenarioIndex] = useState(null);
   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
   const [economicInterests, setEconomicInterests] = useState(() => loadEconomicInterests());
+  const [secondCountry, setSecondCountry] = useState(() => loadSecondCountry());
   const [savedScenarios, setSavedScenarios] = useState(() => loadSavedScenarios(loadSelectedFiscalYear(new Date().getFullYear())));
 
   // Persist both range sets locally (browser only, never sent to any server)
@@ -159,6 +166,17 @@ const TaxNomadCalculator = () => {
   const handleEconomicInterestsReset = () => {
     clearEconomicInterests();
     setEconomicInterests({});
+  };
+
+  // Second-country selection also stays local-only (browser, never a server)
+  const handleSecondCountryChange = (value) => {
+    if (value === 'none') {
+      clearSecondCountry();
+      setSecondCountry(null);
+      return;
+    }
+    saveSecondCountry(value);
+    setSecondCountry(value);
   };
 
   // FAQ JSON-LD matches the visible accordion exactly (buildFaqSchema feeds
@@ -789,6 +807,11 @@ const TaxNomadCalculator = () => {
                       answers={economicInterests}
                       onChange={handleEconomicInterestChange}
                       onReset={handleEconomicInterestsReset}
+                    />
+
+                    <TaxTreatiesPanel
+                      selection={secondCountry}
+                      onChange={handleSecondCountryChange}
                     />
 
                     <button
