@@ -208,6 +208,20 @@ export const translations = {
     ads: {
       advertisement: "Advertisement"
     },
+    onboarding: {
+      eyebrow: "Quick tour",
+      step1Title: "Add your stays",
+      step1Description: "Tap \"Select date range\" and record each period you spent in Spain during the fiscal year. Overlaps are merged automatically.",
+      step2Title: "Review your result",
+      step2Description: "The panel shows your unique counted days, how many remain before 183, and a risk gauge. You can also simulate hypothetical future trips.",
+      step3Title: "Download your report",
+      step3Description: "When your ranges are complete, generate an audit-ready PDF with your identity details to keep with your supporting records.",
+      progress: "Step {{current}} of {{total}}",
+      skip: "Skip",
+      back: "Back",
+      next: "Next",
+      done: "Get started",
+    },
     authority: {
       eyebrow: "Source-backed guidance",
       title: "Understanding the 183-day rule",
@@ -252,7 +266,8 @@ export const translations = {
       privacy: "Privacy Policy",
       terms: "Terms of Service",
       legalNotice: "Legal Notice",
-      cookies: "Cookie Policy"
+      cookies: "Cookie Policy",
+      howItWorks: "How does it work?"
     },
     auditReady: {
       title: "Audit-Ready",
@@ -509,6 +524,20 @@ export const translations = {
     ads: {
       advertisement: "Anuncio"
     },
+    onboarding: {
+      eyebrow: "Guía rápida",
+      step1Title: "Añade tus estancias",
+      step1Description: "Pulsa \"Seleccionar rango de fechas\" y registra cada periodo que has pasado en España durante el ejercicio fiscal. Los solapes se consolidan automáticamente.",
+      step2Title: "Revisa tu resultado",
+      step2Description: "El panel muestra tus días únicos computados, cuántos te quedan hasta 183 y un medidor de riesgo. También puedes simular viajes futuros hipotéticos.",
+      step3Title: "Descarga tu informe",
+      step3Description: "Cuando tus rangos estén completos, genera un PDF listo para revisión con tus datos de identidad y guárdalo con tu documentación de respaldo.",
+      progress: "Paso {{current}} de {{total}}",
+      skip: "Omitir",
+      back: "Atrás",
+      next: "Siguiente",
+      done: "Empezar",
+    },
     authority: {
       eyebrow: "Guía respaldada por fuentes",
       title: "Entendiendo la regla de los 183 días",
@@ -553,7 +582,8 @@ export const translations = {
       privacy: "Política de Privacidad",
       terms: "Términos de Servicio",
       legalNotice: "Aviso Legal",
-      cookies: "Política de Cookies"
+      cookies: "Política de Cookies",
+      howItWorks: "¿Cómo funciona?"
     },
     auditReady: {
       title: "Audit-Ready",

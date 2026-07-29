@@ -1,13 +1,20 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowUpRight, EnvelopeSimple, ShieldCheck } from '@phosphor-icons/react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowUpRight, EnvelopeSimple, Question, ShieldCheck } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
+import { requestOnboardingReplay } from '@/lib/onboarding';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const { t, language } = useLanguage();
+  const navigate = useNavigate();
 
   const langPrefix = language === 'en' ? '/en' : '/es';
+
+  const handleReplayOnboarding = () => {
+    requestOnboardingReplay();
+    navigate(language === 'en' ? '/en' : '/');
+  };
 
   return (
     <footer className="mt-auto border-t border-border/70 px-4 py-8 sm:px-6 lg:px-8">
@@ -65,6 +72,14 @@ const Footer = () => {
               <EnvelopeSimple size={18} weight="light" />
               hola@regla183.com
             </div>
+            <button
+              type="button"
+              onClick={handleReplayOnboarding}
+              className="inline-flex items-center gap-2 text-left text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+            >
+              <Question size={16} weight="bold" />
+              {t('footer.howItWorks')}
+            </button>
           </div>
         </div>
 

@@ -24,6 +24,7 @@ import RemainingDaysCountdown from '@/components/RemainingDaysCountdown.jsx';
 import RiskGauge from '@/components/RiskGauge.jsx';
 import DataAuthoritySection from '@/components/DataAuthoritySection.jsx';
 import EconomicInterestsPanel from '@/components/EconomicInterestsPanel.jsx';
+import OnboardingWizard from '@/components/OnboardingWizard.jsx';
 import {
   Select,
   SelectContent,
@@ -855,6 +856,8 @@ const TaxNomadCalculator = () => {
             isLoading={isProcessing}
           />
         </Suspense>
+
+        <OnboardingWizard />
       </div>
     </>
   );
