@@ -1,6 +1,6 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { Helmet } from 'react-helmet';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   ArrowSquareOut,
@@ -865,6 +865,12 @@ const TaxNomadCalculator = () => {
                         <ArrowSquareOut size={16} weight="bold" />
                         {t('actions.viewExample')}
                       </button>
+                      <Link
+                        to={`/${language}/premium-report`}
+                        className="mt-3 inline-flex w-full items-center justify-center gap-1.5 text-xs font-semibold text-muted-foreground underline-offset-4 transition-colors duration-200 hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                      >
+                        {t('premiumReport.linkLabel')}
+                      </Link>
                     </div>
                   </div>
                 </div>

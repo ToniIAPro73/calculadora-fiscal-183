@@ -5,7 +5,6 @@ import { reportOwner } from './reportMetadata.js';
 import { calculateFiscalSummary } from './fiscalSummary.js';
 import { evaluateEconomicInterests } from './economicInterests.js';
 import { buildScenarioComparison } from './savedScenarios.js';
-import logoSource from '@/assets/logo.png';
 
 const C = {
   blue: [71, 100, 158],
@@ -38,9 +37,13 @@ function buildDataUrlFromBlob(blob) {
 
 let brandLogoDataUrlPromise;
 
+// Lazy import: keeps `generateTaxReport` usable from plain Node scripts
+// (tools/regenerate-*.mjs) that provide their own brandLogoDataUrl and
+// cannot resolve the Vite '@' alias.
 function loadBrandLogoDataUrl() {
   if (!brandLogoDataUrlPromise) {
-    brandLogoDataUrlPromise = fetch(logoSource)
+    brandLogoDataUrlPromise = import('@/assets/logo.png')
+      .then((module) => fetch(module.default))
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Unable to load logo asset: ${response.status}`);

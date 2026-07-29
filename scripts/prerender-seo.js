@@ -124,6 +124,18 @@ const routes = [
     ],
   },
   {
+    distPath: 'es/premium-report/index.html',
+    lang: 'es',
+    canonical: `${BASE_URL}/es/premium-report`,
+    title: 'Qué incluye el informe premium de residencia fiscal · TaxNomad',
+    description: 'Descubre exactamente qué incluye el informe PDF premium de la regla de los 183 días: índice de contenidos, vista previa visual y un informe de ejemplo descargable con datos ficticios.',
+    hreflang: [
+      { lang: 'es', href: `${BASE_URL}/es/premium-report` },
+      { lang: 'en', href: `${BASE_URL}/en/premium-report` },
+      { lang: 'x-default', href: `${BASE_URL}/es/premium-report` },
+    ],
+  },
+  {
     distPath: 'en/index.html',
     lang: 'en',
     faqPage: 'home',
@@ -221,6 +233,18 @@ const routes = [
       { lang: 'x-default', href: `${BASE_URL}/es/irpf-estimator` },
     ],
   },
+  {
+    distPath: 'en/premium-report/index.html',
+    lang: 'en',
+    canonical: `${BASE_URL}/en/premium-report`,
+    title: 'What the Premium Tax Residency Report Includes · TaxNomad',
+    description: 'See exactly what the premium 183-day rule PDF report includes: table of contents, visual preview and a downloadable example report with fictional data.',
+    hreflang: [
+      { lang: 'es', href: `${BASE_URL}/es/premium-report` },
+      { lang: 'en', href: `${BASE_URL}/en/premium-report` },
+      { lang: 'x-default', href: `${BASE_URL}/es/premium-report` },
+    ],
+  },
 ];
 
 // Content hub: one pre-rendered route per profile guide and language
@@ -251,6 +275,7 @@ const NAV_LINKS = {
     { href: '/', label: 'Inicio' },
     { href: '/es/guide', label: 'Guía de la regla de los 183 días' },
     { href: '/es/irpf-estimator', label: 'Estimador de IRPF' },
+    { href: '/es/premium-report', label: 'Qué incluye el informe premium' },
     { href: '/es/about', label: 'Sobre TaxNomad' },
     { href: '/es/legal', label: 'Aviso legal' },
     { href: '/es/privacy', label: 'Política de privacidad' },
@@ -261,6 +286,7 @@ const NAV_LINKS = {
     { href: '/en', label: 'Home' },
     { href: '/en/guide', label: '183-day rule guide' },
     { href: '/en/irpf-estimator', label: 'IRPF estimator' },
+    { href: '/en/premium-report', label: 'What the premium report includes' },
     { href: '/en/about', label: 'About TaxNomad' },
     { href: '/en/legal', label: 'Legal notice' },
     { href: '/en/privacy', label: 'Privacy policy' },

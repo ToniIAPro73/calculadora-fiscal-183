@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -112,6 +113,12 @@ const UserDetailsModal = ({ isOpen, onClose, onConfirm, userData, setUserData, i
               ? t('userDetails.redirecting')
               : `${t('userDetails.confirm')} · 9,99 €`}
           </Button>
+          <Link
+            to={`/${language}/premium-report`}
+            className="mt-2 inline-flex w-full items-center justify-center text-xs font-semibold text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+          >
+            {t('userDetails.whatsIncluded')}
+          </Link>
         </DialogFooter>
         </div>
       </DialogContent>

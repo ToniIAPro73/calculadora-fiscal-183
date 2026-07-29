@@ -242,6 +242,7 @@ export const translations = {
       note: "DNI is not supported. Use Passport or NIE.",
       confirm: "Proceed to payment",
       redirecting: "Redirecting...",
+      whatsIncluded: "What's in the report?",
     },
     ads: {
       advertisement: "Advertisement"
@@ -404,6 +405,66 @@ export const translations = {
       ctaTitle: "First, check if you are a tax resident",
       ctaBody: "The IRPF only applies in full if you are a tax resident in Spain. Use the 183-day rule calculator to determine your residency status and generate a documented report.",
       ctaButton: "Go to the residency calculator",
+    },
+    premiumReport: {
+      metaTitle: "What the Premium Tax Residency Report Includes · TaxNomad",
+      metaDescription: "See exactly what the premium 183-day rule PDF report includes: table of contents, visual preview and a downloadable example report with fictional data.",
+      eyebrow: "Premium report",
+      title: "What's inside the premium report?",
+      intro: "The premium report is a PDF generated with your own data, designed to document your physical presence in Spain under the 183-day rule (art. 9, Law 35/2006). This is exactly what it includes, section by section.",
+      indexTitle: "Table of contents",
+      previewTitle: "Visual preview",
+      previewAlt: "Illustrative mock of the first page of the premium report: branded header with an EXAMPLE badge, taxpayer details card, a large days-in-Spain counter with a status pill and progress bar, and the periods table with overlap badges.",
+      previewNote: "Illustrative mock: the real PDF is generated with your stays, your questionnaire answers and your saved scenarios.",
+      downloadCta: "Download the example PDF",
+      downloadNote: "Example generated with fictional data (Alex Rivera). It includes the centre of economic interests assessment and the hypothetical scenario comparison.",
+      linkLabel: "What's in the report?",
+      priceNote: "One-time payment of €9.99 · Instant download right after payment",
+      ctaTitle: "Generate the report with your real data",
+      ctaBody: "Add your stays in Spain to the calculator, complete the centre of interests questionnaire and save your scenarios: the premium PDF will include all of it automatically.",
+      ctaButton: "Go to the calculator",
+      sections: {
+        taxpayer: {
+          title: "Taxpayer details",
+          description: "Your full name, passport or NIE, generation date and a unique reference number to identify the document.",
+          previewAlt: "Card with four labelled fields: name, passport number, generation date and reference number.",
+        },
+        summary: {
+          title: "Physical presence summary",
+          description: "Large counter with your unique days in Spain, the 183-day legal limit, remaining days, percentage used and a status badge (safe, attention or limit exceeded) with a progress bar.",
+          previewAlt: "Big number card showing days in Spain next to the legal limit, remaining days and percentage used, plus a coloured status pill and a progress bar.",
+        },
+        periods: {
+          title: "Detail of periods in Spain",
+          description: "Table with every recorded stay (start date, end date and days), overlap badges on duplicated days and the unique-total row.",
+          previewAlt: "Table with start and end date columns, a days column and amber overlap badges on the rows with duplicated days.",
+        },
+        overlap: {
+          title: "Overlap handling",
+          description: "Automatic deduplication: days counted in two overlapping periods are discarded so the unique total is always correct and audit-ready.",
+          previewAlt: "Highlighted box explaining how many duplicated days were discarded to obtain the unique total of days in Spain.",
+        },
+        economicInterests: {
+          title: "Centre of economic interests (art. 9 LIRPF)",
+          description: "Your self-assessment questionnaire answers (family, income, habitual residence and activity) with an indicative ties assessment: weak, mixed or strong.",
+          previewAlt: "List of four answered questions followed by a coloured pill with the indicative assessment and its explanation.",
+        },
+        scenarioComparison: {
+          title: "Hypothetical scenario comparison",
+          description: "Your saved scenarios projected on top of your real stays: days in Spain, days left and risk level for each hypothetical plan.",
+          previewAlt: "Comparison table with one row per scenario showing days in Spain, days left and a coloured risk label.",
+        },
+        conclusion: {
+          title: "Conclusion",
+          description: "A narrative closing paragraph that ties your verified day count to the 183-day statutory threshold and states whether you exceed it.",
+          previewAlt: "Closing paragraph citing Article 9 of Law 35/2006 and stating whether the 183-day threshold is exceeded.",
+        },
+        legalNotice: {
+          title: "Legal notice",
+          description: "A clear notice that the document is an automated data summary and does not replace professional tax advice.",
+          previewAlt: "Legal notice box stating that the report is an automated summary and does not constitute official tax advice.",
+        },
+      },
     }
   },
   es: {
@@ -648,6 +709,7 @@ export const translations = {
       note: "DNI no está disponible. Usa Pasaporte o NIE.",
       confirm: "Ir al pago",
       redirecting: "Redirigiendo...",
+      whatsIncluded: "¿Qué incluye el informe?",
     },
     ads: {
       advertisement: "Anuncio"
@@ -810,6 +872,66 @@ export const translations = {
       ctaTitle: "Primero comprueba si eres residente fiscal",
       ctaBody: "El IRPF solo se aplica en su totalidad si eres residente fiscal en España. Usa la calculadora de la regla de los 183 días para determinar tu residencia y generar un informe documentado.",
       ctaButton: "Ir a la calculadora de residencia",
+    },
+    premiumReport: {
+      metaTitle: "Qué incluye el informe premium de residencia fiscal · TaxNomad",
+      metaDescription: "Descubre exactamente qué incluye el informe PDF premium de la regla de los 183 días: índice de contenidos, vista previa visual y un informe de ejemplo descargable con datos ficticios.",
+      eyebrow: "Informe premium",
+      title: "¿Qué incluye el informe premium?",
+      intro: "El informe premium es un PDF generado con tus propios datos, diseñado para documentar tu presencia física en España según la regla de los 183 días (art. 9, Ley 35/2006). Esto es exactamente lo que incluye, sección a sección.",
+      indexTitle: "Índice de contenidos",
+      previewTitle: "Vista previa visual",
+      previewAlt: "Maqueta ilustrativa de la primera página del informe premium: cabecera de marca con insignia EJEMPLO, tarjeta de datos del contribuyente, contador grande de días en España con insignia de estado y barra de progreso, y tabla de períodos con avisos de solape.",
+      previewNote: "Maqueta ilustrativa: el PDF real se genera con tus estancias, tus respuestas del cuestionario y tus escenarios guardados.",
+      downloadCta: "Descargar el PDF de ejemplo",
+      downloadNote: "Ejemplo generado con datos ficticios (Alex Rivera). Incluye la evaluación del centro de intereses económicos y la comparativa de escenarios hipotéticos.",
+      linkLabel: "¿Qué incluye el informe?",
+      priceNote: "Pago único de 9,99 € · Descarga inmediata tras el pago",
+      ctaTitle: "Genera el informe con tus datos reales",
+      ctaBody: "Añade tus estancias en España a la calculadora, completa el cuestionario de centro de intereses y guarda tus escenarios: el PDF premium lo incluirá todo automáticamente.",
+      ctaButton: "Ir a la calculadora",
+      sections: {
+        taxpayer: {
+          title: "Datos del contribuyente",
+          description: "Tu nombre completo, pasaporte o NIE, fecha de generación y un número de referencia único para identificar el documento.",
+          previewAlt: "Tarjeta con cuatro campos etiquetados: nombre, número de pasaporte, fecha de generación y número de referencia.",
+        },
+        summary: {
+          title: "Resumen de presencia física",
+          description: "Contador grande con tus días únicos en España, el límite legal de 183 días, días restantes, porcentaje utilizado y una insignia de estado (seguro, atención o límite superado) con barra de progreso.",
+          previewAlt: "Tarjeta con un número grande de días en España junto al límite legal, los días restantes y el porcentaje utilizado, más una insignia de estado de color y una barra de progreso.",
+        },
+        periods: {
+          title: "Detalle de períodos en España",
+          description: "Tabla con cada estancia registrada (fecha de inicio, fecha de fin y días), avisos de solape en los días duplicados y la fila de total único.",
+          previewAlt: "Tabla con columnas de fecha de inicio y fin, columna de días y avisos ámbar de solape en las filas con días duplicados.",
+        },
+        overlap: {
+          title: "Tratamiento de solapes",
+          description: "Deduplicación automática: los días contados en dos períodos solapados se descartan para que el total único sea siempre correcto y defendible.",
+          previewAlt: "Caja destacada que explica cuántos días duplicados se han descartado para obtener el total único de días en España.",
+        },
+        economicInterests: {
+          title: "Centro de intereses económicos (art. 9 LIRPF)",
+          description: "Tus respuestas del cuestionario de autoevaluación (familia, ingresos, vivienda habitual y actividad) con una evaluación orientativa de vínculos: débiles, mixtos o fuertes.",
+          previewAlt: "Lista de cuatro preguntas respondidas seguida de una insignia de color con la evaluación orientativa y su explicación.",
+        },
+        scenarioComparison: {
+          title: "Comparativa de escenarios hipotéticos",
+          description: "Tus escenarios guardados proyectados sobre tus estancias reales: días en España, días restantes y nivel de riesgo de cada plan hipotético.",
+          previewAlt: "Tabla comparativa con una fila por escenario que muestra días en España, días restantes y una etiqueta de riesgo de color.",
+        },
+        conclusion: {
+          title: "Conclusión",
+          description: "Párrafo de cierre en prosa que vincula tu cómputo verificado de días con el umbral estatutario de 183 días e indica si lo superas.",
+          previewAlt: "Párrafo de cierre que cita el artículo 9 de la Ley 35/2006 e indica si se supera el umbral de 183 días.",
+        },
+        legalNotice: {
+          title: "Aviso legal",
+          description: "Aviso claro de que el documento es un resumen automatizado de datos y no sustituye el asesoramiento fiscal profesional.",
+          previewAlt: "Caja de aviso legal que indica que el informe es un resumen automatizado y no constituye asesoramiento fiscal oficial.",
+        },
+      },
     }
   }
 };
