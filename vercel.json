@@ -105,6 +105,11 @@
       "statusCode": 301
     },
     {
+      "source": "/es/irpf-estimator/",
+      "destination": "/es/irpf-estimator",
+      "statusCode": 301
+    },
+    {
       "source": "/en/terms/",
       "destination": "/en/terms",
       "statusCode": 301
@@ -132,6 +137,11 @@
     {
       "source": "/en/about/",
       "destination": "/en/about",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/irpf-estimator/",
+      "destination": "/en/irpf-estimator",
       "statusCode": 301
     },
     {
@@ -245,6 +255,10 @@
       "destination": "/es/about/index.html"
     },
     {
+      "source": "/es/irpf-estimator",
+      "destination": "/es/irpf-estimator/index.html"
+    },
+    {
       "source": "/en/terms",
       "destination": "/en/terms/index.html"
     },
@@ -283,6 +297,10 @@
     {
       "source": "/en/about",
       "destination": "/en/about/index.html"
+    },
+    {
+      "source": "/en/irpf-estimator",
+      "destination": "/en/irpf-estimator/index.html"
     },
     {
       "source": "/es/payment-success",

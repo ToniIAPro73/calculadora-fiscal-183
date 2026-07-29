@@ -40,6 +40,18 @@ export const LEGAL_REFS = [
     },
   },
   {
+    id: 'lirpf-art63',
+    title: {
+      es: 'Art. 63 de la Ley 35/2006 (escala general estatal del IRPF)',
+      en: 'Article 63 of Law 35/2006 (state general PIT scale)',
+    },
+    url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2006-20764#a63',
+    excerpt: {
+      es: 'La cuota íntegra estatal de la base imponible general se obtiene aplicando la escala general estatal: 9,5 % hasta 12.450 €, 12 % hasta 20.200 €, 15 % hasta 35.200 €, 18,5 % hasta 60.000 €, 22,5 % hasta 300.000 € y 24,5 % en adelante.',
+      en: 'The state gross tax on the general taxable base is obtained by applying the state general scale: 9.5% up to €12,450, 12% up to €20,200, 15% up to €35,200, 18.5% up to €60,000, 22.5% up to €300,000 and 24.5% above that.',
+    },
+  },
+  {
     id: 'ley-startups',
     title: {
       es: 'Ley 28/2022 (Ley de Startups) · teletrabajadores internacionales',

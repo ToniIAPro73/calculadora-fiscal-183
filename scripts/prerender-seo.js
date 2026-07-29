@@ -112,6 +112,18 @@ const routes = [
     ],
   },
   {
+    distPath: 'es/irpf-estimator/index.html',
+    lang: 'es',
+    canonical: `${BASE_URL}/es/irpf-estimator`,
+    title: 'Estimador de IRPF para nuevos residentes fiscales · TaxNomad',
+    description: 'Estima tu IRPF en España tramo a tramo con la escala estatal vigente y una escala autonómica orientativa. Herramienta gratuita para nuevos residentes fiscales.',
+    hreflang: [
+      { lang: 'es', href: `${BASE_URL}/es/irpf-estimator` },
+      { lang: 'en', href: `${BASE_URL}/en/irpf-estimator` },
+      { lang: 'x-default', href: `${BASE_URL}/es/irpf-estimator` },
+    ],
+  },
+  {
     distPath: 'en/index.html',
     lang: 'en',
     faqPage: 'home',
@@ -197,6 +209,18 @@ const routes = [
       { lang: 'x-default', href: `${BASE_URL}/es/about` },
     ],
   },
+  {
+    distPath: 'en/irpf-estimator/index.html',
+    lang: 'en',
+    canonical: `${BASE_URL}/en/irpf-estimator`,
+    title: 'IRPF Estimator for New Tax Residents in Spain · TaxNomad',
+    description: 'Estimate your Spanish personal income tax (IRPF) bracket by bracket with the current state scale and an orientative regional scale. Free tool for new tax residents.',
+    hreflang: [
+      { lang: 'es', href: `${BASE_URL}/es/irpf-estimator` },
+      { lang: 'en', href: `${BASE_URL}/en/irpf-estimator` },
+      { lang: 'x-default', href: `${BASE_URL}/es/irpf-estimator` },
+    ],
+  },
 ];
 
 // Content hub: one pre-rendered route per profile guide and language
@@ -226,6 +250,7 @@ const NAV_LINKS = {
   es: [
     { href: '/', label: 'Inicio' },
     { href: '/es/guide', label: 'Guía de la regla de los 183 días' },
+    { href: '/es/irpf-estimator', label: 'Estimador de IRPF' },
     { href: '/es/about', label: 'Sobre TaxNomad' },
     { href: '/es/legal', label: 'Aviso legal' },
     { href: '/es/privacy', label: 'Política de privacidad' },
@@ -235,6 +260,7 @@ const NAV_LINKS = {
   en: [
     { href: '/en', label: 'Home' },
     { href: '/en/guide', label: '183-day rule guide' },
+    { href: '/en/irpf-estimator', label: 'IRPF estimator' },
     { href: '/en/about', label: 'About TaxNomad' },
     { href: '/en/legal', label: 'Legal notice' },
     { href: '/en/privacy', label: 'Privacy policy' },

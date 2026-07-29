@@ -13,7 +13,7 @@ const rootDir = join(__dirname, '..');
 const distDir = join(rootDir, 'dist');
 const BASE_URL = 'https://www.regla183.com';
 
-const SECTIONS = ['terms', 'privacy', 'legal', 'cookies', 'guide', 'about'];
+const SECTIONS = ['terms', 'privacy', 'legal', 'cookies', 'guide', 'about', 'irpf-estimator'];
 
 const publicRoutes = [
   { distPath: 'index.html', canonical: `${BASE_URL}/` },

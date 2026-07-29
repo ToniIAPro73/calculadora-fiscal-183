@@ -18,6 +18,7 @@ const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
 const GuidePage = lazy(() => import('./pages/GuidePage'));
 const GuideArticlePage = lazy(() => import('./pages/GuideArticlePage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
+const IrpfEstimatorPage = lazy(() => import('./pages/IrpfEstimatorPage'));
 
 function App() {
   return (
@@ -65,6 +66,10 @@ function App() {
               {/* Sobre Nosotros - E-E-A-T para Google */}
               <Route path="/es/about" element={<AboutPage />} />
               <Route path="/en/about" element={<AboutPage />} />
+
+              {/* Mini-herramienta: estimador de IRPF para nuevos residentes */}
+              <Route path="/es/irpf-estimator" element={<IrpfEstimatorPage />} />
+              <Route path="/en/irpf-estimator" element={<IrpfEstimatorPage />} />
               
               {/* Ruta de respaldo segura hacia la raíz */}
               <Route path="*" element={<Navigate to="/" replace />} />

@@ -75,6 +75,12 @@ const Footer = () => {
             >
               {t('footer.guideHub')} <ArrowUpRight size={14} weight="bold" />
             </Link>
+            <Link
+              to={`${langPrefix}/irpf-estimator`}
+              className="inline-flex items-center gap-2 text-left text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+            >
+              {t('footer.irpfEstimator')} <ArrowUpRight size={14} weight="bold" />
+            </Link>
             {GUIDES.map(({ slug }) => (
               <Link
                 key={slug}
