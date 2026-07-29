@@ -101,6 +101,20 @@ const SectionMock = ({ sectionId, label }) => {
         <div className={`${bar} w-5/6`} />
       </div>
     ),
+    methodology: (
+      <div className="space-y-2">
+        {[0, 1].map((i) => (
+          <div key={i} className="space-y-1">
+            <div className={`${bar} w-2/3 bg-foreground/25`} />
+            <div className={`${bar} ml-2 w-full`} />
+            <div className={`${bar} ml-2 w-4/5`} />
+          </div>
+        ))}
+        <div className="rounded-md bg-muted/70 p-2">
+          <div className={`${bar} w-5/6`} />
+        </div>
+      </div>
+    ),
   };
 
   return (

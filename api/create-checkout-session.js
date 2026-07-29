@@ -29,6 +29,11 @@ const checkoutPayloadSchema = z.object({
   language: z.enum(['es', 'en']).default('es'),
   fiscalYear: z.number().int().min(1900).max(2100).default(new Date().getFullYear()),
   statusLabel: z.string().max(80).optional().default(''),
+  // Advisor report (Mejora 15): the client only sends a boolean; the actual
+  // Stripe Price is resolved server-side from STRIPE_ADVISOR_PRICE_ID so the
+  // client can never pick an arbitrary price. The firm name/logo branding
+  // stays local-only (sessionStorage) and never reaches this endpoint.
+  advisor: z.boolean().optional().default(false),
   ranges: z.array(z.object({
     start: z.union([z.string(), z.date()]),
     end: z.union([z.string(), z.date()]),
@@ -50,11 +55,13 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid date ranges' });
   }
 
-  const { name, email, taxId, fiscalYear, statusLabel, documentType, language, ranges } = parsedPayload.data;
+  const { name, email, taxId, fiscalYear, statusLabel, documentType, language, ranges, advisor } = parsedPayload.data;
   const totalDays = fiscalSummary.totalDays;
 
   const stripeKey = process.env.STRIPE_SECRET_KEY;
-  const priceId = process.env.STRIPE_PRICE_ID;
+  const priceId = advisor
+    ? process.env.STRIPE_ADVISOR_PRICE_ID
+    : process.env.STRIPE_PRICE_ID;
   const appUrl = process.env.APP_URL;
   const databaseUrl = process.env.DATABASE_URL;
   const isProduction = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
@@ -70,7 +77,9 @@ export default async function handler(req, res) {
       }
 
       if (!priceId) {
-        return res.status(500).json({ error: 'STRIPE_PRICE_ID not configured' });
+        return res.status(500).json({
+          error: advisor ? 'STRIPE_ADVISOR_PRICE_ID not configured' : 'STRIPE_PRICE_ID not configured',
+        });
       }
 
       if (!baseUrl) {
@@ -115,6 +124,7 @@ export default async function handler(req, res) {
           product_type: 'premium_report',
           report_key: reportKey,
           report_language: language,
+          ...(advisor ? { advisor_report: 'true' } : {}),
         },
         payment_intent_data: {
           metadata: {
@@ -122,6 +132,7 @@ export default async function handler(req, res) {
             product_type: 'premium_report',
             report_key: reportKey,
             report_language: language,
+            ...(advisor ? { advisor_report: 'true' } : {}),
           },
         },
       });
@@ -138,6 +149,7 @@ export default async function handler(req, res) {
         fiscalYear,
         periodCount: ranges.length,
         totalDays,
+        advisor: Boolean(advisor),
       });
 
       return res.status(200).json({ url: session.url, mode: 'stripe' });

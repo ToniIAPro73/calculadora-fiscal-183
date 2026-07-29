@@ -243,6 +243,17 @@ export const translations = {
       confirm: "Proceed to payment",
       redirecting: "Redirecting...",
       whatsIncluded: "What's in the report?",
+      advisorCheckboxLabel: "I'm a tax advisor / professional firm",
+      advisorCheckboxHint: "Brand the PDF header with your firm name and logo.",
+      advisorComingSoon: "Coming soon",
+      advisorNameLabel: "Firm name",
+      advisorNamePlaceholder: "e.g. López Tax Advisors",
+      advisorLogoLabel: "Firm logo (optional)",
+      advisorLogoHelp: "PNG or JPG, max. 500 KB. Only used in your PDF header.",
+      advisorLogoTooLarge: "The logo exceeds the 500 KB limit.",
+      advisorLogoInvalidType: "Invalid format. Use a PNG or JPG image.",
+      advisorLogoRemove: "Remove logo",
+      advisorPrivacyNote: "Your firm name and logo stay in this browser and are only embedded in the downloaded PDF.",
     },
     ads: {
       advertisement: "Advertisement"
@@ -463,6 +474,11 @@ export const translations = {
           title: "Legal notice",
           description: "A clear notice that the document is an automated data summary and does not replace professional tax advice.",
           previewAlt: "Legal notice box stating that the report is an automated summary and does not constitute official tax advice.",
+        },
+        methodology: {
+          title: "Methodology and sources",
+          description: "A closing page explaining how unique days are counted (overlap deduplication) and listing the official sources used: art. 9 of Law 35/2006 and the DGT binding-ruling criteria.",
+          previewAlt: "Final page with the day-counting methodology, a list of official sources with their URLs and a professional disclaimer box.",
         },
       },
     }
@@ -710,6 +726,17 @@ export const translations = {
       confirm: "Ir al pago",
       redirecting: "Redirigiendo...",
       whatsIncluded: "¿Qué incluye el informe?",
+      advisorCheckboxLabel: "Soy asesor / despacho profesional",
+      advisorCheckboxHint: "Personaliza la cabecera del PDF con el nombre y el logo de tu despacho.",
+      advisorComingSoon: "Próximamente",
+      advisorNameLabel: "Nombre del despacho",
+      advisorNamePlaceholder: "Ej. Asesoría López",
+      advisorLogoLabel: "Logo del despacho (opcional)",
+      advisorLogoHelp: "PNG o JPG, máx. 500 KB. Solo se usa en la cabecera de tu PDF.",
+      advisorLogoTooLarge: "El logo supera el límite de 500 KB.",
+      advisorLogoInvalidType: "Formato no válido. Usa una imagen PNG o JPG.",
+      advisorLogoRemove: "Quitar logo",
+      advisorPrivacyNote: "El nombre y el logo del despacho se quedan en este navegador y solo se incrustan en el PDF descargado.",
     },
     ads: {
       advertisement: "Anuncio"
@@ -930,6 +957,11 @@ export const translations = {
           title: "Aviso legal",
           description: "Aviso claro de que el documento es un resumen automatizado de datos y no sustituye el asesoramiento fiscal profesional.",
           previewAlt: "Caja de aviso legal que indica que el informe es un resumen automatizado y no constituye asesoramiento fiscal oficial.",
+        },
+        methodology: {
+          title: "Metodología y fuentes",
+          description: "Página de cierre que explica cómo se computan los días únicos (deduplicación de solapes) y lista las fuentes oficiales utilizadas: art. 9 de la Ley 35/2006 y los criterios de las consultas vinculantes de la DGT.",
+          previewAlt: "Página final con la metodología de cómputo de días, una lista de fuentes oficiales con sus URL y una caja de descargo profesional.",
         },
       },
     }

@@ -5,6 +5,16 @@ import { reportOwner } from './reportMetadata.js';
 import { calculateFiscalSummary } from './fiscalSummary.js';
 import { evaluateEconomicInterests } from './economicInterests.js';
 import { buildScenarioComparison } from './savedScenarios.js';
+import { getLocalizedLegalRef } from './legalRefs.js';
+import { sanitizeAdvisorBranding } from './advisorReport.js';
+
+// Official sources cited on the final "Methodology and sources" page.
+const METHODOLOGY_REF_IDS = [
+  'lirpf-art9',
+  'dgt-ausencias-esporadicas',
+  'dgt-intereses-economicos',
+  'dgt-convenios-cdi',
+];
 
 const C = {
   blue: [71, 100, 158],
@@ -361,6 +371,23 @@ function getPdfCopy(language) {
           activity: { spain: 'From Spain', mixed: 'From several countries equally', abroad: 'From abroad' },
         },
       },
+      advisor: {
+        preparedBy: 'Report prepared by',
+      },
+      methodology: {
+        heading: 'METHODOLOGY AND SOURCES',
+        countingTitle: 'Day-counting methodology',
+        countingIntro: 'Physical presence in Spain is computed from the stays recorded by the user, applying these rules:',
+        countingBullets: [
+          'Each stay counts every calendar day between its start and end dates, both inclusive.',
+          'Overlapping stays are consolidated: duplicated days are counted only once in the unique total.',
+          'Following the DGT criterion on sporadic absences, the tool counts the stays exactly as declared; temporary absences are not deducted automatically.',
+        ],
+        sourcesTitle: 'Official sources',
+        sourcesIntro: 'The report is based on the following regulations and interpretative criteria:',
+        disclaimerHeading: 'PROFESSIONAL DISCLAIMER',
+        disclaimer: 'This report is an automated summary of user-provided data based on the sources listed above. It does not constitute legal or tax advice, not even in its advisor-branded version. Tax residency is determined by the tax authority on a case-by-case basis; always validate this document with a qualified tax advisor before any administrative procedure or tax filing.',
+      },
     };
   }
 
@@ -447,6 +474,23 @@ function getPdfCopy(language) {
         activity: { spain: 'Desde España', mixed: 'Desde varios países por igual', abroad: 'Desde el extranjero' },
       },
     },
+    advisor: {
+      preparedBy: 'Informe preparado por',
+    },
+    methodology: {
+      heading: 'METODOLOGÍA Y FUENTES',
+      countingTitle: 'Metodología de cómputo de días',
+      countingIntro: 'La presencia física en España se computa a partir de las estancias registradas por el usuario, aplicando estas reglas:',
+      countingBullets: [
+        'Cada estancia computa todos los días naturales entre su fecha de inicio y su fecha de fin, ambas inclusive.',
+        'Las estancias solapadas se consolidan: los días duplicados computan una sola vez en el total único.',
+        'Siguiendo el criterio de la DGT sobre ausencias esporádicas, la herramienta computa las estancias tal como se declaran; las ausencias temporales no se descuentan automáticamente.',
+      ],
+      sourcesTitle: 'Fuentes oficiales',
+      sourcesIntro: 'El informe se basa en la siguiente normativa y criterios interpretativos:',
+      disclaimerHeading: 'DESCARGO PROFESIONAL',
+      disclaimer: 'Este informe es un resumen automatizado de datos aportados por el usuario basado en las fuentes anteriores. No constituye asesoramiento legal ni fiscal, ni siquiera en su versión personalizada para despachos. La residencia fiscal la determina la administración caso por caso; valida siempre este documento con un asesor fiscal cualificado antes de cualquier trámite administrativo o declaración tributaria.',
+    },
   };
 }
 
@@ -462,8 +506,10 @@ export async function generateTaxReport({
   brandLogoDataUrl: providedBrandLogoDataUrl,
   economicInterests = null,
   savedScenarios = null,
+  advisor = null,
 }) {
   const copy = getPdfCopy(language);
+  const advisorBranding = sanitizeAdvisorBranding(advisor);
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const brandLogoDataUrl = providedBrandLogoDataUrl ?? await loadBrandLogoDataUrl();
   const summary = calculateFiscalSummary(ranges);
@@ -521,6 +567,43 @@ export async function generateTaxReport({
   doc.text(`${copy.ref}: ${refNum}`, W - M, exampleMode ? 20.4 : 21.8, { align: 'right' });
 
   y = headerHeight + 10;
+
+  // Advisor branding band (Mejora 15): only when the advisor option was
+  // selected; never in the fictional example report.
+  if (advisorBranding && !exampleMode) {
+    const bandTop = y - 6;
+    const bandHeight = 12;
+
+    doc.setFillColor(...C.lightGray);
+    doc.setDrawColor(...C.gold);
+    doc.roundedRect(M, bandTop, CW, bandHeight, 3, 3, 'FD');
+
+    let textX = M + 4;
+    if (advisorBranding.logo) {
+      try {
+        const logoFormat = advisorBranding.logo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+        doc.addImage(advisorBranding.logo, logoFormat, M + 2.5, bandTop + 1.5, 9, 9);
+        textX = M + 15;
+      } catch (error) {
+        console.warn('PDF advisor logo rendering skipped:', error.message);
+      }
+    }
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(...C.gray);
+    doc.text(copy.advisor.preparedBy, textX, bandTop + 7.6);
+    const preparedByWidth = doc.getTextWidth(copy.advisor.preparedBy);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...C.dark);
+    const nameMaxWidth = W - M - 4 - (textX + preparedByWidth + 3);
+    const advisorNameLines = doc.splitTextToSize(advisorBranding.name, Math.max(nameMaxWidth, 20));
+    doc.text(advisorNameLines[0], textX + preparedByWidth + 3, bandTop + 7.6);
+
+    y = bandTop + bandHeight + 8;
+  }
 
   if (exampleMode) {
     doc.setFillColor(255, 247, 237);
@@ -808,6 +891,98 @@ export async function generateTaxReport({
   const dLines = doc.splitTextToSize(disc, CW - 8);
   doc.text(dLines, M + 4, y + 10);
   y += 26;
+
+  // Final page: methodology and official sources (always included).
+  y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+
+  const met = copy.methodology;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(...C.blue);
+  doc.text(met.heading, M, y);
+  y += 9;
+
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.dark);
+  doc.text(met.countingTitle, M, y);
+  y += 5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.4);
+  doc.setTextColor(...C.gray);
+  const countingIntroLines = doc.splitTextToSize(met.countingIntro, CW);
+  doc.text(countingIntroLines, M, y);
+  y += countingIntroLines.length * 3.6 + 3;
+
+  met.countingBullets.forEach((bullet) => {
+    const bulletLines = doc.splitTextToSize(bullet, CW - 6);
+    if (y + bulletLines.length * 3.6 > footerReserveY) {
+      y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+    }
+    doc.setTextColor(...C.blue);
+    doc.text('•', M + 2, y);
+    doc.setTextColor(...C.dark);
+    doc.text(bulletLines, M + 6, y);
+    y += bulletLines.length * 3.6 + 2.5;
+  });
+
+  y += 3;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.dark);
+  doc.text(met.sourcesTitle, M, y);
+  y += 5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.4);
+  doc.setTextColor(...C.gray);
+  const sourcesIntroLines = doc.splitTextToSize(met.sourcesIntro, CW);
+  doc.text(sourcesIntroLines, M, y);
+  y += sourcesIntroLines.length * 3.6 + 3;
+
+  METHODOLOGY_REF_IDS.forEach((refId) => {
+    const ref = getLocalizedLegalRef(refId, language);
+    if (!ref) return;
+
+    const excerptLines = doc.splitTextToSize(ref.excerpt, CW - 8);
+    if (y + 11 + excerptLines.length * 3.3 > footerReserveY) {
+      y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+    }
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.4);
+    doc.setTextColor(...C.dark);
+    doc.text(ref.title, M + 4, y);
+    y += 3.8;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.8);
+    doc.setTextColor(...C.blue);
+    doc.text(ref.url, M + 4, y);
+    y += 3.8;
+
+    doc.setTextColor(...C.gray);
+    doc.text(excerptLines, M + 4, y);
+    y += excerptLines.length * 3.3 + 3;
+  });
+
+  const metDisclaimerLines = doc.splitTextToSize(met.disclaimer, CW - 8);
+  const metDisclaimerHeight = metDisclaimerLines.length * 3.3 + 11;
+  if (y + metDisclaimerHeight + 2 > footerReserveY) {
+    y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+  }
+  y += 2;
+
+  doc.setFillColor(...C.lightGray);
+  doc.roundedRect(M, y, CW, metDisclaimerHeight, 3, 3, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...C.gray);
+  doc.text(met.disclaimerHeading, M + 4, y + 5);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.text(metDisclaimerLines, M + 4, y + 10);
 
   drawFooter(doc, W, H, M, fileOwnerLine, refNum, copy);
 

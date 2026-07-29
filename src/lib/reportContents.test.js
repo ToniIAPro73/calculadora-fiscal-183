@@ -23,6 +23,7 @@ describe('REPORT_SECTION_IDS', () => {
       'scenarioComparison',
       'conclusion',
       'legalNotice',
+      'methodology',
     ]);
   });
 });

@@ -200,4 +200,100 @@ describe('generateTaxReport', () => {
 
     expect(doc.output()).not.toContain('COMPARATIVA DE ESCENARIOS');
   });
+
+  it('always ends with a methodology and sources page', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('METODOLOGÍA Y FUENTES');
+    expect(output).toContain('Fuentes oficiales');
+    expect(output).toContain('Art. 9 de la Ley 35/2006');
+    expect(output).toContain('boe.es');
+    expect(output).toContain('DESCARGO PROFESIONAL');
+  });
+
+  it('renders the methodology page in English', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      language: 'en',
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('METHODOLOGY AND SOURCES');
+    expect(output).toContain('Official sources');
+    expect(output).toContain('Article 9 of Law 35/2006');
+    expect(output).toContain('PROFESSIONAL DISCLAIMER');
+  });
+
+  it('brands the header with the advisor firm name and logo', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      advisor: { name: 'Asesoría López', logo: transparentPng },
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('Informe preparado por');
+    expect(output).toContain('Asesoría López');
+  });
+
+  it('renders the advisor band in English', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      language: 'en',
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      advisor: { name: 'López Tax Advisors' },
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('Report prepared by');
+    expect(output).toContain('López Tax Advisors');
+  });
+
+  it('ignores advisor branding without a usable firm name', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      advisor: { name: '   ', logo: transparentPng },
+    });
+
+    expect(doc.output()).not.toContain('Informe preparado por');
+  });
+
+  it('omits the advisor band in the fictional example report', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      exampleMode: true,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      advisor: { name: 'Asesoría López', logo: transparentPng },
+    });
+
+    expect(doc.output()).not.toContain('Asesoría López');
+  });
 });

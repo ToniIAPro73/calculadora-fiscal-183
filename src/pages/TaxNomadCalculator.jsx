@@ -71,6 +71,7 @@ import {
   readShareParam,
 } from '@/lib/shareScenario.js';
 import { buildExampleReportPayload } from '@/lib/reportMetadata.js';
+import { isAdvisorCheckoutAvailable, sanitizeAdvisorBranding } from '@/lib/advisorReport.js';
 import { getCanonicalUrl, getDefaultUrl } from '@/lib/seo.js';
 import { SeoAppSchema } from '@/components/SeoAppSchema';
 import FaqSection from '@/components/FaqSection.jsx';
@@ -87,7 +88,7 @@ const TaxNomadCalculator = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRangeModalOpen, setIsRangeModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [userData, setUserData] = useState({ name: '', email: '', documentType: 'passport', taxId: '' });
+  const [userData, setUserData] = useState({ name: '', email: '', documentType: 'passport', taxId: '', isAdvisor: false, advisorName: '', advisorLogo: '' });
   const [scenarioRanges, setScenarioRanges] = useState(() => loadScenarioState(loadSelectedFiscalYear(new Date().getFullYear())).ranges);
   const [scenarioEnabled, setScenarioEnabled] = useState(() => loadScenarioState(loadSelectedFiscalYear(new Date().getFullYear())).enabled);
   const [editingScenarioIndex, setEditingScenarioIndex] = useState(null);
@@ -378,6 +379,13 @@ const TaxNomadCalculator = () => {
       window.taxNomadTrack('checkout_initiated', { total_days: totalDays, price: '9.99', currency: 'EUR' });
     }
 
+    // Advisor option (Mejora 15): only honored when the feature flag and the
+    // Stripe Price are configured; the firm branding stays local-only.
+    const advisorRequested = isAdvisorCheckoutAvailable(import.meta.env) && Boolean(userData.isAdvisor);
+    const advisorBranding = advisorRequested
+      ? sanitizeAdvisorBranding({ name: userData.advisorName, logo: userData.advisorLogo })
+      : null;
+
     // Persist session data so payment & success pages can access it
     const sessionData = {
       name: userData.name,
@@ -416,6 +424,10 @@ const TaxNomadCalculator = () => {
             })),
           }
         : {}),
+      // Advisor branding (firm name + logo data URL) travels only inside this
+      // browser session so the paid PDF can brand its header; only the
+      // `advisor` boolean is sent to the checkout API to pick the Price.
+      ...(advisorBranding ? { advisor: advisorBranding } : {}),
     };
     sessionStorage.setItem('taxnomad_session', JSON.stringify(sessionData));
 
@@ -432,6 +444,7 @@ const TaxNomadCalculator = () => {
           totalDays,
           statusLabel: statusObj.label,
           fiscalYear,
+          advisor:     advisorRequested,
           ranges: selectedRanges.map(r => ({
             start: r.start instanceof Date ? r.start.toISOString() : r.start,
             end:   r.end   instanceof Date ? r.end.toISOString()   : r.end,
