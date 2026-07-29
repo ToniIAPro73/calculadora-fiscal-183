@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { reportOwner } from './reportMetadata.js';
 import { calculateFiscalSummary } from './fiscalSummary.js';
+import { evaluateEconomicInterests } from './economicInterests.js';
 import logoSource from '@/assets/logo.png';
 
 const C = {
@@ -94,6 +95,96 @@ function addReportPage(doc, pageWidth, pageHeight, margin, fileOwnerLine, refNum
   return 24;
 }
 
+const ECONOMIC_INTEREST_LEVEL_COLORS = {
+  low: C.green,
+  medium: C.orange,
+  high: C.red,
+};
+
+/**
+ * Draws the "centre of economic interests" section (art. 9 Law 35/2006):
+ * the questionnaire answers plus the qualitative evaluation. Only called
+ * when the user completed the questionnaire.
+ */
+function drawEconomicInterestsSection(doc, { copy, evaluation, startY, W, H, M, CW, footerReserveY, fileOwnerLine, refNum }) {
+  const ei = copy.economicInterests;
+  let y = startY;
+
+  const ensureSpace = (needed) => {
+    if (y + needed > footerReserveY) {
+      y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+    }
+  };
+
+  const introLines = doc.splitTextToSize(ei.intro, CW);
+  ensureSpace(16 + introLines.length * 3.4);
+
+  doc.setDrawColor(...C.lightGray);
+  doc.setLineWidth(0.3);
+  doc.line(M, y, W - M, y);
+  y += 7;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.blue);
+  doc.text(ei.sectionTitle, M, y);
+  y += 4.5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.9);
+  doc.setTextColor(...C.gray);
+  doc.text(introLines, M, y);
+  y += introLines.length * 3.4 + 3;
+
+  evaluation.perQuestion.forEach((item, index) => {
+    const questionText = `${index + 1}. ${ei.questions[item.questionId]}`;
+    const answerText = `— ${ei.options[item.questionId][item.optionId]}`;
+    const qLines = doc.splitTextToSize(questionText, CW);
+    const aLines = doc.splitTextToSize(answerText, CW - 4);
+    ensureSpace(qLines.length * 3.7 + aLines.length * 3.5 + 2);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.4);
+    doc.setTextColor(...C.dark);
+    doc.text(qLines, M, y);
+    y += qLines.length * 3.7;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.2);
+    doc.setTextColor(...C.gray);
+    doc.text(aLines, M + 4, y);
+    y += aLines.length * 3.5 + 2;
+  });
+
+  const levelColor = ECONOMIC_INTEREST_LEVEL_COLORS[evaluation.level] ?? C.gray;
+  const descriptionLines = doc.splitTextToSize(ei.levelDescriptions[evaluation.level], CW);
+  const disclaimerLines = doc.splitTextToSize(ei.disclaimer, CW - 8);
+  ensureSpace(17 + descriptionLines.length * 3.7 + disclaimerLines.length * 3.3 + 6);
+
+  y += 2;
+  drawPill(doc, M, y, ei.levels[evaluation.level], levelColor, C.white, 42);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.4);
+  doc.setTextColor(...C.dark);
+  doc.text(ei.evaluationLabel, M + 47, y + 5.2);
+  y += 12;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.2);
+  doc.text(descriptionLines, M, y);
+  y += descriptionLines.length * 3.7 + 4;
+
+  doc.setFillColor(...C.lightGray);
+  doc.roundedRect(M, y - 3.5, CW, disclaimerLines.length * 3.3 + 6, 2, 2, 'F');
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.setTextColor(...C.gray);
+  doc.text(disclaimerLines, M + 4, y + 0.5);
+  y += disclaimerLines.length * 3.3 + 8;
+
+  return y;
+}
+
 function getPdfCopy(language) {
   if (language === 'en') {
     return {
@@ -141,6 +232,34 @@ function getPdfCopy(language) {
         over: 'LIMIT EXCEEDED',
         warning: 'ATTENTION',
         safe: 'SAFE',
+      },
+      economicInterests: {
+        sectionTitle: 'CENTRE OF ECONOMIC INTERESTS (ART. 9 LAW 35/2006)',
+        intro: 'Self-assessment questionnaire completed by the user. Article 9 of the Spanish Personal Income Tax Act (Law 35/2006) also takes into account the centre of economic interests: the place where the main nucleus or base of the taxpayer\'s activities or economic interests is located, regardless of the 183-day count.',
+        evaluationLabel: 'INDICATIVE ASSESSMENT',
+        levels: {
+          low: 'WEAK TIES',
+          medium: 'MIXED TIES',
+          high: 'STRONG TIES',
+        },
+        levelDescriptions: {
+          low: 'The answers suggest that the centre of economic interests points mostly outside Spain. Even so, the tax authority assesses every case individually.',
+          medium: 'The answers show ties split between Spain and abroad. If the tax authority disagrees with this position, documentary evidence will be key.',
+          high: 'The answers suggest a centre of economic interests close to Spain. The Spanish Tax Agency could treat the subject as tax resident even below 183 days of physical presence.',
+        },
+        disclaimer: 'Indicative assessment based solely on the user\'s answers. It does not constitute nor replace professional tax advice.',
+        questions: {
+          family: 'Where does your close family (spouse or children) live?',
+          income: 'Where do you generate most of your income?',
+          home: 'Where is your habitual residence?',
+          activity: 'From where do you run your professional activity or businesses?',
+        },
+        options: {
+          family: { spain: 'In Spain', mixed: 'Split between Spain and abroad', abroad: 'Abroad' },
+          income: { spain: 'Mainly in Spain', mixed: 'Split between Spain and abroad', abroad: 'Mainly abroad' },
+          home: { spain: 'In Spain', mixed: 'No fixed habitual residence', abroad: 'Abroad' },
+          activity: { spain: 'From Spain', mixed: 'From several countries equally', abroad: 'From abroad' },
+        },
       },
     };
   }
@@ -191,6 +310,34 @@ function getPdfCopy(language) {
       warning: 'ATENCIÓN',
       safe: 'SEGURO',
     },
+    economicInterests: {
+      sectionTitle: 'CENTRO DE INTERESES ECONÓMICOS (ART. 9 LEY 35/2006)',
+      intro: 'Cuestionario de autoevaluación cumplimentado por el usuario. El artículo 9 de la Ley 35/2006 del Impuesto sobre la Renta de las Personas Físicas también tiene en cuenta el centro de intereses económicos: el lugar donde radica el núcleo principal o la base de las actividades o intereses económicos del contribuyente, con independencia del cómputo de 183 días.',
+      evaluationLabel: 'EVALUACIÓN ORIENTATIVA',
+      levels: {
+        low: 'VÍNCULOS DÉBILES',
+        medium: 'VÍNCULOS MIXTOS',
+        high: 'VÍNCULOS FUERTES',
+      },
+      levelDescriptions: {
+        low: 'Las respuestas sugieren que el centro de intereses económicos apunta mayoritariamente fuera de España. Aun así, la administración valora cada caso de forma individual.',
+        medium: 'Las respuestas muestran vínculos repartidos entre España y el extranjero. En caso de discrepancia con la administración, la prueba documental será clave.',
+        high: 'Las respuestas sugieren un centro de intereses económicos próximo a España. La Agencia Tributaria podría considerar al sujeto residente fiscal aunque no supere los 183 días de presencia física.',
+      },
+      disclaimer: 'Evaluación orientativa basada únicamente en las respuestas del usuario. No constituye ni sustituye el asesoramiento fiscal profesional.',
+      questions: {
+        family: '¿Dónde reside tu núcleo familiar (pareja o hijos)?',
+        income: '¿Dónde generas la mayor parte de tus ingresos?',
+        home: '¿Dónde está tu vivienda habitual?',
+        activity: '¿Desde dónde diriges tu actividad profesional o negocios?',
+      },
+      options: {
+        family: { spain: 'En España', mixed: 'Repartido entre España y el extranjero', abroad: 'En el extranjero' },
+        income: { spain: 'Principalmente en España', mixed: 'Repartidos entre España y el extranjero', abroad: 'Principalmente en el extranjero' },
+        home: { spain: 'En España', mixed: 'Sin vivienda habitual fija', abroad: 'En el extranjero' },
+        activity: { spain: 'Desde España', mixed: 'Desde varios países por igual', abroad: 'Desde el extranjero' },
+      },
+    },
   };
 }
 
@@ -204,6 +351,7 @@ export async function generateTaxReport({
   language = 'es',
   exampleMode = false,
   brandLogoDataUrl: providedBrandLogoDataUrl,
+  economicInterests = null,
 }) {
   const copy = getPdfCopy(language);
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -473,6 +621,26 @@ export async function generateTaxReport({
   }
 
   const conclusion = copy.conclusion({ name, verifiedTotalDays, fiscalYear, pct });
+
+  // Optional qualitative section: only when the questionnaire was completed.
+  const economicInterestsEvaluation = economicInterests
+    ? evaluateEconomicInterests(economicInterests)
+    : null;
+
+  if (economicInterestsEvaluation?.complete) {
+    y = drawEconomicInterestsSection(doc, {
+      copy,
+      evaluation: economicInterestsEvaluation,
+      startY: y,
+      W,
+      H,
+      M,
+      CW,
+      footerReserveY,
+      fileOwnerLine,
+      refNum,
+    });
+  }
 
   const cLines = doc.splitTextToSize(conclusion, CW);
   const legalBlockHeight = 26;

@@ -164,6 +164,7 @@ const PaymentSuccess = () => {
         ranges: data.ranges || [],
         fiscalYear: data.fiscalYear || new Date().getFullYear(),
         language: data.language || language,
+        economicInterests: data.economicInterests || null,
       });
       const safeName = (data.name || 'informe').replace(/\s+/g, '_');
       doc.save(`TaxNomad_Informe_${safeName}_${data.fiscalYear || new Date().getFullYear()}.pdf`);

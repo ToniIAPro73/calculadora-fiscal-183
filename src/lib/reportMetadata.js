@@ -16,5 +16,11 @@ export const buildExampleReportPayload = () => ({
     { start: new Date('2026-03-02'), end: new Date('2026-03-18'), days: 17 },
     { start: new Date('2026-08-11'), end: new Date('2026-08-23'), days: 13 },
   ],
+  economicInterests: {
+    family: 'abroad',
+    income: 'abroad',
+    home: 'mixed',
+    activity: 'abroad',
+  },
   exampleMode: true,
 });

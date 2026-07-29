@@ -21,6 +21,7 @@ import RangeList from '@/components/RangeList.jsx';
 import ProgressBar from '@/components/ProgressBar.jsx';
 import RemainingDaysCountdown from '@/components/RemainingDaysCountdown.jsx';
 import DataAuthoritySection from '@/components/DataAuthoritySection.jsx';
+import EconomicInterestsPanel from '@/components/EconomicInterestsPanel.jsx';
 import {
   Select,
   SelectContent,
@@ -32,6 +33,12 @@ import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage.js';
 import { mergeDateRanges, calculateUniqueDays } from '@/lib/dateRangeMerger.js';
 import { calculateScenarioComparison } from '@/lib/fiscalSummary.js';
+import {
+  clearEconomicInterests,
+  evaluateEconomicInterests,
+  loadEconomicInterests,
+  saveEconomicInterests,
+} from '@/lib/economicInterests.js';
 import {
   loadScenarioState,
   loadSelectedFiscalYear,
@@ -68,11 +75,17 @@ const TaxNomadCalculator = () => {
   const [scenarioEnabled, setScenarioEnabled] = useState(() => loadScenarioState(loadSelectedFiscalYear(new Date().getFullYear())).enabled);
   const [editingScenarioIndex, setEditingScenarioIndex] = useState(null);
   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
+  const [economicInterests, setEconomicInterests] = useState(() => loadEconomicInterests());
 
   // Persist both range sets locally (browser only, never sent to any server)
   useEffect(() => {
     saveStayRanges(fiscalYear, selectedRanges);
   }, [fiscalYear, selectedRanges]);
+
+  // Questionnaire answers also stay local-only (browser, never a server)
+  useEffect(() => {
+    saveEconomicInterests(economicInterests);
+  }, [economicInterests]);
 
   useEffect(() => {
     saveScenarioState(fiscalYear, { enabled: scenarioEnabled, ranges: scenarioRanges });
@@ -124,6 +137,17 @@ const TaxNomadCalculator = () => {
   const scenarioComparison = calculateScenarioComparison(selectedRanges, scenarioRanges);
   const scenarioActive = scenarioEnabled && scenarioRanges.length > 0;
   const projected = scenarioComparison.projected;
+
+  const economicInterestsEvaluation = evaluateEconomicInterests(economicInterests);
+
+  const handleEconomicInterestChange = (questionId, optionId) => {
+    setEconomicInterests(prev => ({ ...prev, [questionId]: optionId }));
+  };
+
+  const handleEconomicInterestsReset = () => {
+    clearEconomicInterests();
+    setEconomicInterests({});
+  };
 
   // SeoAppSchema is rendered only on the homepage for correct semantic markup
   const faqSchema = {
@@ -298,6 +322,7 @@ const TaxNomadCalculator = () => {
         fiscalYear: example.fiscalYear,
         language,
         exampleMode: true,
+        economicInterests: example.economicInterests,
       });
 
       const blobUrl = doc.output('bloburl');
@@ -343,6 +368,11 @@ const TaxNomadCalculator = () => {
         end:   r.end   instanceof Date ? r.end.toISOString()   : r.end,
         days:  r.days,
       })),
+      // Questionnaire answers travel only inside this browser session so the
+      // paid PDF can include them; they are NOT sent to the checkout API.
+      ...(economicInterestsEvaluation.complete
+        ? { economicInterests: { ...economicInterests } }
+        : {}),
     };
     sessionStorage.setItem('taxnomad_session', JSON.stringify(sessionData));
 
@@ -715,6 +745,12 @@ const TaxNomadCalculator = () => {
                         )}
                       </div>
                     </div>
+
+                    <EconomicInterestsPanel
+                      answers={economicInterests}
+                      onChange={handleEconomicInterestChange}
+                      onReset={handleEconomicInterestsReset}
+                    />
 
                     <button
                       type="button"

@@ -42,4 +42,75 @@ describe('generateTaxReport', () => {
     expect(output).toContain('TAXPAYER DETAILS');
     expect(output).not.toContain('INFORME DE RESIDENCIA FISCAL');
   });
+
+  it('includes the economic interests section when the questionnaire is complete', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      economicInterests: {
+        family: 'abroad',
+        income: 'abroad',
+        home: 'mixed',
+        activity: 'abroad',
+      },
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('CENTRO DE INTERESES ECONÓMICOS');
+    expect(output).toContain('ART. 9 LEY 35/2006');
+    expect(output).toContain('EVALUACIÓN ORIENTATIVA');
+    expect(output).toContain('VÍNCULOS DÉBILES');
+  });
+
+  it('renders the economic interests section in English', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      language: 'en',
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      economicInterests: {
+        family: 'spain',
+        income: 'spain',
+        home: 'spain',
+        activity: 'spain',
+      },
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('CENTRE OF ECONOMIC INTERESTS');
+    expect(output).toContain('ART. 9 LAW 35/2006');
+    expect(output).toContain('STRONG TIES');
+  });
+
+  it('omits the economic interests section without answers', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+    });
+
+    expect(doc.output()).not.toContain('CENTRO DE INTERESES ECONÓMICOS');
+  });
+
+  it('omits the economic interests section when the questionnaire is incomplete', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      economicInterests: { family: 'spain', income: 'abroad' },
+    });
+
+    expect(doc.output()).not.toContain('CENTRO DE INTERESES ECONÓMICOS');
+  });
 });
