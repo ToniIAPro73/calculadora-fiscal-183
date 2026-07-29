@@ -18,6 +18,7 @@ import Footer from '@/components/Footer.jsx';
 import DateRangeSelector from '@/components/DateRangeSelector.jsx';
 import RangeList from '@/components/RangeList.jsx';
 import ProgressBar from '@/components/ProgressBar.jsx';
+import RemainingDaysCountdown from '@/components/RemainingDaysCountdown.jsx';
 import DataAuthoritySection from '@/components/DataAuthoritySection.jsx';
 import {
   Select,
@@ -597,6 +598,12 @@ const TaxNomadCalculator = () => {
                   </div>
 
                   <div className="space-y-4 xl:sticky xl:top-28">
+                    <RemainingDaysCountdown
+                      totalDays={totalDays}
+                      ranges={selectedRanges}
+                      fiscalYear={fiscalYear}
+                    />
+
                     <div className="trust-panel p-5">
                       <div className="space-y-4">
                         <div className="flex items-center justify-between gap-3">
