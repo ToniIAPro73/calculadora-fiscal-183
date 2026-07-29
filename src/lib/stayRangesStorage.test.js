@@ -1,10 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   SCENARIO_STORAGE_KEY,
+  SELECTED_YEAR_STORAGE_KEY,
   STAY_RANGES_STORAGE_KEY,
   loadScenarioState,
+  loadSelectedFiscalYear,
   loadStayRanges,
   saveScenarioState,
+  saveSelectedFiscalYear,
   saveStayRanges,
 } from './stayRangesStorage.js';
 
@@ -103,7 +106,35 @@ describe('stayRangesStorage', () => {
 
     expect(loadStayRanges(2026)).toEqual([]);
     expect(loadScenarioState(2026)).toEqual({ enabled: false, ranges: [] });
+    expect(loadSelectedFiscalYear(2026)).toBe(2026);
     expect(() => saveStayRanges(2026, [{ start: '2026-01-01', end: '2026-01-02' }])).not.toThrow();
     expect(() => saveScenarioState(2026, { enabled: true, ranges: [] })).not.toThrow();
+    expect(() => saveSelectedFiscalYear(2026)).not.toThrow();
+  });
+
+  it('round-trips the selected fiscal year', () => {
+    const currentYear = new Date().getFullYear();
+
+    saveSelectedFiscalYear(currentYear - 1);
+    expect(loadSelectedFiscalYear(currentYear)).toBe(currentYear - 1);
+    expect(globalThis.localStorage.getItem(SELECTED_YEAR_STORAGE_KEY)).toBe(String(currentYear - 1));
+  });
+
+  it('falls back when the saved fiscal year is missing or out of range', () => {
+    const currentYear = new Date().getFullYear();
+
+    expect(loadSelectedFiscalYear(currentYear)).toBe(currentYear);
+
+    globalThis.localStorage.setItem(SELECTED_YEAR_STORAGE_KEY, '1999');
+    expect(loadSelectedFiscalYear(currentYear)).toBe(currentYear);
+
+    globalThis.localStorage.setItem(SELECTED_YEAR_STORAGE_KEY, String(currentYear + 5));
+    expect(loadSelectedFiscalYear(currentYear)).toBe(currentYear);
+
+    globalThis.localStorage.setItem(SELECTED_YEAR_STORAGE_KEY, 'not-a-year');
+    expect(loadSelectedFiscalYear(currentYear)).toBe(currentYear);
+
+    saveSelectedFiscalYear(NaN);
+    expect(loadSelectedFiscalYear(currentYear)).toBe(currentYear);
   });
 });

@@ -90,6 +90,13 @@ export const translations = {
       emptyHint: "No hypothetical stays yet. Add one to preview your projected position.",
       inactiveHint: "The scenario is off. Turn it on to compare against your current situation.",
     },
+    share: {
+      button: "Share calculation",
+      copied: "Link copied to clipboard. Anyone who opens it will see this calculation.",
+      loaded: "Shared scenario loaded",
+      invalid: "The shared link is not valid or is corrupted.",
+      copyError: "Could not copy the link. Please try again.",
+    },
     countdown: {
       title: "Countdown to the 183-day threshold",
       remaining: "You have {{days}} days left before reaching 183 in calendar year {{year}}",
@@ -325,6 +332,13 @@ export const translations = {
       withScenario: "Con escenario",
       emptyHint: "Aún no hay estancias hipotéticas. Añade una para previsualizar tu posición proyectada.",
       inactiveHint: "El escenario está desactivado. Actívalo para compararlo con tu situación actual.",
+    },
+    share: {
+      button: "Compartir cálculo",
+      copied: "Enlace copiado al portapapeles. Quien lo abra verá este cálculo.",
+      loaded: "Escenario compartido cargado",
+      invalid: "El enlace compartido no es válido o está dañado.",
+      copyError: "No se pudo copiar el enlace. Inténtalo de nuevo.",
     },
     countdown: {
       title: "Cuenta atrás hasta el umbral de 183 días",

@@ -2,6 +2,9 @@ import { normalizeDateRange } from './fiscalSummary.js';
 
 export const STAY_RANGES_STORAGE_KEY = 'taxnomad_stay_ranges';
 export const SCENARIO_STORAGE_KEY = 'taxnomad_scenario_state';
+export const SELECTED_YEAR_STORAGE_KEY = 'taxnomad_selected_fiscal_year';
+
+const MIN_FISCAL_YEAR = 2015;
 
 function getStorage() {
   try {
@@ -92,4 +95,38 @@ export function saveScenarioState(fiscalYear, { enabled, ranges }) {
     ranges: serializeRanges(ranges),
   };
   writeJson(SCENARIO_STORAGE_KEY, byYear);
+}
+
+/**
+ * Loads the last selected fiscal year, validated against the selectable
+ * range (2015..current year). Falls back to the given year when the saved
+ * value is missing or out of range.
+ */
+export function loadSelectedFiscalYear(fallbackYear) {
+  const storage = getStorage();
+  if (!storage) return fallbackYear;
+
+  try {
+    const year = Number(storage.getItem(SELECTED_YEAR_STORAGE_KEY));
+    const currentYear = new Date().getFullYear();
+    if (Number.isInteger(year) && year >= MIN_FISCAL_YEAR && year <= currentYear) {
+      return year;
+    }
+    return fallbackYear;
+  } catch {
+    return fallbackYear;
+  }
+}
+
+export function saveSelectedFiscalYear(fiscalYear) {
+  const storage = getStorage();
+  if (!storage) return;
+
+  try {
+    const year = Number(fiscalYear);
+    if (!Number.isInteger(year)) return;
+    storage.setItem(SELECTED_YEAR_STORAGE_KEY, String(year));
+  } catch {
+    // Storage full or unavailable: persistence is best-effort only.
+  }
 }

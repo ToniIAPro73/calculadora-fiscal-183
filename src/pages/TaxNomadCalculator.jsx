@@ -10,6 +10,7 @@ import {
   Eraser,
   FilePdf,
   Flask,
+  ShareNetwork,
   ShieldCheck,
   WarningCircle,
 } from '@phosphor-icons/react';
@@ -33,10 +34,20 @@ import { mergeDateRanges, calculateUniqueDays } from '@/lib/dateRangeMerger.js';
 import { calculateScenarioComparison } from '@/lib/fiscalSummary.js';
 import {
   loadScenarioState,
+  loadSelectedFiscalYear,
   loadStayRanges,
   saveScenarioState,
+  saveSelectedFiscalYear,
   saveStayRanges,
 } from '@/lib/stayRangesStorage.js';
+import {
+  buildShareUrl,
+  clearShareParamFromUrl,
+  copyTextToClipboard,
+  decodeShareState,
+  encodeShareState,
+  readShareParam,
+} from '@/lib/shareScenario.js';
 import { buildExampleReportPayload } from '@/lib/reportMetadata.js';
 import { getCanonicalUrl, getDefaultUrl } from '@/lib/seo.js';
 import { SeoAppSchema } from '@/components/SeoAppSchema';
@@ -46,15 +57,15 @@ const UserDetailsModal = lazy(() => import('@/components/UserDetailsModal.jsx'))
 const TaxNomadCalculator = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
-  const [fiscalYear, setFiscalYear] = useState(() => new Date().getFullYear());
-  const [selectedRanges, setSelectedRanges] = useState(() => loadStayRanges(new Date().getFullYear()));
+  const [fiscalYear, setFiscalYear] = useState(() => loadSelectedFiscalYear(new Date().getFullYear()));
+  const [selectedRanges, setSelectedRanges] = useState(() => loadStayRanges(loadSelectedFiscalYear(new Date().getFullYear())));
   const [editingRangeIndex, setEditingRangeIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRangeModalOpen, setIsRangeModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [userData, setUserData] = useState({ name: '', email: '', documentType: 'passport', taxId: '' });
-  const [scenarioRanges, setScenarioRanges] = useState(() => loadScenarioState(new Date().getFullYear()).ranges);
-  const [scenarioEnabled, setScenarioEnabled] = useState(() => loadScenarioState(new Date().getFullYear()).enabled);
+  const [scenarioRanges, setScenarioRanges] = useState(() => loadScenarioState(loadSelectedFiscalYear(new Date().getFullYear())).ranges);
+  const [scenarioEnabled, setScenarioEnabled] = useState(() => loadScenarioState(loadSelectedFiscalYear(new Date().getFullYear())).enabled);
   const [editingScenarioIndex, setEditingScenarioIndex] = useState(null);
   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
 
@@ -66,6 +77,42 @@ const TaxNomadCalculator = () => {
   useEffect(() => {
     saveScenarioState(fiscalYear, { enabled: scenarioEnabled, ranges: scenarioRanges });
   }, [fiscalYear, scenarioEnabled, scenarioRanges]);
+
+  useEffect(() => {
+    saveSelectedFiscalYear(fiscalYear);
+  }, [fiscalYear]);
+
+  // Restore a shared calculation from the URL (?s=...) once on mount, then
+  // clean the param so the address bar and analytics stay tidy.
+  useEffect(() => {
+    const encoded = readShareParam();
+    if (!encoded) return undefined;
+
+    let cancelled = false;
+    decodeShareState(encoded).then((shared) => {
+      clearShareParamFromUrl();
+      if (cancelled) return;
+
+      if (!shared) {
+        toast.error(t('share.invalid'));
+        return;
+      }
+
+      setFiscalYear(shared.fiscalYear);
+      setSelectedRanges(shared.stayRanges);
+      setScenarioRanges(shared.scenarioRanges);
+      setScenarioEnabled(shared.scenarioEnabled);
+      setEditingRangeIndex(null);
+      setEditingScenarioIndex(null);
+      toast.success(t('share.loaded'));
+    });
+
+    return () => {
+      cancelled = true;
+    };
+    // Run only on mount: the share param is consumed exactly once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { merged, annotatedRanges } = mergeDateRanges(selectedRanges);
   const totalDays = calculateUniqueDays(merged);
@@ -163,6 +210,27 @@ const TaxNomadCalculator = () => {
   const handleClearScenario = () => {
     setScenarioRanges([]);
     setEditingScenarioIndex(null);
+  };
+
+  const handleShareCalculation = async () => {
+    const encoded = await encodeShareState({
+      fiscalYear,
+      stayRanges: selectedRanges,
+      scenarioEnabled,
+      scenarioRanges,
+    });
+    const shareUrl = buildShareUrl(encoded, `${window.location.origin}${window.location.pathname}`);
+    const copied = await copyTextToClipboard(shareUrl);
+
+    if (copied) {
+      toast.success(t('share.copied'));
+    } else {
+      toast.error(t('share.copyError'));
+    }
+
+    if (typeof window.taxNomadTrack === 'function') {
+      window.taxNomadTrack('calculation_shared', { fiscal_year: fiscalYear });
+    }
   };
 
   const handleAddRange = (range) => {
@@ -647,6 +715,16 @@ const TaxNomadCalculator = () => {
                         )}
                       </div>
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={handleShareCalculation}
+                      aria-label={t('share.button')}
+                      className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-input bg-background px-4 text-sm font-semibold text-foreground transition-colors duration-200 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                    >
+                      <ShareNetwork size={18} weight="bold" className="text-primary" />
+                      {t('share.button')}
+                    </button>
 
                     <div className="trust-panel p-5">
                       <div className="flex items-start gap-3">
