@@ -7,6 +7,8 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { buildFaqSchema, getLocalizedFaq } from '../src/lib/faqData.js';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const distDir = join(__dirname, '..', 'dist');
 const BASE_URL = 'https://www.regla183.com';
@@ -15,6 +17,7 @@ const routes = [
   {
     distPath: 'index.html',
     lang: 'es',
+    faqPage: 'home',
     canonical: `${BASE_URL}/`,
     title: 'Calculadora Regla 183 España | Residencia Fiscal',
     description: 'Calcula si eres residente fiscal en España según la regla de los 183 días. Herramienta gratuita para nómadas digitales y expatriados.',
@@ -75,6 +78,7 @@ const routes = [
   {
     distPath: 'es/guide/index.html',
     lang: 'es',
+    faqPage: 'guide',
     canonical: `${BASE_URL}/es/guide`,
     title: 'Guía Completa de la Regla de los 183 Días en España · TaxNomad',
     description: 'Todo lo que necesitas saber sobre la regla de los 183 días para determinar tu residencia fiscal en España. Explicación detallada con ejemplos y fuentes oficiales.',
@@ -99,6 +103,7 @@ const routes = [
   {
     distPath: 'en/index.html',
     lang: 'en',
+    faqPage: 'home',
     canonical: `${BASE_URL}/en`,
     title: '183-Day Rule Calculator Spain | Tax Residency',
     description: 'Calculate if you are a tax resident in Spain under the 183-day rule. Free tool for digital nomads and expats.',
@@ -159,6 +164,7 @@ const routes = [
   {
     distPath: 'en/guide/index.html',
     lang: 'en',
+    faqPage: 'guide',
     canonical: `${BASE_URL}/en/guide`,
     title: 'Complete Guide to the 183-Day Rule in Spain · TaxNomad',
     description: 'Everything you need to know about the 183-day rule to determine your tax residency in Spain. Detailed explanation with examples and official sources.',
@@ -225,7 +231,7 @@ for (const route of routes) {
   const ogUrl = route.canonical;
   const ogType = route.distPath === 'index.html' ? 'website' : 'article';
 
-  const seoBlock = [
+  const seoParts = [
     `  <title>${route.title}</title>`,
     `  <meta name="description" content="${route.description}">`,
     `  <meta name="robots" content="index, follow">`,
@@ -239,7 +245,17 @@ for (const route of routes) {
     `  <meta name="twitter:title" content="${route.title}">`,
     `  <meta name="twitter:description" content="${route.description}">`,
     hreflangTags,
-  ].join('\n');
+  ];
+
+  // FAQ structured data for the routes that render a FAQ block. The answers
+  // are the same plain-text strings shown in the visible accordion (Google
+  // requires parity between structured data and visible content).
+  if (route.faqPage) {
+    const faqSchema = buildFaqSchema(getLocalizedFaq(route.lang, route.faqPage));
+    seoParts.push(`  <script type="application/ld+json">${JSON.stringify(faqSchema)}</script>`);
+  }
+
+  const seoBlock = seoParts.join('\n');
 
   html = html.replace('</head>', `${seoBlock}\n</head>`);
 

@@ -67,6 +67,8 @@ import {
 import { buildExampleReportPayload } from '@/lib/reportMetadata.js';
 import { getCanonicalUrl, getDefaultUrl } from '@/lib/seo.js';
 import { SeoAppSchema } from '@/components/SeoAppSchema';
+import FaqSection from '@/components/FaqSection.jsx';
+import { buildFaqSchema, getLocalizedFaq } from '@/lib/faqData.js';
 
 const UserDetailsModal = lazy(() => import('@/components/UserDetailsModal.jsx'));
 
@@ -159,50 +161,9 @@ const TaxNomadCalculator = () => {
     setEconomicInterests({});
   };
 
-  // SeoAppSchema is rendered only on the homepage for correct semantic markup
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: t('authority.whatIsTitle'),
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: t('authority.whatIsDesc'),
-        },
-      },
-      {
-        '@type': 'Question',
-        name: t('authority.whatCountsTitle'),
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: [
-            t('authority.whatCountsDesc'),
-            t('authority.whatCountsList1'),
-            t('authority.whatCountsList2'),
-            t('authority.whatCountsList3'),
-            t('authority.whatCountsList4'),
-          ].join('\n'),
-        },
-      },
-      {
-        '@type': 'Question',
-        name: t('authority.exceptionsTitle'),
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: [
-            t('authority.exceptionsDesc'),
-            t('authority.exceptionsList1'),
-            t('authority.exceptionsList2'),
-            t('authority.exceptionsList3'),
-            t('authority.exceptionsList4'),
-            t('authority.exceptionsList5'),
-          ].join('\n'),
-        },
-      },
-    ],
-  };
+  // FAQ JSON-LD matches the visible accordion exactly (buildFaqSchema feeds
+  // from the same localized strings as <FaqSection page="home" />).
+  const faqSchema = buildFaqSchema(getLocalizedFaq(language, 'home'));
 
   const toStatusObj = (days) => {
     const color = getRiskLevel(days);
@@ -887,6 +848,8 @@ const TaxNomadCalculator = () => {
               </div>
             </div>
           </section>
+
+          <FaqSection page="home" className="premium-section pb-10 pt-2" />
         </main>
 
         <Footer />

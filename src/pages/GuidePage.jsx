@@ -5,6 +5,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
 import LegalRef from '@/components/LegalRef.jsx';
+import FaqSection from '@/components/FaqSection.jsx';
+import { buildFaqSchema, getLocalizedFaq } from '@/lib/faqData.js';
 import { getCanonicalUrl } from '@/lib/seo';
 
 const GuidePage = () => {
@@ -12,78 +14,9 @@ const GuidePage = () => {
   const isEs = language === 'es';
   const canonicalUrl = getCanonicalUrl(language, 'guide');
 
-  const faqItems = isEs ? [
-    {
-      question: '¿Qué es la regla de los 183 días?',
-      answer: 'La regla de los 183 días es el criterio principal que utiliza la Agencia Tributaria española para determinar si una persona es residente fiscal en España. Si permaneces 183 días o más en territorio español durante un año natural, se te considera residente fiscal y debes tributar por tus rentas mundiales en España.'
-    },
-    {
-      question: '¿Cómo se cuentan los días de presencia en España?',
-      answer: 'Se cuentan como días de presencia cualquier día en el que estés físicamente en territorio español, aunque sea por unas horas. El día de llegada y el día de salida cuentan como días completos. Las ausencias temporales de corta duración no interrumpen el cómputo, salvo que se demuestre la residencia fiscal en otro país.'
-    },
-    {
-      question: '¿Qué pasa si supero los 183 días?',
-      answer: 'Si superas los 183 días de presencia en España en un año natural, se te considera residente fiscal y debes declarar y tributar por tus rentas mundiales (españolas y extranjeras) en España. Esto incluye ingresos del trabajo, rentas del capital, ganancias patrimoniales y cualquier otro tipo de renta obtenida en cualquier parte del mundo.'
-    },
-    {
-      question: '¿Existen excepciones a la regla de los 183 días?',
-      answer: 'Sí. Los diplomáticos y funcionarios consulares acreditados, los estudiantes en programas de intercambio temporal, y los trabajadores transfronterizos pueden tener regímenes especiales. Además, los convenios de doble imposición entre España y otros países pueden modificar las reglas generales de residencia fiscal.'
-    },
-    {
-      question: '¿Qué otros criterios determinan la residencia fiscal además de los 183 días?',
-      answer: 'Además del criterio de los 183 días, la legislación española considera residente fiscal a quien tenga en España el núcleo principal o la base de sus actividades o intereses económicos, o tenga en España al cónyuge o hijos menores de edad que convivan con él, salvo prueba en contrario.'
-    },
-    {
-      question: '¿Cómo afectan los convenios de doble imposición?',
-      answer: 'Los convenios de doble imposición (CDI) son tratados internacionales que evitan que una persona tribute dos veces por las mismas rentas. Si según las reglas internas de dos países eres residente fiscal en ambos, el CDI establece criterios de desempate: domicilio permanente, centro de intereses vitales, residencia habitual y nacionalidad, en ese orden.'
-    },
-    {
-      question: '¿El informe PDF de TaxNomad tiene validez legal?',
-      answer: 'El informe PDF generado por TaxNomad es un documento informativo que resume tus periodos de estancia y el cálculo de días de presencia. No constituye una prueba legal por sí mismo, pero puede servir como documentación complementaria de respaldo ante una posible verificación por parte de la Agencia Tributaria. Siempre es recomendable contar con asesoramiento fiscal profesional.'
-    }
-  ] : [
-    {
-      question: 'What is the 183-day rule?',
-      answer: 'The 183-day rule is the primary criterion used by the Spanish Tax Authority (Agencia Tributaria) to determine whether a person is a tax resident in Spain. If you spend 183 days or more in Spanish territory during a calendar year, you are considered a tax resident and must pay taxes on your worldwide income in Spain.'
-    },
-    {
-      question: 'How are days of presence in Spain counted?',
-      answer: 'Any day you are physically present in Spanish territory counts as a day of presence, even if only for a few hours. Both the day of arrival and the day of departure count as full days. Short temporary absences do not interrupt the count unless you can prove tax residency in another country.'
-    },
-    {
-      question: 'What happens if I exceed 183 days?',
-      answer: 'If you exceed 183 days of presence in Spain in a calendar year, you are considered a tax resident and must declare and pay taxes on your worldwide income (both Spanish and foreign) in Spain. This includes employment income, investment income, capital gains, and any other type of income earned anywhere in the world.'
-    },
-    {
-      question: 'Are there exceptions to the 183-day rule?',
-      answer: 'Yes. Accredited diplomats and consular officials, students in temporary exchange programs, and cross-border workers may have special regimes. Additionally, double taxation treaties between Spain and other countries may modify the general tax residency rules.'
-    },
-    {
-      question: 'What other criteria determine tax residency besides the 183-day rule?',
-      answer: 'In addition to the 183-day criterion, Spanish legislation considers a person to be a tax resident if they have the main nucleus or base of their activities or economic interests in Spain, or if their spouse or minor children who live with them reside in Spain, unless proven otherwise.'
-    },
-    {
-      question: 'How do double taxation treaties affect this?',
-      answer: 'Double taxation treaties (DTTs) are international agreements that prevent a person from being taxed twice on the same income. If under the domestic rules of two countries you are a tax resident in both, the DTT establishes tie-breaker criteria: permanent home, center of vital interests, habitual abode, and nationality, in that order.'
-    },
-    {
-      question: 'Does the TaxNomad PDF report have legal validity?',
-      answer: 'The PDF report generated by TaxNomad is an informational document that summarizes your stay periods and day count calculation. It does not constitute legal proof by itself, but can serve as supplementary supporting documentation in case of a verification by the Tax Authority. It is always recommended to seek professional tax advice.'
-    }
-  ];
-
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqItems.map(item => ({
-      '@type': 'Question',
-      name: item.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: item.answer,
-      },
-    })),
-  };
+  // FAQ JSON-LD matches the visible accordion exactly (buildFaqSchema feeds
+  // from the same localized strings as <FaqSection page="guide" />).
+  const faqSchema = buildFaqSchema(getLocalizedFaq(language, 'guide'));
 
   const articleSchema = {
     '@context': 'https://schema.org',
@@ -269,19 +202,7 @@ const GuidePage = () => {
           </section>
 
           {/* FAQ */}
-          <section className="mb-12">
-            <h2 className="mb-6 text-2xl font-bold">
-              {isEs ? 'Preguntas frecuentes' : 'Frequently asked questions'}
-            </h2>
-            <div className="space-y-6">
-              {faqItems.map((item, i) => (
-                <div key={i} className="rounded-lg border border-border/70 p-5">
-                  <h3 className="mb-2 font-semibold">{item.question}</h3>
-                  <p className="leading-7 text-muted-foreground">{item.answer}</p>
-                </div>
-              ))}
-            </div>
-          </section>
+          <FaqSection page="guide" className="mb-12" />
 
           {/* CTA */}
           <div className="rounded-xl bg-primary/5 border border-primary/20 p-8 text-center">
