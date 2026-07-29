@@ -20,6 +20,7 @@ import DateRangeSelector from '@/components/DateRangeSelector.jsx';
 import RangeList from '@/components/RangeList.jsx';
 import ProgressBar from '@/components/ProgressBar.jsx';
 import RemainingDaysCountdown from '@/components/RemainingDaysCountdown.jsx';
+import RiskGauge from '@/components/RiskGauge.jsx';
 import DataAuthoritySection from '@/components/DataAuthoritySection.jsx';
 import EconomicInterestsPanel from '@/components/EconomicInterestsPanel.jsx';
 import {
@@ -32,7 +33,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage.js';
 import { mergeDateRanges, calculateUniqueDays } from '@/lib/dateRangeMerger.js';
-import { calculateScenarioComparison } from '@/lib/fiscalSummary.js';
+import { calculateScenarioComparison, getRiskLevel } from '@/lib/fiscalSummary.js';
 import {
   clearEconomicInterests,
   evaluateEconomicInterests,
@@ -194,17 +195,20 @@ const TaxNomadCalculator = () => {
     ],
   };
 
-  const statusObj = totalDays <= 150
-    ? { color: 'safe',        label: t('progress.safe') }
-    : totalDays <= 183
-    ? { color: 'warning',     label: t('progress.approaching') }
-    : { color: 'destructive', label: t('progress.over') };
+  const toStatusObj = (days) => {
+    const color = getRiskLevel(days);
+    return {
+      color,
+      label: color === 'safe'
+        ? t('progress.safe')
+        : color === 'warning'
+        ? t('progress.approaching')
+        : t('progress.over'),
+    };
+  };
 
-  const projectedStatusObj = projected.totalDays <= 150
-    ? { color: 'safe',        label: t('progress.safe') }
-    : projected.totalDays <= 183
-    ? { color: 'warning',     label: t('progress.approaching') }
-    : { color: 'destructive', label: t('progress.over') };
+  const statusObj = toStatusObj(totalDays);
+  const projectedStatusObj = toStatusObj(projected.totalDays);
 
   const handleAddScenarioRange = (range) => {
     setScenarioRanges(prev => [...prev, range]);
@@ -718,14 +722,12 @@ const TaxNomadCalculator = () => {
                           </span>
                         </div>
 
-                        <div>
-                          <p className="field-label">{t('progress.title')}</p>
-                          <div className="mt-2 flex items-end gap-2">
-                            <span className="text-5xl font-[750] tracking-tight text-foreground">{totalDays}</span>
-                            <span className="pb-1 text-lg font-semibold text-muted-foreground">/ 183</span>
-                          </div>
-                          <p className="mt-2 text-sm leading-6 text-muted-foreground">{t('dashboard.statusDescription')}</p>
-                        </div>
+                        <RiskGauge
+                          totalDays={totalDays}
+                          projectedDays={scenarioActive ? projected.totalDays : undefined}
+                          onOpenPayment={() => setIsModalOpen(true)}
+                          paymentDisabled={totalDays <= 0}
+                        />
 
                         <ProgressBar totalDays={totalDays} projectedDays={scenarioActive ? projected.totalDays : undefined} />
 

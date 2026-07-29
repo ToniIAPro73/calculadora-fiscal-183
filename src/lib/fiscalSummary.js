@@ -99,6 +99,17 @@ export function getFiscalStatus(totalDays, warningThreshold = DEFAULT_WARNING_TH
   return 'safe';
 }
 
+/**
+ * Single source of truth for the visual risk level ("semáforo de riesgo")
+ * shared by the countdown card and the risk gauge:
+ * 'safe' up to 150 days, 'warning' 151-183, 'destructive' over 183.
+ * The 150-day warning threshold keeps ~1 month of planning margin and is
+ * the criterion already shipped and tested across the app.
+ */
+export function getRiskLevel(totalDays, warningThreshold = DEFAULT_WARNING_THRESHOLD, limit = DEFAULT_FISCAL_LIMIT) {
+  return getFiscalStatus(totalDays, warningThreshold, limit);
+}
+
 export function calculateFiscalSummary(ranges = [], options = {}) {
   const limit = options.limit ?? DEFAULT_FISCAL_LIMIT;
   const warningThreshold = options.warningThreshold ?? DEFAULT_WARNING_THRESHOLD;

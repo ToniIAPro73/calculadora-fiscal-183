@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { CalendarPlus } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage.js';
 import { buildIcsCalendar } from '@/lib/icsExport.js';
-import { DEFAULT_FISCAL_LIMIT, DEFAULT_WARNING_THRESHOLD } from '@/lib/fiscalSummary.js';
+import { DEFAULT_FISCAL_LIMIT, DEFAULT_WARNING_THRESHOLD, getRiskLevel } from '@/lib/fiscalSummary.js';
 
 const interpolate = (template, values) =>
   Object.entries(values).reduce(
@@ -35,11 +35,7 @@ const RemainingDaysCountdown = ({
   const remaining = Math.max(limit - totalDays, 0);
   const exceeded = Math.max(totalDays - limit, 0);
 
-  const status = totalDays > limit
-    ? 'destructive'
-    : totalDays > warningThreshold
-    ? 'warning'
-    : 'safe';
+  const status = getRiskLevel(totalDays, warningThreshold, limit);
 
   const statusLabel = status === 'safe'
     ? t('progress.safe')

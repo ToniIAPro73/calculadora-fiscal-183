@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/useLanguage.js';
+import { getRiskLevel } from '@/lib/fiscalSummary.js';
 
 const ProgressBar = ({ totalDays, projectedDays }) => {
   const { t } = useLanguage();
@@ -20,8 +21,9 @@ const ProgressBar = ({ totalDays, projectedDays }) => {
   }, [totalDays]);
 
   const getStatus = () => {
-    if (totalDays <= 150) return { color: 'success', label: t('progress.safe') };
-    if (totalDays <= 183) return { color: 'warning', label: t('progress.approaching') };
+    const level = getRiskLevel(totalDays);
+    if (level === 'safe') return { color: 'success', label: t('progress.safe') };
+    if (level === 'warning') return { color: 'warning', label: t('progress.approaching') };
     return { color: 'destructive', label: t('progress.over') };
   };
 

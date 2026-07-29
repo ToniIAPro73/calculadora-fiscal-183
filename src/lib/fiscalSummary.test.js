@@ -5,6 +5,7 @@ import {
   calculateScenarioComparison,
   calculateUniqueDays,
   getFiscalStatus,
+  getRiskLevel,
   mergeDateRanges,
 } from './fiscalSummary.js';
 
@@ -96,6 +97,29 @@ describe('fiscalSummary', () => {
 
       expect(calculateUniqueDays(result.merged)).toBe(calculateUniqueDaysWithOracle(ranges));
     }
+  });
+});
+
+describe('getRiskLevel', () => {
+  it('maps day counts to the visual risk zones on the unified thresholds', () => {
+    expect(getRiskLevel(0)).toBe('safe');
+    expect(getRiskLevel(150)).toBe('safe');
+    expect(getRiskLevel(151)).toBe('warning');
+    expect(getRiskLevel(183)).toBe('warning');
+    expect(getRiskLevel(184)).toBe('destructive');
+    expect(getRiskLevel(365)).toBe('destructive');
+  });
+
+  it('stays aligned with getFiscalStatus as the single source of truth', () => {
+    [0, 1, 149, 150, 151, 182, 183, 184, 300].forEach((days) => {
+      expect(getRiskLevel(days)).toBe(getFiscalStatus(days));
+    });
+  });
+
+  it('honours custom warning thresholds and limits', () => {
+    expect(getRiskLevel(90, 90, 120)).toBe('safe');
+    expect(getRiskLevel(91, 90, 120)).toBe('warning');
+    expect(getRiskLevel(121, 90, 120)).toBe('destructive');
   });
 });
 
