@@ -118,3 +118,20 @@ export function calculateFiscalSummary(ranges = [], options = {}) {
     annotatedRanges,
   };
 }
+
+/**
+ * Compares the current situation (real stays) against a hypothetical scenario
+ * (real + planned stays merged). Overlapping days are counted only once, so
+ * `addedDays` can be lower than the raw sum of the scenario ranges.
+ */
+export function calculateScenarioComparison(currentRanges = [], scenarioRanges = [], options = {}) {
+  const current = calculateFiscalSummary(currentRanges, options);
+  const projected = calculateFiscalSummary([...currentRanges, ...scenarioRanges], options);
+
+  return {
+    current,
+    projected,
+    addedDays: projected.totalDays - current.totalDays,
+    statusChanged: current.status !== projected.status,
+  };
+}

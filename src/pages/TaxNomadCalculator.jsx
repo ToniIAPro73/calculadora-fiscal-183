@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -7,7 +7,9 @@ import {
   CalendarPlus,
   CheckCircle,
   ClockCountdown,
+  Eraser,
   FilePdf,
+  Flask,
   ShieldCheck,
   WarningCircle,
 } from '@phosphor-icons/react';
@@ -24,8 +26,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage.js';
 import { mergeDateRanges, calculateUniqueDays } from '@/lib/dateRangeMerger.js';
+import { calculateScenarioComparison } from '@/lib/fiscalSummary.js';
+import {
+  loadScenarioState,
+  loadStayRanges,
+  saveScenarioState,
+  saveStayRanges,
+} from '@/lib/stayRangesStorage.js';
 import { buildExampleReportPayload } from '@/lib/reportMetadata.js';
 import { getCanonicalUrl, getDefaultUrl } from '@/lib/seo.js';
 import { SeoAppSchema } from '@/components/SeoAppSchema';
@@ -36,12 +46,25 @@ const TaxNomadCalculator = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const [fiscalYear, setFiscalYear] = useState(() => new Date().getFullYear());
-  const [selectedRanges, setSelectedRanges] = useState([]);
+  const [selectedRanges, setSelectedRanges] = useState(() => loadStayRanges(new Date().getFullYear()));
   const [editingRangeIndex, setEditingRangeIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRangeModalOpen, setIsRangeModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [userData, setUserData] = useState({ name: '', email: '', documentType: 'passport', taxId: '' });
+  const [scenarioRanges, setScenarioRanges] = useState(() => loadScenarioState(new Date().getFullYear()).ranges);
+  const [scenarioEnabled, setScenarioEnabled] = useState(() => loadScenarioState(new Date().getFullYear()).enabled);
+  const [editingScenarioIndex, setEditingScenarioIndex] = useState(null);
+  const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
+
+  // Persist both range sets locally (browser only, never sent to any server)
+  useEffect(() => {
+    saveStayRanges(fiscalYear, selectedRanges);
+  }, [fiscalYear, selectedRanges]);
+
+  useEffect(() => {
+    saveScenarioState(fiscalYear, { enabled: scenarioEnabled, ranges: scenarioRanges });
+  }, [fiscalYear, scenarioEnabled, scenarioRanges]);
 
   const { merged, annotatedRanges } = mergeDateRanges(selectedRanges);
   const totalDays = calculateUniqueDays(merged);
@@ -49,6 +72,10 @@ const TaxNomadCalculator = () => {
   const remaining = Math.max(LIMIT - totalDays, 0);
   const percentage = Math.min((totalDays / LIMIT) * 100, 100);
   const canonicalUrl = getCanonicalUrl(null); // Home page uses root canonical https://www.regla183.com/
+
+  const scenarioComparison = calculateScenarioComparison(selectedRanges, scenarioRanges);
+  const scenarioActive = scenarioEnabled && scenarioRanges.length > 0;
+  const projected = scenarioComparison.projected;
 
   // SeoAppSchema is rendered only on the homepage for correct semantic markup
   const faqSchema = {
@@ -101,6 +128,42 @@ const TaxNomadCalculator = () => {
     ? { color: 'warning',     label: t('progress.approaching') }
     : { color: 'destructive', label: t('progress.over') };
 
+  const projectedStatusObj = projected.totalDays <= 150
+    ? { color: 'safe',        label: t('progress.safe') }
+    : projected.totalDays <= 183
+    ? { color: 'warning',     label: t('progress.approaching') }
+    : { color: 'destructive', label: t('progress.over') };
+
+  const handleAddScenarioRange = (range) => {
+    setScenarioRanges(prev => [...prev, range]);
+  };
+
+  const handleRemoveScenarioRange = (index) => {
+    setScenarioRanges(prev => prev.filter((_, i) => i !== index));
+    setEditingScenarioIndex((currentIndex) => {
+      if (currentIndex === null) return null;
+      if (currentIndex === index) return null;
+      return currentIndex > index ? currentIndex - 1 : currentIndex;
+    });
+  };
+
+  const handleEditScenarioRange = (index) => {
+    setEditingScenarioIndex(index);
+    setIsScenarioModalOpen(true);
+  };
+
+  const handleUpdateScenarioRange = (index, nextRange) => {
+    setScenarioRanges(prev => prev.map((range, currentIndex) => (
+      currentIndex === index ? nextRange : range
+    )));
+    setEditingScenarioIndex(null);
+  };
+
+  const handleClearScenario = () => {
+    setScenarioRanges([]);
+    setEditingScenarioIndex(null);
+  };
+
   const handleAddRange = (range) => {
     setSelectedRanges(prev => [...prev, range]);
     // Track conversion event
@@ -131,8 +194,12 @@ const TaxNomadCalculator = () => {
     const nextYear = Number(value);
     if (nextYear === fiscalYear) return;
     setFiscalYear(nextYear);
-    setSelectedRanges([]);
+    setSelectedRanges(loadStayRanges(nextYear));
+    const nextScenarioState = loadScenarioState(nextYear);
+    setScenarioRanges(nextScenarioState.ranges);
+    setScenarioEnabled(nextScenarioState.enabled);
     setEditingRangeIndex(null);
+    setEditingScenarioIndex(null);
   };
 
   const fiscalYearOptions = Array.from(
@@ -282,6 +349,21 @@ const TaxNomadCalculator = () => {
         setIsOpen={setIsRangeModalOpen}
       />
 
+      <DateRangeSelector
+        fiscalYear={fiscalYear}
+        ranges={scenarioRanges}
+        onAddRange={handleAddScenarioRange}
+        onUpdateRange={handleUpdateScenarioRange}
+        editingRangeIndex={editingScenarioIndex}
+        onEditingHandled={() => setEditingScenarioIndex(null)}
+        isOpen={isScenarioModalOpen}
+        setIsOpen={setIsScenarioModalOpen}
+        allowFutureDates
+        modalTitle={t('scenario.modalTitle')}
+        modalDescription={t('scenario.modalDescription')}
+        editRangeTitle={t('scenario.editRange')}
+      />
+
       <div className="relative flex min-h-[100dvh] flex-col bg-background pb-[calc(5.75rem+env(safe-area-inset-bottom))] lg:pb-0">
         <Header
           totalDays={totalDays}
@@ -343,15 +425,20 @@ const TaxNomadCalculator = () => {
 
                 <div className="grid gap-3 sm:grid-cols-3">
                   {[
-                    { label: t('stats.totalDays'), value: `${totalDays}`, icon: ClockCountdown, helper: t('dashboard.totalHelper') },
-                    { label: t('stats.remainingDays'), value: `${remaining}`, icon: ShieldCheck, helper: t('dashboard.remainingHelper') },
-                    { label: t('stats.limitUsage'), value: `${percentage.toFixed(1)}%`, icon: ArrowSquareOut, helper: statusObj.label },
-                  ].map(({ label, value, icon: Icon, helper }) => (
+                    { label: t('stats.totalDays'), value: `${totalDays}`, projectedValue: `${projected.totalDays}`, icon: ClockCountdown, helper: t('dashboard.totalHelper') },
+                    { label: t('stats.remainingDays'), value: `${remaining}`, projectedValue: `${projected.remainingDays}`, icon: ShieldCheck, helper: t('dashboard.remainingHelper') },
+                    { label: t('stats.limitUsage'), value: `${percentage.toFixed(1)}%`, projectedValue: `${projected.percentageUsed.toFixed(1)}%`, icon: ArrowSquareOut, helper: statusObj.label },
+                  ].map(({ label, value, projectedValue, icon: Icon, helper }) => (
                     <div key={label} className="trust-panel reveal-surface p-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="space-y-1.5">
                           <p className="field-label">{label}</p>
                           <p className="text-3xl font-[700] tracking-tight text-foreground">{value}</p>
+                          {scenarioActive && (
+                            <p className="text-xs font-semibold text-[hsl(var(--warning-foreground))]">
+                              {t('scenario.withScenario')}: {projectedValue}
+                            </p>
+                          )}
                           <p className="text-xs text-muted-foreground">{helper}</p>
                         </div>
                         <div className="flex h-10 w-10 items-center justify-center rounded-md border border-primary/15 bg-primary/10">
@@ -406,6 +493,106 @@ const TaxNomadCalculator = () => {
                       </div>
                     )}
 
+                    <section
+                      aria-labelledby="scenario-simulator-heading"
+                      className="trust-panel space-y-4 border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.04)] p-5"
+                    >
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="space-y-2">
+                          <span className="inline-flex items-center gap-2 rounded-full border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.1)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[hsl(var(--warning-foreground))]">
+                            <Flask size={13} weight="fill" />
+                            {t('scenario.eyebrow')}
+                          </span>
+                          <h2 id="scenario-simulator-heading" className="text-lg font-semibold text-foreground">
+                            {t('scenario.title')}
+                          </h2>
+                          <p className="max-w-[62ch] text-sm leading-6 text-muted-foreground">
+                            {t('scenario.description')}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <label
+                            htmlFor="scenario-toggle"
+                            className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                          >
+                            {t('scenario.toggleLabel')}
+                          </label>
+                          <Switch
+                            id="scenario-toggle"
+                            checked={scenarioEnabled}
+                            onCheckedChange={setScenarioEnabled}
+                            aria-label={t('scenario.toggleLabel')}
+                          />
+                        </div>
+                      </div>
+
+                      {!scenarioEnabled && scenarioRanges.length > 0 && (
+                        <p role="status" className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs leading-5 text-muted-foreground">
+                          {t('scenario.inactiveHint')}
+                        </p>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingScenarioIndex(null);
+                          setIsScenarioModalOpen(true);
+                        }}
+                        className="group flex w-full items-center justify-between gap-5 rounded-xl border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.08)] p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[hsl(var(--warning)/0.7)] hover:bg-[hsl(var(--warning)/0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[hsl(var(--warning)/0.18)] text-[hsl(var(--warning-foreground))]">
+                            <CalendarPlus size={20} weight="bold" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">{t('scenario.addRange')}</p>
+                            <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{t('scenario.modalDescription')}</p>
+                          </div>
+                        </div>
+                        <ArrowSquareOut size={16} weight="bold" className="hidden shrink-0 text-[hsl(var(--warning-foreground))] transition-transform duration-200 group-hover:translate-x-0.5 sm:block" />
+                      </button>
+
+                      {scenarioRanges.length === 0 && (
+                        <p className="text-xs leading-5 text-muted-foreground">{t('scenario.emptyHint')}</p>
+                      )}
+
+                      <RangeList
+                        ranges={scenarioRanges}
+                        onRemoveRange={handleRemoveScenarioRange}
+                        onEditRange={handleEditScenarioRange}
+                        variant="scenario"
+                        title={t('scenario.title')}
+                      />
+
+                      {scenarioActive && (
+                        <div
+                          role="status"
+                          className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.08)] px-4 py-3 text-sm"
+                        >
+                          <span className="text-muted-foreground">
+                            {t('scenario.currentLabel')}: <strong className="text-foreground">{totalDays} {t('dateSelector.days')}</strong>
+                          </span>
+                          <span className="font-semibold text-[hsl(var(--warning-foreground))]">
+                            {t('scenario.withScenario')}: {projected.totalDays} {t('dateSelector.days')}
+                            {scenarioComparison.addedDays > 0 && ` (+${scenarioComparison.addedDays})`}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="flex justify-end">
+                        <button
+                          type="button"
+                          onClick={handleClearScenario}
+                          disabled={scenarioRanges.length === 0}
+                          className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-input bg-background px-4 text-xs font-bold uppercase tracking-wide text-foreground transition-colors duration-200 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <Eraser size={16} weight="bold" />
+                          {t('scenario.clear')}
+                        </button>
+                      </div>
+                    </section>
+
                     <DataAuthoritySection />
                   </div>
 
@@ -435,7 +622,22 @@ const TaxNomadCalculator = () => {
                           <p className="mt-2 text-sm leading-6 text-muted-foreground">{t('dashboard.statusDescription')}</p>
                         </div>
 
-                        <ProgressBar totalDays={totalDays} />
+                        <ProgressBar totalDays={totalDays} projectedDays={scenarioActive ? projected.totalDays : undefined} />
+
+                        {scenarioActive && (
+                          <div
+                            role="status"
+                            className="flex items-center justify-between gap-3 rounded-lg border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.08)] px-3.5 py-2.5"
+                          >
+                            <span className="text-xs font-semibold uppercase tracking-wide text-[hsl(var(--warning-foreground))]">
+                              {t('scenario.withScenario')}
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[hsl(var(--warning-foreground))]">
+                              {projectedStatusObj.color === 'safe' ? <CheckCircle size={14} weight="fill" /> : <WarningCircle size={14} weight="fill" />}
+                              {projected.totalDays}/183 · {projectedStatusObj.label}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
 

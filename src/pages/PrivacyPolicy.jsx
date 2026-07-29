@@ -123,6 +123,7 @@ const contentByLanguage = {
         plainList: [
           'localStorage para guardar la preferencia de idioma y tema visual.',
           'localStorage para registrar tu preferencia de consentimiento de cookies opcionales.',
+          'localStorage para guardar tus rangos de estancia y el simulador de escenarios, solo en tu navegador y sin enviarlos a ningún servidor.',
           'Google Analytics 4 solo se activa si aceptas cookies analíticas.',
         ],
       },
@@ -246,6 +247,7 @@ const contentByLanguage = {
         plainList: [
           'localStorage to remember language and theme preferences.',
           'localStorage to record your optional cookie consent preference.',
+          'localStorage to store your stay ranges and the what-if scenario simulator, only in your browser and never sent to any server.',
           'Google Analytics 4 is only enabled if you accept analytics cookies.',
         ],
       },

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   calculateFiscalSummary,
   calculateRangeDays,
+  calculateScenarioComparison,
   calculateUniqueDays,
   getFiscalStatus,
   mergeDateRanges,
@@ -95,5 +96,58 @@ describe('fiscalSummary', () => {
 
       expect(calculateUniqueDays(result.merged)).toBe(calculateUniqueDaysWithOracle(ranges));
     }
+  });
+});
+
+describe('calculateScenarioComparison', () => {
+  it('keeps the current summary untouched and projects real + scenario ranges merged', () => {
+    const current = [{ start: '2026-01-01', end: '2026-01-10' }];
+    const scenario = [{ start: '2026-02-01', end: '2026-02-15' }];
+
+    const comparison = calculateScenarioComparison(current, scenario);
+
+    expect(comparison.current.totalDays).toBe(10);
+    expect(comparison.projected.totalDays).toBe(25);
+    expect(comparison.addedDays).toBe(15);
+    expect(comparison.current.status).toBe('safe');
+    expect(comparison.projected.status).toBe('safe');
+    expect(comparison.statusChanged).toBe(false);
+  });
+
+  it('counts overlapping hypothetical days only once', () => {
+    const current = [{ start: '2026-03-01', end: '2026-03-10' }];
+    const scenario = [{ start: '2026-03-05', end: '2026-03-20' }];
+
+    const comparison = calculateScenarioComparison(current, scenario);
+
+    expect(comparison.projected.totalDays).toBe(20);
+    expect(comparison.addedDays).toBe(10);
+  });
+
+  it('detects status changes when the scenario crosses a threshold', () => {
+    const current = [{ start: '2026-01-01', end: '2026-05-30' }]; // 150 days
+    const scenario = [{ start: '2026-06-01', end: '2026-07-03' }]; // +33 days -> 183 total
+
+    const comparison = calculateScenarioComparison(current, scenario);
+
+    expect(comparison.current.status).toBe('safe');
+    expect(comparison.projected.status).toBe('warning');
+    expect(comparison.statusChanged).toBe(true);
+
+    const overLimit = calculateScenarioComparison(current, [
+      { start: '2026-06-01', end: '2026-07-04' },
+    ]);
+    expect(overLimit.projected.status).toBe('destructive');
+    expect(overLimit.projected.exceededDays).toBe(1);
+  });
+
+  it('treats an empty scenario as a no-op', () => {
+    const current = [{ start: '2026-01-01', end: '2026-01-05' }];
+
+    const comparison = calculateScenarioComparison(current, []);
+
+    expect(comparison.projected.totalDays).toBe(comparison.current.totalDays);
+    expect(comparison.addedDays).toBe(0);
+    expect(comparison.statusChanged).toBe(false);
   });
 });

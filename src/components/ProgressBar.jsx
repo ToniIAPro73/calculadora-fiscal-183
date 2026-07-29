@@ -3,10 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/useLanguage.js';
 
-const ProgressBar = ({ totalDays }) => {
+const ProgressBar = ({ totalDays, projectedDays }) => {
   const { t } = useLanguage();
   const limit = 183;
   const percentage = Math.min((totalDays / limit) * 100, 100);
+  const hasProjection = typeof projectedDays === 'number' && projectedDays > totalDays;
+  const projectedPercentage = hasProjection ? Math.min((projectedDays / limit) * 100, 100) : null;
   const [isPulsing, setIsPulsing] = useState(false);
   
   useEffect(() => {
@@ -53,12 +55,26 @@ const ProgressBar = ({ totalDays }) => {
           aria-valuemax="100"
           aria-label={t('progress.title')}
         />
-        
+
+        {hasProjection && (
+          <div
+            aria-hidden="true"
+            className="absolute inset-y-0 border-y border-dashed border-[hsl(var(--warning)/0.7)]"
+            style={{
+              left: `${percentage}%`,
+              width: `${projectedPercentage - percentage}%`,
+              background:
+                'repeating-linear-gradient(45deg, hsl(var(--warning) / 0.35) 0 6px, hsl(var(--warning) / 0.12) 6px 12px)',
+              transition: 'left 800ms cubic-bezier(0.32,0.72,0,1), width 800ms cubic-bezier(0.32,0.72,0,1)',
+            }}
+          />
+        )}
+
         <div className="absolute inset-0 flex items-center justify-center">
           <span className={cn(
             "text-xs font-semibold transition-colors duration-300",
-            percentage > 50 
-              ? status.color === 'warning' 
+            percentage > 50
+              ? status.color === 'warning'
                 ? "text-[hsl(var(--warning-foreground))]"
                 : "text-white"
               : "text-foreground"
@@ -67,6 +83,12 @@ const ProgressBar = ({ totalDays }) => {
           </span>
         </div>
       </div>
+
+      {hasProjection && (
+        <p className="text-xs font-medium text-[hsl(var(--warning-foreground))]">
+          {t('scenario.withScenario')}: {projectedDays} / {limit} {t('dateSelector.days')} ({projectedPercentage.toFixed(1)}%)
+        </p>
+      )}
 
       <div className="flex items-center justify-between text-xs">
         <span className={cn(
