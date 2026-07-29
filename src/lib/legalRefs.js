@@ -28,6 +28,42 @@ export const LEGAL_REFS = [
     },
   },
   {
+    id: 'lirpf-art93',
+    title: {
+      es: 'Art. 93 de la Ley 35/2006 (régimen de impatriados)',
+      en: 'Article 93 of Law 35/2006 (impatriate regime)',
+    },
+    url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2006-20764#a93',
+    excerpt: {
+      es: 'Los trabajadores desplazados a España pueden optar por tributar en el IRPF como contribuyentes del Impuesto sobre la Renta de no Residentes, manteniendo la condición de residentes fiscales en España, durante el período impositivo del cambio de residencia y los cinco siguientes.',
+      en: 'Workers relocated to Spain may opt to be taxed under the Non-Resident Income Tax rules while remaining Spanish tax residents, during the tax period of the change of residence and the following five periods.',
+    },
+  },
+  {
+    id: 'ley-startups',
+    title: {
+      es: 'Ley 28/2022 (Ley de Startups) · teletrabajadores internacionales',
+      en: 'Law 28/2022 (Startups Act) · international remote workers',
+    },
+    url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2022-21739',
+    excerpt: {
+      es: 'La Ley 28/2022 crea el visado para teletrabajadores de carácter internacional (visado de nómada digital) y amplía el acceso al régimen especial de trabajadores desplazados del art. 93 LIRPF, incluyendo a los teletrabajadores internacionales.',
+      en: 'Law 28/2022 creates the international remote worker visa (digital nomad visa) and widens access to the special regime for posted workers in Art. 93 of the PIT Act, including international remote workers.',
+    },
+  },
+  {
+    id: 'dgt-convenios-cdi',
+    title: {
+      es: 'DGT · Convenios de doble imposición (doctrina)',
+      en: 'DGT · Double taxation treaties (doctrine)',
+    },
+    url: 'https://sede.agenciatributaria.gob.es/Sede/normativa-criterios-interpretativos/doctrina-criterios-interpretativos.html',
+    excerpt: {
+      es: 'La Dirección General de Tributos aplica los convenios de doble imposición (CDI) con prevalencia sobre la normativa interna: los criterios de desempate (domicilio permanente, centro de intereses vitales, residencia habitual, nacionalidad) resuelven los conflictos de doble residencia.',
+      en: 'The Directorate-General for Taxes (DGT) applies double taxation treaties (DTTs) with precedence over domestic law: tie-breaker criteria (permanent home, centre of vital interests, habitual abode, nationality) resolve dual-residency conflicts.',
+    },
+  },
+  {
     id: 'dgt-intereses-economicos',
     title: {
       es: 'DGT · Centro de intereses económicos (consultas vinculantes)',

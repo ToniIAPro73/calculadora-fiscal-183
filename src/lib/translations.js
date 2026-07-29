@@ -297,7 +297,9 @@ export const translations = {
       terms: "Terms of Service",
       legalNotice: "Legal Notice",
       cookies: "Cookie Policy",
-      howItWorks: "How does it work?"
+      howItWorks: "How does it work?",
+      guidesTitle: "Guides",
+      guideHub: "183-day rule guide"
     },
     auditReady: {
       title: "Audit-Ready",
@@ -643,7 +645,9 @@ export const translations = {
       terms: "Términos de Servicio",
       legalNotice: "Aviso Legal",
       cookies: "Política de Cookies",
-      howItWorks: "¿Cómo funciona?"
+      howItWorks: "¿Cómo funciona?",
+      guidesTitle: "Guías",
+      guideHub: "Guía de la regla de los 183 días"
     },
     auditReady: {
       title: "Audit-Ready",

@@ -16,6 +16,7 @@ const CookiePolicy = lazy(() => import('./pages/CookiePolicy'));
 const PaymentMock = lazy(() => import('./pages/PaymentMock'));
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
 const GuidePage = lazy(() => import('./pages/GuidePage'));
+const GuideArticlePage = lazy(() => import('./pages/GuideArticlePage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 
 function App() {
@@ -56,6 +57,10 @@ function App() {
               {/* Guía SEO - Contenido de valor para posicionamiento orgánico */}
               <Route path="/es/guide" element={<GuidePage />} />
               <Route path="/en/guide" element={<GuidePage />} />
+
+              {/* Hub de contenido: guías por perfil (mismo slug en ES/EN) */}
+              <Route path="/es/guide/:slug" element={<GuideArticlePage />} />
+              <Route path="/en/guide/:slug" element={<GuideArticlePage />} />
 
               {/* Sobre Nosotros - E-E-A-T para Google */}
               <Route path="/es/about" element={<AboutPage />} />

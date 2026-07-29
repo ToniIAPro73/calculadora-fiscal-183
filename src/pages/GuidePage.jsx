@@ -1,12 +1,14 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
+import { ArrowRight } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
 import LegalRef from '@/components/LegalRef.jsx';
 import FaqSection from '@/components/FaqSection.jsx';
 import { buildFaqSchema, getLocalizedFaq } from '@/lib/faqData.js';
+import { GUIDES, getGuidePath, getLocalizedGuide } from '@/lib/guideContent/index.js';
 import { getCanonicalUrl } from '@/lib/seo';
 
 const GuidePage = () => {
@@ -66,6 +68,41 @@ const GuidePage = () => {
                 : 'Everything you need to know to understand and calculate your tax residency in Spain under current legislation.'}
             </p>
           </div>
+
+          {/* Guide hub: profile guides index */}
+          <section className="mb-12">
+            <h2 className="mb-2 text-2xl font-bold">
+              {isEs ? 'Guías por perfil' : 'Guides by profile'}
+            </h2>
+            <p className="mb-6 leading-7 text-muted-foreground">
+              {isEs
+                ? 'Análisis en profundidad según tu situación: visado de nómada digital, régimen de impatriados, año del traslado y convenios de doble imposición.'
+                : 'In-depth analysis for your situation: digital nomad visa, impatriate regime, moving year and double taxation treaties.'}
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {GUIDES.map(({ slug }) => {
+                const guide = getLocalizedGuide(slug, language);
+                return (
+                  <Link
+                    key={slug}
+                    to={getGuidePath(language, slug)}
+                    className="group rounded-xl border border-border/70 bg-card p-5 transition-colors duration-200 hover:border-primary/50"
+                  >
+                    <h3 className="mb-2 font-semibold leading-snug transition-colors duration-200 group-hover:text-primary">
+                      {guide.shortTitle}
+                    </h3>
+                    <p className="mb-3 text-sm leading-6 text-muted-foreground">
+                      {guide.excerpt}
+                    </p>
+                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+                      {isEs ? 'Leer guía' : 'Read guide'}
+                      <ArrowRight size={14} weight="bold" aria-hidden="true" />
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
 
           {/* What is */}
           <section className="mb-10">

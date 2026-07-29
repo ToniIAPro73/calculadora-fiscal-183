@@ -8,10 +8,21 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { buildFaqSchema, getLocalizedFaq } from '../src/lib/faqData.js';
+import {
+  GUIDES,
+  buildArticleSchema,
+  buildBreadcrumbSchema,
+  getGuidePath,
+  getLocalizedGuide,
+} from '../src/lib/guideContent/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const distDir = join(__dirname, '..', 'dist');
 const BASE_URL = 'https://www.regla183.com';
+
+// Build date: feeds sitemap <lastmod> and the Article JSON-LD dateModified
+// of the profile guides (freshness signal on every deploy).
+const today = new Date().toISOString().slice(0, 10);
 
 const routes = [
   {
@@ -188,6 +199,29 @@ const routes = [
   },
 ];
 
+// Content hub: one pre-rendered route per profile guide and language
+// (/es/guide/<slug> and /en/guide/<slug>, same slug in both locales).
+// `articleSlug` marks the route so the loop below injects the Article and
+// BreadcrumbList JSON-LD matching the visible content of GuideArticlePage.
+for (const lang of ['es', 'en']) {
+  for (const { slug } of GUIDES) {
+    const guide = getLocalizedGuide(slug, lang);
+    routes.push({
+      distPath: `${lang}/guide/${slug}/index.html`,
+      lang,
+      articleSlug: slug,
+      canonical: `${BASE_URL}${getGuidePath(lang, slug)}`,
+      title: `${guide.title} · TaxNomad`,
+      description: guide.description,
+      hreflang: [
+        { lang: 'es', href: `${BASE_URL}${getGuidePath('es', slug)}` },
+        { lang: 'en', href: `${BASE_URL}${getGuidePath('en', slug)}` },
+        { lang: 'x-default', href: `${BASE_URL}${getGuidePath('es', slug)}` },
+      ],
+    });
+  }
+}
+
 const NAV_LINKS = {
   es: [
     { href: '/', label: 'Inicio' },
@@ -208,6 +242,15 @@ const NAV_LINKS = {
     { href: '/en/cookies', label: 'Cookie policy' },
   ],
 };
+
+// The static #seo-content nav is also the crawler discovery path for the
+// profile guides: every pre-rendered page links to all of them.
+for (const lang of ['es', 'en']) {
+  for (const { slug } of GUIDES) {
+    const guide = getLocalizedGuide(slug, lang);
+    NAV_LINKS[lang].push({ href: getGuidePath(lang, slug), label: guide.shortTitle });
+  }
+}
 
 const baseHtml = readFileSync(join(distDir, 'index.html'), 'utf-8');
 
@@ -255,6 +298,16 @@ for (const route of routes) {
     seoParts.push(`  <script type="application/ld+json">${JSON.stringify(faqSchema)}</script>`);
   }
 
+  // Profile guides: Article + BreadcrumbList JSON-LD. dateModified uses the
+  // build date; the visible breadcrumbs on GuideArticlePage mirror the
+  // BreadcrumbList (Inicio/Home > Guía/Guide > guide).
+  if (route.articleSlug) {
+    const articleSchema = buildArticleSchema(route.articleSlug, route.lang, { dateModified: today });
+    const breadcrumbSchema = buildBreadcrumbSchema(route.articleSlug, route.lang);
+    seoParts.push(`  <script type="application/ld+json">${JSON.stringify(articleSchema)}</script>`);
+    seoParts.push(`  <script type="application/ld+json">${JSON.stringify(breadcrumbSchema)}</script>`);
+  }
+
   const seoBlock = seoParts.join('\n');
 
   html = html.replace('</head>', `${seoBlock}\n</head>`);
@@ -288,7 +341,6 @@ for (const route of routes) {
 }
 
 // Keep sitemap <lastmod> in sync with the real deploy date on every build.
-const today = new Date().toISOString().slice(0, 10);
 const sitemapPath = join(distDir, 'sitemap.xml');
 try {
   const sitemap = readFileSync(sitemapPath, 'utf-8');
