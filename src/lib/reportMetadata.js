@@ -22,5 +22,19 @@ export const buildExampleReportPayload = () => ({
     home: 'mixed',
     activity: 'abroad',
   },
+  savedScenarios: [
+    {
+      name: 'Verano en Mallorca',
+      ranges: [
+        { start: new Date('2026-07-01'), end: new Date('2026-07-21'), days: 21 },
+      ],
+    },
+    {
+      name: 'Puente de diciembre',
+      ranges: [
+        { start: new Date('2026-12-05'), end: new Date('2026-12-14'), days: 10 },
+      ],
+    },
+  ],
   exampleMode: true,
 });

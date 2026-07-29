@@ -24,6 +24,7 @@ import RemainingDaysCountdown from '@/components/RemainingDaysCountdown.jsx';
 import RiskGauge from '@/components/RiskGauge.jsx';
 import DataAuthoritySection from '@/components/DataAuthoritySection.jsx';
 import EconomicInterestsPanel from '@/components/EconomicInterestsPanel.jsx';
+import SavedScenariosPanel from '@/components/SavedScenariosPanel.jsx';
 import OnboardingWizard from '@/components/OnboardingWizard.jsx';
 import {
   Select,
@@ -50,6 +51,11 @@ import {
   saveSelectedFiscalYear,
   saveStayRanges,
 } from '@/lib/stayRangesStorage.js';
+import {
+  addSavedScenario,
+  loadSavedScenarios,
+  removeSavedScenario,
+} from '@/lib/savedScenarios.js';
 import {
   buildShareUrl,
   clearShareParamFromUrl,
@@ -79,6 +85,7 @@ const TaxNomadCalculator = () => {
   const [editingScenarioIndex, setEditingScenarioIndex] = useState(null);
   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
   const [economicInterests, setEconomicInterests] = useState(() => loadEconomicInterests());
+  const [savedScenarios, setSavedScenarios] = useState(() => loadSavedScenarios(loadSelectedFiscalYear(new Date().getFullYear())));
 
   // Persist both range sets locally (browser only, never sent to any server)
   useEffect(() => {
@@ -242,6 +249,42 @@ const TaxNomadCalculator = () => {
     setEditingScenarioIndex(null);
   };
 
+  const handleSaveScenario = (name) => {
+    const result = addSavedScenario(fiscalYear, { name, ranges: scenarioRanges });
+
+    if (result.status === 'saved') {
+      setSavedScenarios(loadSavedScenarios(fiscalYear));
+      toast.success(t('savedScenarios.saved'));
+      return true;
+    }
+
+    if (result.status === 'limit') {
+      toast.error(t('savedScenarios.limitReached'));
+    } else if (result.status === 'invalid-name') {
+      toast.error(t('savedScenarios.invalidName'));
+    } else {
+      toast.error(t('savedScenarios.nothingToSave'));
+    }
+
+    return false;
+  };
+
+  const handleLoadSavedScenario = (scenarioId) => {
+    const scenario = savedScenarios.find((entry) => entry.id === scenarioId);
+    if (!scenario) return;
+
+    setScenarioRanges(scenario.ranges);
+    setScenarioEnabled(true);
+    setEditingScenarioIndex(null);
+    toast.success(t('savedScenarios.loaded'));
+  };
+
+  const handleDeleteSavedScenario = (scenarioId) => {
+    removeSavedScenario(fiscalYear, scenarioId);
+    setSavedScenarios(loadSavedScenarios(fiscalYear));
+    toast.success(t('savedScenarios.deleted'));
+  };
+
   const handleShareCalculation = async () => {
     const encoded = await encodeShareState({
       fiscalYear,
@@ -297,6 +340,7 @@ const TaxNomadCalculator = () => {
     const nextScenarioState = loadScenarioState(nextYear);
     setScenarioRanges(nextScenarioState.ranges);
     setScenarioEnabled(nextScenarioState.enabled);
+    setSavedScenarios(loadSavedScenarios(nextYear));
     setEditingRangeIndex(null);
     setEditingScenarioIndex(null);
   };
@@ -329,6 +373,7 @@ const TaxNomadCalculator = () => {
         language,
         exampleMode: true,
         economicInterests: example.economicInterests,
+        savedScenarios: example.savedScenarios,
       });
 
       const blobUrl = doc.output('bloburl');
@@ -378,6 +423,19 @@ const TaxNomadCalculator = () => {
       // paid PDF can include them; they are NOT sent to the checkout API.
       ...(economicInterestsEvaluation.complete
         ? { economicInterests: { ...economicInterests } }
+        : {}),
+      // Saved scenarios also stay local-only (sessionStorage) so the paid PDF
+      // can render the comparison table; never sent to the checkout API.
+      ...(savedScenarios.length >= 2
+        ? {
+            savedScenarios: savedScenarios.map((scenario) => ({
+              name: scenario.name,
+              ranges: scenario.ranges.map((r) => ({
+                start: r.start instanceof Date ? r.start.toISOString() : r.start,
+                end:   r.end   instanceof Date ? r.end.toISOString()   : r.end,
+              })),
+            })),
+          }
         : {}),
     };
     sessionStorage.setItem('taxnomad_session', JSON.stringify(sessionData));
@@ -704,6 +762,15 @@ const TaxNomadCalculator = () => {
                         </button>
                       </div>
                     </section>
+
+                    <SavedScenariosPanel
+                      scenarios={savedScenarios}
+                      currentRanges={selectedRanges}
+                      canSave={scenarioRanges.length > 0}
+                      onSave={handleSaveScenario}
+                      onLoad={handleLoadSavedScenario}
+                      onDelete={handleDeleteSavedScenario}
+                    />
 
                     <DataAuthoritySection />
                   </div>

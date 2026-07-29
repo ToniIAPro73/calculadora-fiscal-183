@@ -4,6 +4,7 @@ import { enUS, es } from 'date-fns/locale';
 import { reportOwner } from './reportMetadata.js';
 import { calculateFiscalSummary } from './fiscalSummary.js';
 import { evaluateEconomicInterests } from './economicInterests.js';
+import { buildScenarioComparison } from './savedScenarios.js';
 import logoSource from '@/assets/logo.png';
 
 const C = {
@@ -185,6 +186,93 @@ function drawEconomicInterestsSection(doc, { copy, evaluation, startY, W, H, M, 
   return y;
 }
 
+/**
+ * Draws the hypothetical scenario comparison table: the current situation
+ * plus each saved scenario projected on top of the real stays. Only called
+ * when the user saved at least two scenarios.
+ */
+function drawScenarioComparisonSection(doc, { copy, comparison, startY, W, H, M, CW, footerReserveY, fileOwnerLine, refNum }) {
+  const sc = copy.scenarioComparison;
+  let y = startY;
+
+  const colW = [CW * 0.4, CW * 0.2, CW * 0.2, CW * 0.2];
+  const colX = [M, M + colW[0], M + colW[0] + colW[1], M + colW[0] + colW[1] + colW[2]];
+
+  const drawHeader = () => {
+    doc.setFillColor(...C.blue);
+    doc.rect(M, y, CW, 7, 'F');
+    doc.setTextColor(...C.white);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.text(sc.scenarioColumn, colX[0] + 3, y + 4.5);
+    doc.text(sc.daysColumn, colX[1] + colW[1] / 2, y + 4.5, { align: 'center' });
+    doc.text(sc.remainingColumn, colX[2] + colW[2] / 2, y + 4.5, { align: 'center' });
+    doc.text(sc.riskColumn, colX[3] + colW[3] / 2, y + 4.5, { align: 'center' });
+    y += 7;
+  };
+
+  const ensureSpace = (needed) => {
+    if (y + needed > footerReserveY) {
+      y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+    }
+  };
+
+  const introLines = doc.splitTextToSize(sc.intro, CW);
+  ensureSpace(16 + introLines.length * 3.4);
+
+  doc.setDrawColor(...C.lightGray);
+  doc.setLineWidth(0.3);
+  doc.line(M, y, W - M, y);
+  y += 7;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.blue);
+  doc.text(sc.sectionTitle, M, y);
+  y += 4.5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.9);
+  doc.setTextColor(...C.gray);
+  doc.text(introLines, M, y);
+  y += introLines.length * 3.4 + 3;
+
+  drawHeader();
+
+  const drawRow = (name, totalDays, remainingDays, fill, bold) => {
+    if (y + 7 > footerReserveY) {
+      y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+      drawHeader();
+    }
+
+    const nameLines = doc.splitTextToSize(name, colW[0] - 6);
+    const displayName = nameLines.length > 1 ? `${nameLines[0].slice(0, -1)}…` : nameLines[0];
+    const status = statusInfo(totalDays, copy);
+
+    doc.setFillColor(...fill);
+    doc.rect(M, y, CW, 7, 'F');
+    doc.setFont('helvetica', bold ? 'bold' : 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(...C.dark);
+    doc.text(displayName, colX[0] + 3, y + 4.6);
+    doc.text(String(totalDays), colX[1] + colW[1] / 2, y + 4.6, { align: 'center' });
+    doc.text(String(remainingDays), colX[2] + colW[2] / 2, y + 4.6, { align: 'center' });
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...status.color);
+    doc.text(status.text, colX[3] + colW[3] / 2, y + 4.6, { align: 'center' });
+    y += 7;
+  };
+
+  drawRow(sc.currentRow, comparison.current.totalDays, comparison.current.remainingDays, C.blueBg, true);
+  comparison.rows.forEach((row, index) => {
+    drawRow(row.name, row.totalDays, row.remainingDays, index % 2 === 0 ? C.white : C.lightGray, false);
+  });
+
+  y += 5;
+
+  return y;
+}
+
 function getPdfCopy(language) {
   if (language === 'en') {
     return {
@@ -232,6 +320,15 @@ function getPdfCopy(language) {
         over: 'LIMIT EXCEEDED',
         warning: 'ATTENTION',
         safe: 'SAFE',
+      },
+      scenarioComparison: {
+        sectionTitle: 'HYPOTHETICAL SCENARIO COMPARISON',
+        intro: 'Scenarios saved by the user: hypothetical stays projected on top of the recorded real stays. Overlapping days are counted only once.',
+        scenarioColumn: 'Scenario',
+        daysColumn: 'Days in Spain',
+        remainingColumn: 'Days left',
+        riskColumn: 'Risk',
+        currentRow: 'Current situation (no scenario)',
       },
       economicInterests: {
         sectionTitle: 'CENTRE OF ECONOMIC INTERESTS (ART. 9 LAW 35/2006)',
@@ -310,6 +407,15 @@ function getPdfCopy(language) {
       warning: 'ATENCIÓN',
       safe: 'SEGURO',
     },
+    scenarioComparison: {
+      sectionTitle: 'COMPARATIVA DE ESCENARIOS HIPOTÉTICOS',
+      intro: 'Escenarios guardados por el usuario: estancias hipotéticas proyectadas sobre las presencias reales registradas. Los días solapados computan una sola vez.',
+      scenarioColumn: 'Escenario',
+      daysColumn: 'Días en España',
+      remainingColumn: 'Días restantes',
+      riskColumn: 'Riesgo',
+      currentRow: 'Situación actual (sin escenario)',
+    },
     economicInterests: {
       sectionTitle: 'CENTRO DE INTERESES ECONÓMICOS (ART. 9 LEY 35/2006)',
       intro: 'Cuestionario de autoevaluación cumplimentado por el usuario. El artículo 9 de la Ley 35/2006 del Impuesto sobre la Renta de las Personas Físicas también tiene en cuenta el centro de intereses económicos: el lugar donde radica el núcleo principal o la base de las actividades o intereses económicos del contribuyente, con independencia del cómputo de 183 días.',
@@ -352,6 +458,7 @@ export async function generateTaxReport({
   exampleMode = false,
   brandLogoDataUrl: providedBrandLogoDataUrl,
   economicInterests = null,
+  savedScenarios = null,
 }) {
   const copy = getPdfCopy(language);
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -631,6 +738,26 @@ export async function generateTaxReport({
     y = drawEconomicInterestsSection(doc, {
       copy,
       evaluation: economicInterestsEvaluation,
+      startY: y,
+      W,
+      H,
+      M,
+      CW,
+      footerReserveY,
+      fileOwnerLine,
+      refNum,
+    });
+  }
+
+  // Optional comparison table: only with at least two saved scenarios.
+  const scenarioComparisonData = Array.isArray(savedScenarios) && savedScenarios.length >= 2
+    ? buildScenarioComparison(ranges, savedScenarios)
+    : null;
+
+  if (scenarioComparisonData) {
+    y = drawScenarioComparisonSection(doc, {
+      copy,
+      comparison: scenarioComparisonData,
       startY: y,
       W,
       H,

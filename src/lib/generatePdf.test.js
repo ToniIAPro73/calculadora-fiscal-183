@@ -113,4 +113,91 @@ describe('generateTaxReport', () => {
 
     expect(doc.output()).not.toContain('CENTRO DE INTERESES ECONÓMICOS');
   });
+
+  it('includes the scenario comparison section with at least two saved scenarios', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      savedScenarios: [
+        {
+          name: 'Verano en Mallorca',
+          ranges: [{ start: '2026-07-01T00:00:00.000Z', end: '2026-07-20T00:00:00.000Z' }],
+        },
+        {
+          name: 'Invierno largo',
+          ranges: [{ start: '2026-10-01T00:00:00.000Z', end: '2026-12-31T00:00:00.000Z' }],
+        },
+      ],
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('COMPARATIVA DE ESCENARIOS HIPOTÉTICOS');
+    expect(output).toContain('Situación actual');
+    expect(output).toContain('Verano en Mallorca');
+    expect(output).toContain('Invierno largo');
+  });
+
+  it('renders the scenario comparison section in English', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      language: 'en',
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      savedScenarios: [
+        {
+          name: 'Summer in Mallorca',
+          ranges: [{ start: '2026-07-01T00:00:00.000Z', end: '2026-07-20T00:00:00.000Z' }],
+        },
+        {
+          name: 'Long winter',
+          ranges: [{ start: '2026-10-01T00:00:00.000Z', end: '2026-12-31T00:00:00.000Z' }],
+        },
+      ],
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('HYPOTHETICAL SCENARIO COMPARISON');
+    expect(output).toContain('Current situation');
+    expect(output).toContain('Summer in Mallorca');
+  });
+
+  it('omits the scenario comparison section with fewer than two scenarios', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      savedScenarios: [
+        {
+          name: 'Solo uno',
+          ranges: [{ start: '2026-07-01T00:00:00.000Z', end: '2026-07-20T00:00:00.000Z' }],
+        },
+      ],
+    });
+
+    const output = doc.output();
+
+    expect(output).not.toContain('COMPARATIVA DE ESCENARIOS');
+    expect(output).not.toContain('Solo uno');
+  });
+
+  it('omits the scenario comparison section without scenarios', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+    });
+
+    expect(doc.output()).not.toContain('COMPARATIVA DE ESCENARIOS');
+  });
 });
