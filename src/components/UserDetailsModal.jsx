@@ -10,9 +10,38 @@ import { Article, Briefcase, CheckCircle, LockKey, User, X } from '@phosphor-ico
 import { cn } from '@/lib/utils';
 import {
   ADVISOR_LOGO_ACCEPT_ATTR,
+  ADVISOR_LOGO_MAX_DIMENSION,
   isAdvisorCheckoutAvailable,
   validateAdvisorLogo,
 } from '@/lib/advisorReport.js';
+
+const readFileAsDataUrl = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onloadend = () => resolve(String(reader.result || ''));
+  reader.onerror = () => reject(reader.error);
+  reader.readAsDataURL(file);
+});
+
+// Downscales oversized logos in the browser so the sessionStorage payload
+// and the generated PDF stay small. PNG output preserves transparency.
+const downscaleLogoIfNeeded = async (file) => {
+  const bitmap = await createImageBitmap(file);
+  try {
+    const longestSide = Math.max(bitmap.width, bitmap.height);
+    if (longestSide <= ADVISOR_LOGO_MAX_DIMENSION) {
+      return readFileAsDataUrl(file);
+    }
+
+    const scale = ADVISOR_LOGO_MAX_DIMENSION / longestSide;
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/png');
+  } finally {
+    bitmap.close?.();
+  }
+};
 
 const UserDetailsModal = ({ isOpen, onClose, onConfirm, userData, setUserData, isLoading }) => {
   const { language, t } = useLanguage();
@@ -37,7 +66,7 @@ const UserDetailsModal = ({ isOpen, onClose, onConfirm, userData, setUserData, i
     setUserData({ ...userData, isAdvisor: checked === true });
   };
 
-  const handleLogoChange = (event) => {
+  const handleLogoChange = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -49,13 +78,16 @@ const UserDetailsModal = ({ isOpen, onClose, onConfirm, userData, setUserData, i
     }
 
     setLogoError(null);
-    const reader = new FileReader();
-    reader.onloadend = () => {
+    try {
       // The logo stays local-only (data URL in this browser session); it is
       // never uploaded and only embedded in the generated PDF header.
-      setUserData({ ...userData, advisorLogo: String(reader.result || '') });
-    };
-    reader.readAsDataURL(file);
+      const dataUrl = await downscaleLogoIfNeeded(file);
+      setUserData({ ...userData, advisorLogo: dataUrl });
+    } catch {
+      // The file passed MIME validation but could not be decoded as an image.
+      setLogoError('invalidType');
+      event.target.value = '';
+    }
   };
 
   const handleLogoRemove = () => {

@@ -4,7 +4,10 @@
 // passes them here; the backend resolves the actual Stripe Price from the
 // server-only STRIPE_ADVISOR_PRICE_ID variable.
 
-export const ADVISOR_LOGO_MAX_BYTES = 500 * 1024; // 500 KB
+export const ADVISOR_LOGO_MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+// Logos bigger than this are downscaled in the browser before being stored,
+// so the sessionStorage payload and the final PDF stay small.
+export const ADVISOR_LOGO_MAX_DIMENSION = 640;
 export const ADVISOR_LOGO_ACCEPTED_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 export const ADVISOR_LOGO_ACCEPT_ATTR = 'image/png,image/jpeg,image/webp';
 
