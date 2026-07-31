@@ -411,6 +411,9 @@ const TaxNomadCalculator = () => {
       ...(economicInterestsEvaluation.complete
         ? { economicInterests: { ...economicInterests } }
         : {}),
+      // The second country of residence (treaty panel) is also local-only
+      // session data; the paid PDF renders the tie-breaker section with it.
+      ...(secondCountry ? { secondCountry } : {}),
       // Saved scenarios also stay local-only (sessionStorage) so the paid PDF
       // can render the comparison table; never sent to the checkout API.
       ...(savedScenarios.length >= 2

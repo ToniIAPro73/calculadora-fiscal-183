@@ -25,6 +25,7 @@ export const REPORT_SECTION_IDS = [
   'periods',
   'overlap',
   'economicInterests',
+  'treaty',
   'scenarioComparison',
   'conclusion',
   'legalNotice',

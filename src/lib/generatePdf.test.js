@@ -315,4 +315,72 @@ describe('generateTaxReport', () => {
 
     expect(doc.output()).not.toContain('Asesoría López');
   });
+
+  it('renders the treaty tie-breaker section with the selected country (ES)', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      secondCountry: 'alemania',
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('CONVENIO DE DOBLE IMPOSICIÓN');
+    expect(output).toContain('Alemania');
+    expect(output).toContain('Vivienda permanente');
+    expect(output).toContain('Nacionalidad');
+    // Long URLs wrap across lines in the PDF text stream; assert a stable fragment.
+    expect(output).toContain('alemania.html');
+  });
+
+  it('renders the treaty section in English', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      language: 'en',
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      secondCountry: 'estados-unidos',
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('DOUBLE TAXATION TREATY');
+    expect(output).toContain('United States');
+    expect(output).toContain('Permanent home');
+    expect(output).toContain('Mutual agreement procedure');
+  });
+
+  it('points the "other country" option to the official AEAT treaty listing', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      secondCountry: 'other',
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('CONVENIO DE DOBLE IMPOSICIÓN');
+    expect(output).toContain('Otro país');
+    expect(output).toContain('convenios-doble-imposicion-firmados-espana.html');
+  });
+
+  it('omits the treaty section when no second country was selected', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+    });
+
+    expect(doc.output()).not.toContain('CONVENIO DE DOBLE IMPOSICIÓN');
+  });
 });

@@ -7,6 +7,12 @@ import { evaluateEconomicInterests } from './economicInterests.js';
 import { buildScenarioComparison } from './savedScenarios.js';
 import { getLocalizedLegalRef } from './legalRefs.js';
 import { logoDataUrlToPdfFormat, sanitizeAdvisorBranding } from './advisorReport.js';
+import {
+  AEAT_TREATY_LIST_URL,
+  OTHER_COUNTRY_OPTION,
+  TIE_BREAKER_RULES,
+  getTaxTreatyCountry,
+} from './taxTreaties.js';
 
 // Official sources cited on the final "Methodology and sources" page.
 const METHODOLOGY_REF_IDS = [
@@ -200,6 +206,100 @@ function drawEconomicInterestsSection(doc, { copy, evaluation, startY, W, H, M, 
 }
 
 /**
+ * Draws the double taxation treaty section: the user's selected second
+ * country of residence plus the Art. 4 (OECD Model) tie-breaker rules with
+ * the official AEAT source. Only called when the user picked a country
+ * (or the explicit "other country" option, which points to the AEAT listing).
+ */
+function drawTreatySection(doc, { copy, secondCountry, language, startY, W, H, M, CW, footerReserveY, fileOwnerLine, refNum }) {
+  const tr = copy.treaty;
+  const country = getTaxTreatyCountry(secondCountry);
+  const isOther = secondCountry === OTHER_COUNTRY_OPTION;
+  if (!country && !isOther) return startY;
+
+  const lang = language === 'en' ? 'en' : 'es';
+  const countryName = country ? (country.name[lang] ?? country.name.es) : tr.otherCountryName;
+  const sourceUrl = country ? country.sourceUrl : AEAT_TREATY_LIST_URL;
+
+  let y = startY;
+
+  const ensureSpace = (needed) => {
+    if (y + needed > footerReserveY) {
+      y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+    }
+  };
+
+  const introLines = doc.splitTextToSize(tr.intro, CW);
+  ensureSpace(16 + introLines.length * 3.4);
+
+  doc.setDrawColor(...C.lightGray);
+  doc.setLineWidth(0.3);
+  doc.line(M, y, W - M, y);
+  y += 7;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.blue);
+  doc.text(tr.sectionTitle, M, y);
+  y += 4.5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.9);
+  doc.setTextColor(...C.gray);
+  doc.text(introLines, M, y);
+  y += introLines.length * 3.4 + 3;
+
+  const countryLines = doc.splitTextToSize(`${tr.countryLabel}: ${countryName}`, CW);
+  ensureSpace(countryLines.length * 3.7 + 6);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.4);
+  doc.setTextColor(...C.dark);
+  doc.text(countryLines, M, y);
+  y += countryLines.length * 3.7 + 3;
+
+  const rulesTitleLines = doc.splitTextToSize(tr.rulesTitle, CW);
+  ensureSpace(rulesTitleLines.length * 3.7 + 2);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.2);
+  doc.setTextColor(...C.dark);
+  doc.text(rulesTitleLines, M, y);
+  y += rulesTitleLines.length * 3.7 + 1.5;
+
+  TIE_BREAKER_RULES.forEach((rule, index) => {
+    const ruleText = `${index + 1}. ${rule[lang] ?? rule.es}`;
+    const ruleLines = doc.splitTextToSize(ruleText, CW - 4);
+    ensureSpace(ruleLines.length * 3.5 + 1.5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.2);
+    doc.setTextColor(...C.gray);
+    doc.text(ruleLines, M + 4, y);
+    y += ruleLines.length * 3.5 + 1.5;
+  });
+
+  const sourceLines = doc.splitTextToSize(`${tr.sourceLabel}: ${sourceUrl}`, CW - 4);
+  const disclaimerLines = doc.splitTextToSize(tr.disclaimer, CW - 8);
+  ensureSpace(sourceLines.length * 3.3 + disclaimerLines.length * 3.3 + 12);
+
+  y += 1.5;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.setTextColor(...C.blue);
+  doc.text(sourceLines, M + 4, y);
+  y += sourceLines.length * 3.3 + 4;
+
+  doc.setFillColor(...C.lightGray);
+  doc.roundedRect(M, y - 3.5, CW, disclaimerLines.length * 3.3 + 6, 2, 2, 'F');
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.setTextColor(...C.gray);
+  doc.text(disclaimerLines, M + 4, y + 0.5);
+  y += disclaimerLines.length * 3.3 + 8;
+
+  return y;
+}
+
+/**
  * Draws the hypothetical scenario comparison table: the current situation
  * plus each saved scenario projected on top of the real stays. Only called
  * when the user saved at least two scenarios.
@@ -371,6 +471,15 @@ function getPdfCopy(language) {
           activity: { spain: 'From Spain', mixed: 'From several countries equally', abroad: 'From abroad' },
         },
       },
+      treaty: {
+        sectionTitle: 'DOUBLE TAXATION TREATY',
+        intro: 'The user has indicated that they also reside in another country. If both countries treat them as tax resident, the double taxation treaty (DTT) prevails over domestic law and the tie-breaker rules of its Article 4 (OECD Model) determine a single residence for treaty purposes.',
+        countryLabel: 'Country indicated by the user',
+        otherCountryName: 'Another country (check the applicable treaty)',
+        rulesTitle: 'Tie-breaker rules (Art. 4, OECD Model), in the order they are applied:',
+        sourceLabel: 'Official source (Spanish Tax Agency)',
+        disclaimer: 'Indicative information that does not replace professional advice. How the treaty applies depends on the facts and circumstances of each case.',
+      },
       advisor: {
         preparedBy: 'Report prepared by',
       },
@@ -474,6 +583,15 @@ function getPdfCopy(language) {
         activity: { spain: 'Desde España', mixed: 'Desde varios países por igual', abroad: 'Desde el extranjero' },
       },
     },
+    treaty: {
+      sectionTitle: 'CONVENIO DE DOBLE IMPOSICIÓN',
+      intro: 'El usuario ha indicado que también reside en otro país. Si ambos países le consideran residente fiscal, el convenio de doble imposición (CDI) prevalece sobre la normativa interna y las reglas de desempate de su art. 4 (Modelo OCDE) determinan una única residencia a efectos del convenio.',
+      countryLabel: 'País indicado por el usuario',
+      otherCountryName: 'Otro país (consultar el convenio aplicable)',
+      rulesTitle: 'Reglas de desempate (art. 4, Modelo OCDE), en orden de aplicación:',
+      sourceLabel: 'Fuente oficial (AEAT)',
+      disclaimer: 'Información orientativa que no sustituye el asesoramiento profesional. La aplicación del convenio depende de los hechos y circunstancias de cada caso concreto.',
+    },
     advisor: {
       preparedBy: 'Informe preparado por',
     },
@@ -505,6 +623,7 @@ export async function generateTaxReport({
   exampleMode = false,
   brandLogoDataUrl: providedBrandLogoDataUrl,
   economicInterests = null,
+  secondCountry = null,
   savedScenarios = null,
   advisor = null,
 }) {
@@ -832,6 +951,23 @@ export async function generateTaxReport({
     y = drawEconomicInterestsSection(doc, {
       copy,
       evaluation: economicInterestsEvaluation,
+      startY: y,
+      W,
+      H,
+      M,
+      CW,
+      footerReserveY,
+      fileOwnerLine,
+      refNum,
+    });
+  }
+
+  // Optional treaty section: only when the user picked a second country.
+  if (secondCountry) {
+    y = drawTreatySection(doc, {
+      copy,
+      secondCountry,
+      language,
       startY: y,
       W,
       H,

@@ -463,6 +463,11 @@ export const translations = {
           description: "Your self-assessment questionnaire answers (family, income, habitual residence and activity) with an indicative ties assessment: weak, mixed or strong.",
           previewAlt: "List of four answered questions followed by a coloured pill with the indicative assessment and its explanation.",
         },
+        treaty: {
+          title: "Double taxation treaty tie-breakers",
+          description: "If you indicate that you also reside in another country: the selected country and the tie-breaker rules of Art. 4 (OECD Model) of the applicable treaty, with the official Spanish Tax Agency source.",
+          previewAlt: "Card with the selected country followed by the five numbered tie-breaker rules and the official source link.",
+        },
         scenarioComparison: {
           title: "Hypothetical scenario comparison",
           description: "Your saved scenarios projected on top of your real stays: days in Spain, days left and risk level for each hypothetical plan.",
@@ -948,6 +953,11 @@ export const translations = {
           title: "Centro de intereses económicos (art. 9 LIRPF)",
           description: "Tus respuestas del cuestionario de autoevaluación (familia, ingresos, vivienda habitual y actividad) con una evaluación orientativa de vínculos: débiles, mixtos o fuertes.",
           previewAlt: "Lista de cuatro preguntas respondidas seguida de una insignia de color con la evaluación orientativa y su explicación.",
+        },
+        treaty: {
+          title: "Convenio de doble imposición",
+          description: "Si indicas que también resides en otro país: el país seleccionado y las reglas de desempate del art. 4 (Modelo OCDE) del convenio aplicable, con la fuente oficial de la AEAT.",
+          previewAlt: "Tarjeta con el país seleccionado seguida de las cinco reglas de desempate numeradas y el enlace a la fuente oficial.",
         },
         scenarioComparison: {
           title: "Comparativa de escenarios hipotéticos",

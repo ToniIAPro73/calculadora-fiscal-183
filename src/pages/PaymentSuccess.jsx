@@ -165,6 +165,7 @@ const PaymentSuccess = () => {
         fiscalYear: data.fiscalYear || new Date().getFullYear(),
         language: data.language || language,
         economicInterests: data.economicInterests || null,
+        secondCountry: data.secondCountry || null,
         savedScenarios: data.savedScenarios || null,
         advisor: data.advisor || null,
       });
