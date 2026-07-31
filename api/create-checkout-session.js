@@ -116,7 +116,7 @@ export default async function handler(req, res) {
         customer_email: email,
         line_items: [{ price: priceId, quantity: 1 }],
         mode: 'payment',
-        success_url: `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}&delivery_token=${deliveryToken}`,
+        success_url: `${baseUrl}/${language}/payment-success?session_id={CHECKOUT_SESSION_ID}&delivery_token=${deliveryToken}`,
         cancel_url: `${baseUrl}/?cancelled=true`,
         client_reference_id: clientReferenceId,
         metadata: {
@@ -169,7 +169,7 @@ export default async function handler(req, res) {
   }
 
   return res.status(200).json({
-    url: '/payment-mock',
+    url: `/${language}/payment-mock`,
     mode: 'mock_dev',
   });
 }

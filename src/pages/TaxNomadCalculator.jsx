@@ -463,14 +463,14 @@ const TaxNomadCalculator = () => {
       if (url.startsWith('http')) {
         window.location.href = url; // Real Stripe hosted page
       } else {
-        navigate(url);              // Internal mock route
+        navigate(url);              // Internal mock route (the API returns the language-prefixed path)
       }
     } catch (error) {
       setIsModalOpen(false);
       setIsProcessing(false);
 
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        navigate('/payment-mock');
+        navigate(`${language === 'en' ? '/en' : '/es'}/payment-mock`);
         return;
       }
 
