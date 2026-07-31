@@ -10,15 +10,15 @@ import {
 
 const LEVEL_STYLES = {
   low: {
-    badge: 'border-[hsl(var(--success)/0.22)] bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))]',
+    badge: 'border-[hsl(var(--success)/0.22)] bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success-strong))]',
     panel: 'border-[hsl(var(--success)/0.28)] bg-[hsl(var(--success)/0.06)]',
   },
   medium: {
-    badge: 'border-[hsl(var(--warning)/0.28)] bg-[hsl(var(--warning)/0.13)] text-[hsl(var(--warning-foreground))]',
+    badge: 'border-[hsl(var(--warning)/0.28)] bg-[hsl(var(--warning)/0.13)] text-[hsl(var(--warning-strong))]',
     panel: 'border-[hsl(var(--warning)/0.4)] bg-[hsl(var(--warning)/0.06)]',
   },
   high: {
-    badge: 'border-[hsl(var(--destructive)/0.25)] bg-[hsl(var(--destructive)/0.12)] text-[hsl(var(--destructive))]',
+    badge: 'border-[hsl(var(--destructive)/0.25)] bg-[hsl(var(--destructive)/0.12)] text-[hsl(var(--destructive-strong))]',
     panel: 'border-[hsl(var(--destructive)/0.3)] bg-[hsl(var(--destructive)/0.06)]',
   },
 };
@@ -65,7 +65,7 @@ const EconomicInterestsPanel = ({ answers, onChange, onReset }) => {
       </div>
 
       <div className="mt-4 flex gap-3 rounded-lg border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.06)] px-3.5 py-2.5">
-        <WarningCircle size={18} weight="fill" className="mt-0.5 shrink-0 text-[hsl(var(--warning-foreground))]" />
+        <WarningCircle size={18} weight="fill" className="mt-0.5 shrink-0 text-[hsl(var(--warning-strong))]" />
         <p className="text-xs leading-5 text-muted-foreground">
           {t('economicInterests.disclaimer')}
         </p>

@@ -590,7 +590,7 @@ const TaxNomadCalculator = () => {
                           <p className="field-label">{label}</p>
                           <p className="text-3xl font-[700] tracking-tight text-foreground">{value}</p>
                           {scenarioActive && (
-                            <p className="text-xs font-semibold text-[hsl(var(--warning-foreground))]">
+                            <p className="text-xs font-semibold text-[hsl(var(--warning-strong))]">
                               {t('scenario.withScenario')}: {projectedValue}
                             </p>
                           )}
@@ -639,7 +639,7 @@ const TaxNomadCalculator = () => {
                     {selectedRanges.length === 0 && (
                       <div className="trust-panel p-5">
                         <div className="flex gap-3">
-                          <WarningCircle size={20} weight="fill" className="mt-0.5 shrink-0 text-[hsl(var(--warning))]" />
+                          <WarningCircle size={20} weight="fill" className="mt-0.5 shrink-0 text-[hsl(var(--warning-strong))]" />
                           <div>
                             <p className="text-sm font-semibold text-foreground">{t('dashboard.emptyTitle')}</p>
                             <p className="mt-1 text-sm leading-6 text-muted-foreground">{t('dashboard.emptyDescription')}</p>
@@ -661,7 +661,7 @@ const TaxNomadCalculator = () => {
                     >
                       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                         <div className="space-y-2">
-                          <span className="inline-flex items-center gap-2 rounded-full border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.1)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[hsl(var(--warning-foreground))]">
+                          <span className="inline-flex items-center gap-2 rounded-full border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.1)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[hsl(var(--warning-strong))]">
                             <Flask size={13} weight="fill" />
                             {t('scenario.eyebrow')}
                           </span>
@@ -704,7 +704,7 @@ const TaxNomadCalculator = () => {
                         className="group flex w-full items-center justify-between gap-5 rounded-xl border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.08)] p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[hsl(var(--warning)/0.7)] hover:bg-[hsl(var(--warning)/0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[hsl(var(--warning)/0.18)] text-[hsl(var(--warning-foreground))]">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[hsl(var(--warning)/0.18)] text-[hsl(var(--warning-strong))]">
                             <CalendarPlus size={20} weight="bold" />
                           </div>
                           <div>
@@ -712,7 +712,7 @@ const TaxNomadCalculator = () => {
                             <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{t('scenario.modalDescription')}</p>
                           </div>
                         </div>
-                        <ArrowSquareOut size={16} weight="bold" className="hidden shrink-0 text-[hsl(var(--warning-foreground))] transition-transform duration-200 group-hover:translate-x-0.5 sm:block" />
+                        <ArrowSquareOut size={16} weight="bold" className="hidden shrink-0 text-[hsl(var(--warning-strong))] transition-transform duration-200 group-hover:translate-x-0.5 sm:block" />
                       </button>
 
                       {scenarioRanges.length === 0 && (
@@ -735,7 +735,7 @@ const TaxNomadCalculator = () => {
                           <span className="text-muted-foreground">
                             {t('scenario.currentLabel')}: <strong className="text-foreground">{totalDays} {t('dateSelector.days')}</strong>
                           </span>
-                          <span className="font-semibold text-[hsl(var(--warning-foreground))]">
+                          <span className="font-semibold text-[hsl(var(--warning-strong))]">
                             {t('scenario.withScenario')}: {projected.totalDays} {t('dateSelector.days')}
                             {scenarioComparison.addedDays > 0 && ` (+${scenarioComparison.addedDays})`}
                           </span>
@@ -780,10 +780,10 @@ const TaxNomadCalculator = () => {
                           <span className="premium-eyebrow">{t('dashboard.statusEyebrow')}</span>
                           <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
                             statusObj.color === 'safe'
-                              ? 'border-[hsl(var(--success)/0.22)] bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))]'
+                              ? 'border-[hsl(var(--success)/0.22)] bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success-strong))]'
                               : statusObj.color === 'warning'
-                              ? 'border-[hsl(var(--warning)/0.28)] bg-[hsl(var(--warning)/0.13)] text-[hsl(var(--warning-foreground))]'
-                              : 'border-[hsl(var(--destructive)/0.25)] bg-[hsl(var(--destructive)/0.12)] text-[hsl(var(--destructive))]'
+                              ? 'border-[hsl(var(--warning)/0.28)] bg-[hsl(var(--warning)/0.13)] text-[hsl(var(--warning-strong))]'
+                              : 'border-[hsl(var(--destructive)/0.25)] bg-[hsl(var(--destructive)/0.12)] text-[hsl(var(--destructive-strong))]'
                           }`}>
                             {statusObj.color === 'safe' ? <CheckCircle size={14} weight="fill" /> : <WarningCircle size={14} weight="fill" />}
                             {statusObj.label}
@@ -804,10 +804,10 @@ const TaxNomadCalculator = () => {
                             role="status"
                             className="flex items-center justify-between gap-3 rounded-lg border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.08)] px-3.5 py-2.5"
                           >
-                            <span className="text-xs font-semibold uppercase tracking-wide text-[hsl(var(--warning-foreground))]">
+                            <span className="text-xs font-semibold uppercase tracking-wide text-[hsl(var(--warning-strong))]">
                               {t('scenario.withScenario')}
                             </span>
-                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[hsl(var(--warning-foreground))]">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[hsl(var(--warning-strong))]">
                               {projectedStatusObj.color === 'safe' ? <CheckCircle size={14} weight="fill" /> : <WarningCircle size={14} weight="fill" />}
                               {projected.totalDays}/183 · {projectedStatusObj.label}
                             </span>

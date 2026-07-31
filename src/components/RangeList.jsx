@@ -21,7 +21,7 @@ const RangeList = ({ ranges, onRemoveRange, onEditRange, variant = 'default', ti
         <div className={cn(
           "flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-medium",
           isScenario
-            ? "border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning-foreground))]"
+            ? "border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning-strong))]"
             : "border-border bg-muted/45 text-muted-foreground"
         )}>
           <CalendarBlank size={14} />
@@ -50,11 +50,11 @@ const RangeList = ({ ranges, onRemoveRange, onEditRange, variant = 'default', ti
                 )}>
                   <span className={cn(
                     "text-2xl font-[800] tracking-tight",
-                    isScenario ? "text-[hsl(var(--warning-foreground))]" : "text-primary"
+                    isScenario ? "text-[hsl(var(--warning-strong))]" : "text-primary"
                   )}>{range.days}</span>
                   <span className={cn(
                     "text-[10px] font-bold uppercase tracking-wide",
-                    isScenario ? "text-[hsl(var(--warning-foreground)/0.75)]" : "text-primary/75"
+                    isScenario ? "text-[hsl(var(--warning-strong)/0.85)]" : "text-primary/75"
                   )}>{t('dateSelector.days')}</span>
                 </div>
 
@@ -81,7 +81,7 @@ const RangeList = ({ ranges, onRemoveRange, onEditRange, variant = 'default', ti
                 </div>
 
                 {isScenario && (
-                  <span className="inline-flex w-fit items-center rounded-full border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.1)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[hsl(var(--warning-foreground))]">
+                  <span className="inline-flex w-fit items-center rounded-full border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.1)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[hsl(var(--warning-strong))]">
                     {t('scenario.badge')}
                   </span>
                 )}

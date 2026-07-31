@@ -8,9 +8,9 @@ import {
 } from '@/lib/savedScenarios.js';
 
 const RISK_STYLES = {
-  safe: 'border-[hsl(var(--success)/0.22)] bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))]',
-  warning: 'border-[hsl(var(--warning)/0.28)] bg-[hsl(var(--warning)/0.13)] text-[hsl(var(--warning-foreground))]',
-  destructive: 'border-[hsl(var(--destructive)/0.25)] bg-[hsl(var(--destructive)/0.12)] text-[hsl(var(--destructive))]',
+  safe: 'border-[hsl(var(--success)/0.22)] bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success-strong))]',
+  warning: 'border-[hsl(var(--warning)/0.28)] bg-[hsl(var(--warning)/0.13)] text-[hsl(var(--warning-strong))]',
+  destructive: 'border-[hsl(var(--destructive)/0.25)] bg-[hsl(var(--destructive)/0.12)] text-[hsl(var(--destructive-strong))]',
 };
 
 const RISK_LABEL_KEYS = {
@@ -99,7 +99,7 @@ const SavedScenariosPanel = ({
         </p>
       )}
       {limitReached && (
-        <p role="status" className="mt-2 rounded-lg border border-[hsl(var(--warning)/0.28)] bg-[hsl(var(--warning)/0.08)] px-3 py-2 text-xs leading-5 text-[hsl(var(--warning-foreground))]">
+        <p role="status" className="mt-2 rounded-lg border border-[hsl(var(--warning)/0.28)] bg-[hsl(var(--warning)/0.08)] px-3 py-2 text-xs leading-5 text-[hsl(var(--warning-strong))]">
           {t('savedScenarios.limitReached')}
         </p>
       )}
@@ -175,7 +175,7 @@ const SavedScenariosPanel = ({
                         type="button"
                         onClick={() => onDelete(row.id)}
                         aria-label={`${t('savedScenarios.delete')}: ${row.name}`}
-                        className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-[hsl(var(--destructive)/0.25)] bg-background px-2.5 text-[11px] font-bold uppercase tracking-wide text-[hsl(var(--destructive))] transition-colors duration-200 hover:bg-[hsl(var(--destructive)/0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                        className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-[hsl(var(--destructive)/0.25)] bg-background px-2.5 text-[11px] font-bold uppercase tracking-wide text-[hsl(var(--destructive-strong))] transition-colors duration-200 hover:bg-[hsl(var(--destructive)/0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
                       >
                         <Trash size={13} weight="bold" />
                         {t('savedScenarios.delete')}

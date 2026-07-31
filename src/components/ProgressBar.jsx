@@ -31,9 +31,9 @@ const ProgressBar = ({ totalDays, projectedDays }) => {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between text-sm">
-        <span className="field-label">{t('progress.title')}</span>
-        <span className="font-semibold text-foreground">
+      <div className="space-y-1">
+        <span className="field-label block">{t('progress.title')}</span>
+        <span className="block text-xl font-bold tracking-tight text-foreground">
           {totalDays} / {limit} {t('dateSelector.days')}
         </span>
       </div>
@@ -78,7 +78,7 @@ const ProgressBar = ({ totalDays, projectedDays }) => {
             percentage > 50
               ? status.color === 'warning'
                 ? "text-[hsl(var(--warning-foreground))]"
-                : "text-white"
+                : "text-[hsl(0_0%_10%)]"
               : "text-foreground"
           )}>
             {percentage.toFixed(1)}%
@@ -87,7 +87,7 @@ const ProgressBar = ({ totalDays, projectedDays }) => {
       </div>
 
       {hasProjection && (
-        <p className="text-xs font-medium text-[hsl(var(--warning-foreground))]">
+        <p className="text-xs font-medium text-[hsl(var(--warning-strong))]">
           {t('scenario.withScenario')}: {projectedDays} / {limit} {t('dateSelector.days')} ({projectedPercentage.toFixed(1)}%)
         </p>
       )}
@@ -96,8 +96,8 @@ const ProgressBar = ({ totalDays, projectedDays }) => {
         <span className={cn(
           "rounded-full px-3 py-1.5 font-medium uppercase tracking-wide transition-all duration-300",
           status.color === 'success' && "bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))]",
-          status.color === 'warning' && "bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning-foreground))]",
-          status.color === 'destructive' && "bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))]"
+          status.color === 'warning' && "bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning-strong))]",
+          status.color === 'destructive' && "bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive-strong))]"
         )}>
           {status.label}
         </span>

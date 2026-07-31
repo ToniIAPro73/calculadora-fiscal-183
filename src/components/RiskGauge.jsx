@@ -8,14 +8,20 @@ import {
   DEFAULT_WARNING_THRESHOLD,
   getRiskLevel,
 } from '@/lib/fiscalSummary.js';
+import {
+  gaugeArcPath,
+  gaugePoint,
+} from '@/lib/gaugeGeometry.js';
 
-// Semicircular gauge geometry: GAUGE_MAX days cover the full 180° arc so the
-// 183-day limit stays visibly inside the red zone.
-const GAUGE_MAX = 210;
+// Semicircular gauge: GAUGE_MAX days cover the full 180° arc. 240 keeps the
+// three zones contiguous and proportioned (safe 0-150 ≈ 62% of the arc,
+// warning 150-183 ≈ 14%, over-limit 183-240 ≈ 24%) so the red zone stays
+// clearly visible while the 183-day mark sits well inside it.
+const GAUGE_MAX = 240;
 const CX = 110;
 const CY = 106;
 const R = 84;
-const ZONE_GAP = 0.006; // small visual separation between zones
+const ZONE_GAP_DAYS = 1.5; // small visual separation between zones, in days
 
 const ZONE_COLORS = {
   safe: 'hsl(var(--success))',
@@ -23,17 +29,15 @@ const ZONE_COLORS = {
   destructive: 'hsl(var(--destructive))',
 };
 
-const fractionToPoint = (fraction, radius = R) => {
-  const angle = (180 - 180 * fraction) * (Math.PI / 180);
-  return { x: CX + radius * Math.cos(angle), y: CY - radius * Math.sin(angle) };
+// Solid zone tones fail AA as text on card backgrounds; use the strong
+// variants for textual status (arcs and legend dots keep the solid tones).
+const ZONE_TEXT_COLORS = {
+  safe: 'hsl(var(--success-strong))',
+  warning: 'hsl(var(--warning-strong))',
+  destructive: 'hsl(var(--destructive-strong))',
 };
 
-const zoneArc = (from, to) => {
-  const start = fractionToPoint(from);
-  const end = fractionToPoint(to);
-  const largeArc = to - from > 0.5 ? 1 : 0;
-  return `M ${start.x} ${start.y} A ${R} ${R} 0 ${largeArc} 1 ${end.x} ${end.y}`;
-};
+const zoneArc = (fromDays, toDays) => gaugeArcPath(CX, CY, R, fromDays, toDays, GAUGE_MAX);
 
 const RiskGauge = ({
   totalDays,
@@ -58,19 +62,14 @@ const RiskGauge = ({
     ? t('riskGauge.explainWarning')
     : t('riskGauge.explainOver');
 
-  const clampToGauge = (days) => Math.min(Math.max(days, 0), GAUGE_MAX) / GAUGE_MAX;
-  const valueFraction = clampToGauge(totalDays);
-  const safeEnd = warningThreshold / GAUGE_MAX;
-  const limitEnd = limit / GAUGE_MAX;
-  const needleTip = fractionToPoint(valueFraction, R - 26);
+  const needleTip = gaugePoint(CX, CY, R - 26, totalDays, GAUGE_MAX);
 
   const hasProjection = typeof projectedDays === 'number' && projectedDays !== totalDays;
-  const projectedFraction = hasProjection ? clampToGauge(projectedDays) : null;
-  const projectedTickInner = hasProjection ? fractionToPoint(projectedFraction, R - 12) : null;
-  const projectedTickOuter = hasProjection ? fractionToPoint(projectedFraction, R + 8) : null;
+  const projectedTickInner = hasProjection ? gaugePoint(CX, CY, R - 12, projectedDays, GAUGE_MAX) : null;
+  const projectedTickOuter = hasProjection ? gaugePoint(CX, CY, R + 8, projectedDays, GAUGE_MAX) : null;
 
-  const zeroLabel = fractionToPoint(0, R + 16);
-  const limitLabel = fractionToPoint(limitEnd, R + 20);
+  const zeroLabel = gaugePoint(CX, CY, R + 16, 0, GAUGE_MAX);
+  const limitLabel = gaugePoint(CX, CY, R + 20, limit, GAUGE_MAX);
 
   const valueText = hasProjection
     ? `${totalDays} ${t('dateSelector.days')} · ${statusLabel} · ${t('scenario.withScenario')}: ${projectedDays} ${t('dateSelector.days')}`
@@ -88,21 +87,21 @@ const RiskGauge = ({
         aria-valuenow={Math.min(Math.max(totalDays, 0), limit)}
         aria-valuetext={valueText}
       >
-        {/* Three risk zones: safe / warning / destructive */}
+        {/* Three contiguous risk zones: safe / warning / destructive */}
         <path
-          d={zoneArc(0, safeEnd - ZONE_GAP)}
+          d={zoneArc(0, warningThreshold - ZONE_GAP_DAYS)}
           fill="none"
           stroke={ZONE_COLORS.safe}
           strokeWidth={14}
         />
         <path
-          d={zoneArc(safeEnd + ZONE_GAP, limitEnd - ZONE_GAP)}
+          d={zoneArc(warningThreshold + ZONE_GAP_DAYS, limit - ZONE_GAP_DAYS)}
           fill="none"
           stroke={ZONE_COLORS.warning}
           strokeWidth={14}
         />
         <path
-          d={zoneArc(limitEnd + ZONE_GAP, 1)}
+          d={zoneArc(limit + ZONE_GAP_DAYS, GAUGE_MAX)}
           fill="none"
           stroke={ZONE_COLORS.destructive}
           strokeWidth={14}
@@ -147,7 +146,7 @@ const RiskGauge = ({
             y={CY - 14}
             textAnchor="middle"
             className="text-[11px] font-semibold"
-            fill={ZONE_COLORS[status]}
+            fill={ZONE_TEXT_COLORS[status]}
           >
             {statusLabel}
           </text>
@@ -189,7 +188,7 @@ const RiskGauge = ({
       </div>
 
       {hasProjection && (
-        <p className="mt-2 text-center text-xs font-semibold text-[hsl(var(--warning-foreground))]">
+        <p className="mt-2 text-center text-xs font-semibold text-[hsl(var(--warning-strong))]">
           {t('scenario.withScenario')}: {projectedDays} {t('dateSelector.days')}
         </p>
       )}

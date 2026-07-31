@@ -79,7 +79,7 @@ const YearCalendarHeatmap = ({
                   <span
                     key={`${label}-${index}`}
                     aria-hidden="true"
-                    className="text-center text-[8px] font-medium uppercase leading-none text-muted-foreground/70"
+                    className="text-center text-[8px] font-medium uppercase leading-none text-muted-foreground"
                   >
                     {label}
                   </span>

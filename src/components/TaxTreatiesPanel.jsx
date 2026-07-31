@@ -101,7 +101,7 @@ const TaxTreatiesPanel = ({ selection, onChange }) => {
             <span className="sr-only">{t('legalRefs.externalLinkSr')}</span>
           </a>
           <div className="flex gap-2.5 rounded-md border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.06)] px-3 py-2">
-            <WarningCircle size={16} weight="fill" className="mt-0.5 shrink-0 text-[hsl(var(--warning-foreground))]" />
+            <WarningCircle size={16} weight="fill" className="mt-0.5 shrink-0 text-[hsl(var(--warning-strong))]" />
             <p className="text-[11px] leading-4 text-muted-foreground">
               {t('taxTreaties.disclaimer')}
             </p>

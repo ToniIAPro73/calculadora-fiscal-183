@@ -93,10 +93,10 @@ const DataAuthoritySection = () => {
           </section>
         </div>
 
-          <div className="rounded-xl border border-[hsl(var(--warning)/0.18)] bg-[hsl(var(--warning)/0.08)] p-5">
+          <div className="rounded-xl border border-[hsl(var(--warning)/0.3)] bg-[hsl(var(--warning)/0.08)] p-5">
             <div className="flex gap-3">
-              <WarningCircle size={20} weight="fill" className="mt-0.5 shrink-0 text-[hsl(var(--warning-foreground))]" />
-              <div className="text-xs text-muted-foreground">
+              <WarningCircle size={20} weight="fill" className="mt-0.5 shrink-0 text-[hsl(var(--warning-strong))]" />
+              <div className="text-xs leading-5 text-foreground/80">
                 <span className="font-semibold block mb-1 text-foreground">{t('authority.disclaimerTitle')}</span>
                 {t('authority.disclaimerDesc')}
               </div>
