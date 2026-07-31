@@ -8,8 +8,8 @@ import Footer from '@/components/Footer.jsx';
 import { Button } from '@/components/ui/button';
 import { getCanonicalUrl } from '@/lib/seo';
 import {
-  EXAMPLE_PDF_URL,
   PREMIUM_REPORT_ROUTE,
+  getExamplePdfUrl,
   getReportContents,
 } from '@/lib/reportContents.js';
 
@@ -218,7 +218,7 @@ const PremiumReportPage = () => {
                 {t('premiumReport.previewNote')}
               </p>
               <Button asChild className="h-11 w-full gap-2">
-                <a href={EXAMPLE_PDF_URL} download>
+                <a href={getExamplePdfUrl(language)} download>
                   <Download size={17} weight="bold" />
                   {t('premiumReport.downloadCta')}
                 </a>

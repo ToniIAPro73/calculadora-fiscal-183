@@ -1,8 +1,19 @@
 import { translations } from './translations.js';
 
-// Static asset served from public/ (copied to dist/ by the Vite build).
-// Regenerate it with: node tools/regenerate-example-pdf.mjs
-export const EXAMPLE_PDF_URL = '/ejemplo.pdf';
+// Static assets served from public/ (copied to dist/ by the Vite build).
+// Regenerate them with: node tools/regenerate-example-pdf.mjs
+export const EXAMPLE_PDF_URLS = Object.freeze({
+  es: '/ejemplo.pdf',
+  en: '/ejemplo-en.pdf',
+});
+
+/**
+ * Returns the static example PDF for the given UI language, falling back to
+ * Spanish for unknown languages.
+ */
+export function getExamplePdfUrl(language = 'es') {
+  return EXAMPLE_PDF_URLS[language] ?? EXAMPLE_PDF_URLS.es;
+}
 export const PREMIUM_REPORT_ROUTE = 'premium-report';
 
 // Sections of the premium PDF, in the exact order generateTaxReport()

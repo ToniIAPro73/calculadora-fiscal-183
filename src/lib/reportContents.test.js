@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { translations } from './translations.js';
 import {
-  EXAMPLE_PDF_URL,
+  EXAMPLE_PDF_URLS,
   PREMIUM_REPORT_ROUTE,
   REPORT_SECTION_IDS,
+  getExamplePdfUrl,
   getReportContents,
 } from './reportContents.js';
 
@@ -61,8 +62,16 @@ describe('getReportContents', () => {
 });
 
 describe('example PDF asset', () => {
-  it('points to a root-relative static file', () => {
-    expect(EXAMPLE_PDF_URL).toMatch(/^\/[^/].*\.pdf$/);
+  it('points every language to a root-relative static file', () => {
+    Object.values(EXAMPLE_PDF_URLS).forEach((url) => {
+      expect(url).toMatch(/^\/[^/].*\.pdf$/);
+    });
+  });
+
+  it('resolves the example PDF per language with Spanish fallback', () => {
+    expect(getExamplePdfUrl('es')).toBe(EXAMPLE_PDF_URLS.es);
+    expect(getExamplePdfUrl('en')).toBe(EXAMPLE_PDF_URLS.en);
+    expect(getExamplePdfUrl('fr')).toBe(EXAMPLE_PDF_URLS.es);
   });
 
   it('uses a language-agnostic route slug for the page', () => {

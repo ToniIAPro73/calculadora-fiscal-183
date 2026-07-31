@@ -10,7 +10,7 @@
 endobj
 4 0 obj
 <<
-/Length 12413
+/Length 12350
 >>
 stream
 0.5670000000000001 w
@@ -34,7 +34,7 @@ BT
 8.625 TL
 0.816 0.89 1. rg
 130.393700787401599 785.7640157480315111 Td
-(Calculadora de Residencia Fiscal · Regla de los 183 Días) Tj
+(Fiscal Residency Calculator · 183-Day Rule) Tj
 ET
 0.96 0.62 0.04 rg
 0.96 0.62 0.04 RG
@@ -53,22 +53,22 @@ BT
 /F2 7 Tf
 8.0499999999999989 TL
 1. g
-281.0149999999999295 816.3781889763779418 Td
-(EJEMPLO) Tj
+280.839999999999975 816.3781889763779418 Td
+(EXAMPLE) Tj
 ET
 BT
 /F2 7.5 Tf
 8.625 TL
 0.816 0.89 1. rg
-467.6063779527557926 799.3703149606299121 Td
-(Generado: 31/07/2026) Tj
+465.5813779527558154 799.3703149606299121 Td
+(Generated: 07/31/2026) Tj
 ET
 BT
 /F2 7.5 Tf
 8.625 TL
 0.816 0.89 1. rg
 463.2563779527558836 784.0632283464566399 Td
-(Ref: TN-20260731-7437) Tj
+(Ref: TN-20260731-2672) Tj
 ET
 1. 0.97 0.93 rg
 0.98 0.57 0.24 RG
@@ -88,28 +88,28 @@ BT
 9.7749999999999986 TL
 0.761 0.255 0.047 rg
 62.3622047244094517 727.086850393700729 Td
-(Informe de ejemplo con datos ficticios) Tj
+(Example report with fictional data) Tj
 ET
 BT
 /F1 7.4 Tf
 8.5099999999999998 TL
 0.761 0.255 0.047 rg
 62.3622047244094517 712.6301574803148924 Td
-(Las cifras y fechas son ficticias y solo ilustran el contenido del informe.) Tj
+(All figures and dates are fictional and only illustrate the report contents.) Tj
 ET
 BT
 /F2 18 Tf
 20.6999999999999993 TL
 0.059 0.09 0.165 rg
 51.0236220472441033 677.480551181102328 Td
-(INFORME DE RESIDENCIA FISCAL) Tj
+(FISCAL RESIDENCY REPORT) Tj
 ET
 BT
 /F1 9 Tf
 10.3499999999999996 TL
 0.392 0.455 0.545 rg
 51.0236220472441033 660.4726771653542983 Td
-(Ejercicio Fiscal 2026 · Art. 9 Ley 35/2006 IRPF · Regla de los 183 Días) Tj
+(Fiscal Year 2026 · Art. 9 Spanish Personal Income Tax Law 35/2006 · 183-Day Rule) Tj
 ET
 0.28 0.39 0.62 RG
 1.4173228346456694 w
@@ -121,7 +121,7 @@ BT
 9.7749999999999986 TL
 0.278 0.392 0.62 rg
 51.0236220472441033 617.952992125984224 Td
-(DATOS DEL CONTRIBUYENTE) Tj
+(TAXPAYER DETAILS) Tj
 ET
 0.95 0.96 0.98 rg
 59.5275590551181182 603.7797637795274568 m
@@ -140,13 +140,13 @@ BT
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 581.1025984251967884 Td
-(Nombre:) Tj
+(Name:) Tj
 ET
 BT
 /F2 8 Tf
 9.1999999999999993 TL
 0.059 0.09 0.165 rg
-103.6661417322834637 581.1025984251967884 Td
+95.1861417322834882 581.1025984251967884 Td
 (Alex Rivera) Tj
 ET
 BT
@@ -154,13 +154,13 @@ BT
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 308.9785826771653205 581.1025984251967884 Td
-(Pasaporte:) Tj
+(Passport:) Tj
 ET
 BT
 /F2 8 Tf
 9.1999999999999993 TL
 0.059 0.09 0.165 rg
-358.5225196850393559 581.1025984251967884 Td
+354.1225196850393786 581.1025984251967884 Td
 (X1234567Z) Tj
 ET
 BT
@@ -168,28 +168,28 @@ BT
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 558.42543307086612 Td
-(Fecha de generación:) Tj
+(Generation date:) Tj
 ET
 BT
 /F2 8 Tf
 9.1999999999999993 TL
 0.059 0.09 0.165 rg
-152.70614173228347 558.42543307086612 Td
-(31 de julio de 2026) Tj
+134.1461417322834677 558.42543307086612 Td
+(July 31, 2026) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 535.748267716535338 Td
-(N.º de referencia:) Tj
+(Reference no.:) Tj
 ET
 BT
 /F2 8 Tf
 9.1999999999999993 TL
 0.059 0.09 0.165 rg
-136.1461417322834677 535.748267716535338 Td
-(TN-20260731-7437) Tj
+126.1461417322834819 535.748267716535338 Td
+(TN-20260731-2672) Tj
 ET
 0.95 0.96 0.98 RG
 0.8503937007874016 w
@@ -201,7 +201,7 @@ BT
 9.7749999999999986 TL
 0.278 0.392 0.62 rg
 51.0236220472441033 481.8899999999999295 Td
-(RESUMEN DE PRESENCIA FÍSICA EN ESPAÑA) Tj
+(PHYSICAL PRESENCE SUMMARY IN SPAIN) Tj
 ET
 0.86 0.99 0.91 rg
 62.3622047244094517 464.8821259842518998 m
@@ -226,43 +226,43 @@ BT
 /F1 7 Tf
 8.0499999999999989 TL
 0.392 0.455 0.545 rg
-101.4137007874015808 399.6852755905511003 Td
-(DÍAS EN ESPAÑA) Tj
+105.0537007874015956 399.6852755905511003 Td
+(DAYS IN SPAIN) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 229.6062992125984579 447.8742519685038701 Td
-(Límite legal \(183 días\):) Tj
+(Legal limit \(183 days\):) Tj
 ET
 BT
 /F2 8 Tf
 9.1999999999999993 TL
 0.059 0.09 0.165 rg
-512.89637795275587 447.8742519685038701 Td
-(183 días) Tj
+510.7363779527558449 447.8742519685038701 Td
+(183 days) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 229.6062992125984579 425.1970866141731449 Td
-(Días restantes:) Tj
+(Remaining days:) Tj
 ET
 BT
 /F2 8 Tf
 9.1999999999999993 TL
 0.059 0.09 0.165 rg
-512.89637795275587 425.1970866141731449 Td
-(126 días) Tj
+510.7363779527558449 425.1970866141731449 Td
+(126 days) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 229.6062992125984579 402.5199212598424765 Td
-(Porcentaje utilizado:) Tj
+(Percentage used:) Tj
 ET
 BT
 /F2 8 Tf
@@ -288,8 +288,8 @@ BT
 /F2 7 Tf
 8.0499999999999989 TL
 1. g
-262.6752755905512231 382.110472440944875 Td
-(SEGURO) Tj
+268.5202755905511935 382.110472440944875 Td
+(SAFE) Tj
 ET
 0.95 0.96 0.98 rg
 56.6929133858267775 348.6616535433070112 m
@@ -324,7 +324,7 @@ BT
 9.7749999999999986 TL
 0.278 0.392 0.62 rg
 51.0236220472441033 297.6380314960629221 Td
-(DETALLE DE PERÍODOS EN ESPAÑA) Tj
+(DETAIL OF PERIODS IN SPAIN) Tj
 ET
 0.28 0.39 0.62 rg
 51.0236220472441033 283.4648031496062117 493.2327559055117376 -19.8425196850393704 re
@@ -334,21 +334,21 @@ BT
 8.625 TL
 1. g
 59.5275590551181182 270.7088976377951894 Td
-(Fecha de inicio) Tj
+(Start date) Tj
 ET
 BT
 /F2 7.5 Tf
 8.625 TL
 1. g
 246.9560062992125893 270.7088976377951894 Td
-(Fecha de fin) Tj
+(End date) Tj
 ET
 BT
 /F2 7.5 Tf
 8.625 TL
 1. g
-477.1934472440945001 270.7088976377951894 Td
-(Días) Tj
+476.1809472440944546 270.7088976377951894 Td
+(Days) Tj
 ET
 1. g
 51.0236220472441033 263.6222834645668627 493.2327559055117376 -19.8425196850393704 re
@@ -454,7 +454,7 @@ BT
 9.1999999999999993 TL
 0.278 0.392 0.62 rg
 59.5275590551181182 171.4962992125983874 Td
-(TOTAL DÍAS ÚNICOS EN ESPAÑA) Tj
+(TOTAL UNIQUE DAYS IN SPAIN) Tj
 ET
 BT
 /F2 8 Tf
@@ -472,21 +472,21 @@ BT
 7.589999999999999 TL
 0.392 0.455 0.545 rg
 51.0236220472441033 31.1811023622046832 Td
-(TaxNomad · Calculadora de Residencia Fiscal · regla183.com) Tj
+(TaxNomad · Fiscal Residency Calculator · regla183.com) Tj
 ET
 BT
 /F1 6.6 Tf
 7.589999999999999 TL
 0.392 0.455 0.545 rg
 51.0236220472441033 20.4094488188976584 Td
-(Contacto: hola@regla183.com) Tj
+(Contact: hola@regla183.com) Tj
 ET
 BT
 /F1 6.6 Tf
 7.589999999999999 TL
 0.392 0.455 0.545 rg
 487.5623779527558099 31.1811023622046832 Td
-(TN-20260731-7437) Tj
+(TN-20260731-2672) Tj
 ET
 endstream
 endobj
@@ -500,7 +500,7 @@ endobj
 endobj
 6 0 obj
 <<
-/Length 9441
+/Length 9186
 >>
 stream
 0.8503937007874016 w
@@ -515,72 +515,72 @@ BT
 9.7749999999999986 TL
 0.278 0.392 0.62 rg
 51.0236220472441033 754.0159842519684616 Td
-(CENTRO DE INTERESES ECONÓMICOS \(ART. 9 LEY 35/2006\)) Tj
+(CENTRE OF ECONOMIC INTERESTS \(ART. 9 LAW 35/2006\)) Tj
 ET
 BT
 /F1 6.9 Tf
 7.9349999999999996 TL
 0.392 0.455 0.545 rg
 51.0236220472441033 741.2600787401574962 Td
-(Cuestionario de autoevaluación cumplimentado por el usuario. El artículo 9 de la Ley 35/2006 del Impuesto sobre la Renta de las) Tj
-T* (Personas Físicas también tiene en cuenta el centro de intereses económicos: el lugar donde radica el núcleo principal o la base) Tj
-T* (de las actividades o intereses económicos del contribuyente, con independencia del cómputo de 183 días.) Tj
+(Self-assessment questionnaire completed by the user. Article 9 of the Spanish Personal Income Tax Act \(Law 35/2006\) also takes) Tj
+T* (into account the centre of economic interests: the place where the main nucleus or base of the taxpayer's activities or economic) Tj
+T* (interests is located, regardless of the 183-day count.) Tj
 ET
 BT
 /F2 7.4 Tf
 8.5099999999999998 TL
 0.059 0.09 0.165 rg
 51.0236220472441033 703.8427559055118081 Td
-(1. ¿Dónde reside tu núcleo familiar \(pareja o hijos\)?) Tj
+(1. Where does your close family \(spouse or children\) live?) Tj
 ET
 BT
 /F1 7.2 Tf
 8.2799999999999994 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 693.3545669291338527 Td
-(— En el extranjero) Tj
+(— Abroad) Tj
 ET
 BT
 /F2 7.4 Tf
 8.5099999999999998 TL
 0.059 0.09 0.165 rg
 51.0236220472441033 677.7640157480313974 Td
-(2. ¿Dónde generas la mayor parte de tus ingresos?) Tj
+(2. Where do you generate most of your income?) Tj
 ET
 BT
 /F1 7.2 Tf
 8.2799999999999994 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 667.2758267716535556 Td
-(— Principalmente en el extranjero) Tj
+(— Mainly abroad) Tj
 ET
 BT
 /F2 7.4 Tf
 8.5099999999999998 TL
 0.059 0.09 0.165 rg
 51.0236220472441033 651.6852755905511003 Td
-(3. ¿Dónde está tu vivienda habitual?) Tj
+(3. Where is your habitual residence?) Tj
 ET
 BT
 /F1 7.2 Tf
 8.2799999999999994 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 641.1970866141731449 Td
-(— Sin vivienda habitual fija) Tj
+(— No fixed habitual residence) Tj
 ET
 BT
 /F2 7.4 Tf
 8.5099999999999998 TL
 0.059 0.09 0.165 rg
 51.0236220472441033 625.6065354330708033 Td
-(4. ¿Desde dónde diriges tu actividad profesional o negocios?) Tj
+(4. From where do you run your professional activity or businesses?) Tj
 ET
 BT
 /F1 7.2 Tf
 8.2799999999999994 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 615.1183464566928478 Td
-(— Desde el extranjero) Tj
+(— From abroad) Tj
 ET
 0.09 0.64 0.29 rg
 0.09 0.64 0.29 RG
@@ -599,233 +599,232 @@ BT
 /F2 7 Tf
 8.0499999999999989 TL
 1. g
-76.4611811023622181 579.1183464566928478 Td
-(VÍNCULOS DÉBILES) Tj
+91.1961811023622175 579.1183464566928478 Td
+(WEAK TIES) Tj
 ET
 BT
 /F2 7.4 Tf
 8.5099999999999998 TL
 0.059 0.09 0.165 rg
 184.2519685039370358 579.1183464566928478 Td
-(EVALUACIÓN ORIENTATIVA) Tj
+(INDICATIVE ASSESSMENT) Tj
 ET
 BT
 /F1 7.2 Tf
 8.2799999999999994 TL
 0.059 0.09 0.165 rg
 51.0236220472441033 559.8427559055116944 Td
-(Las respuestas sugieren que el centro de intereses económicos apunta mayoritariamente fuera de España. Aun así, la administración valora cada caso de) Tj
-T* (forma individual.) Tj
+(The answers suggest that the centre of economic interests points mostly outside Spain. Even so, the tax authority assesses every case individually.) Tj
 ET
 0.95 0.96 0.98 rg
-56.6929133858267775 537.4490551181100955 m
-538.5870866141731312 537.4490551181100955 l
-541.7181497628201896 537.4490551181100955 544.2563779527558836 534.9108269281745152 544.2563779527558836 531.7797637795274568 c
-544.2563779527558836 516.7561417322833677 l
-544.2563779527558836 513.6250785836363093 541.1253148041088252 511.0868503937006722 538.5870866141731312 511.0868503937006722 c
-56.6929133858267775 511.0868503937006722 l
-53.5618502371797618 511.0868503937006722 51.0236220472441033 514.2179135423477874 51.0236220472441033 516.7561417322833677 c
-51.0236220472441033 531.7797637795274568 l
-51.0236220472441033 534.9108269281745152 54.1546851958911191 537.4490551181100955 56.6929133858267775 537.4490551181100955 c
+56.6929133858267775 547.9372440944880509 m
+538.5870866141731312 547.9372440944880509 l
+541.7181497628201896 547.9372440944880509 544.2563779527558836 545.3990159045524706 544.2563779527558836 542.2679527559054122 c
+544.2563779527558836 527.2443307086613231 l
+544.2563779527558836 524.1132675600142647 541.1253148041088252 521.5750393700786844 538.5870866141731312 521.5750393700786844 c
+56.6929133858267775 521.5750393700786844 l
+53.5618502371797618 521.5750393700786844 51.0236220472441033 524.7061025187256291 51.0236220472441033 527.2443307086613231 c
+51.0236220472441033 542.2679527559054122 l
+51.0236220472441033 545.3990159045524706 54.1546851958911191 547.9372440944880509 56.6929133858267775 547.9372440944880509 c
 h
 f
 BT
 /F1 6.8 Tf
 7.8199999999999994 TL
 0.392 0.455 0.545 rg
-62.3622047244094517 526.1104724409447044 Td
-(Evaluación orientativa basada únicamente en las respuestas del usuario. No constituye ni sustituye el asesoramiento fiscal profesional.) Tj
+62.3622047244094517 536.5986614173227736 Td
+(Indicative assessment based solely on the user's answers. It does not constitute nor replace professional tax advice.) Tj
 ET
 0.95 0.96 0.98 RG
 0.8503937007874016 w
-51.0236220472441033 495.4962992125983305 m
-544.2563779527558836 495.4962992125983305 l
+51.0236220472441033 505.9844881889763428 m
+544.2563779527558836 505.9844881889763428 l
 S
 BT
 /F2 8.5 Tf
 9.7749999999999986 TL
 0.278 0.392 0.62 rg
-51.0236220472441033 475.6537795275589815 Td
-(COMPARATIVA DE ESCENARIOS HIPOTÉTICOS) Tj
+51.0236220472441033 486.1419685039369369 Td
+(HYPOTHETICAL SCENARIO COMPARISON) Tj
 ET
 BT
 /F1 6.9 Tf
 7.9349999999999996 TL
 0.392 0.455 0.545 rg
-51.0236220472441033 462.8978740157479024 Td
-(Escenarios guardados por el usuario: estancias hipotéticas proyectadas sobre las presencias reales registradas. Los días solapados computan una sola vez.) Tj
+51.0236220472441033 473.3860629921259147 Td
+(Scenarios saved by the user: hypothetical stays projected on top of the recorded real stays. Overlapping days are counted only once.) Tj
 ET
 0.28 0.39 0.62 rg
-51.0236220472441033 444.7561417322833108 493.2327559055117376 -19.8425196850393704 re
+51.0236220472441033 455.2443307086613231 493.2327559055117376 -19.8425196850393704 re
 f
 BT
 /F2 7.5 Tf
 8.625 TL
 1. g
-59.5275590551181182 432.0002362204723454 Td
-(Escenario) Tj
+59.5275590551181182 442.4884251968503008 Td
+(Scenario) Tj
 ET
 BT
 /F2 7.5 Tf
 8.625 TL
 1. g
-270.0774999999999864 432.0002362204723454 Td
-(Días en España) Tj
+273.1525000000000318 442.4884251968503008 Td
+(Days in Spain) Tj
 ET
 BT
 /F2 7.5 Tf
 8.625 TL
 1. g
-370.8240511811023339 432.0002362204723454 Td
-(Días restantes) Tj
+380.7615511811023339 442.4884251968503008 Td
+(Days left) Tj
 ET
 BT
 /F2 7.5 Tf
 8.625 TL
 1. g
-482.4831023622047041 432.0002362204723454 Td
-(Riesgo) Tj
+487.0581023622047496 442.4884251968503008 Td
+(Risk) Tj
 ET
 0.89 0.93 0.98 rg
-51.0236220472441033 424.9136220472439618 493.2327559055117376 -19.8425196850393704 re
+51.0236220472441033 435.4018110236219741 493.2327559055117376 -19.8425196850393704 re
 f
 BT
 /F2 7.5 Tf
 8.625 TL
 0.059 0.09 0.165 rg
-59.5275590551181182 411.8742519685038133 Td
-(Situación actual \(sin escenario\)) Tj
+59.5275590551181182 422.3624409448818255 Td
+(Current situation \(no scenario\)) Tj
 ET
 BT
 /F2 7.5 Tf
 8.625 TL
 0.059 0.09 0.165 rg
-293.5150000000000432 411.8742519685038133 Td
+293.5150000000000432 422.3624409448818255 Td
 (57) Tj
 ET
 BT
 /F2 7.5 Tf
 8.625 TL
 0.059 0.09 0.165 rg
-390.0990511811023111 411.8742519685038133 Td
+390.0990511811023111 422.3624409448818255 Td
 (126) Tj
 ET
 BT
 /F2 7.5 Tf
 8.625 TL
 0.086 0.639 0.29 rg
-478.7331023622047041 411.8742519685038133 Td
-(SEGURO) Tj
+484.9956023622047496 422.3624409448818255 Td
+(SAFE) Tj
 ET
 1. g
-51.0236220472441033 405.0711023622046127 493.2327559055117376 -19.8425196850393704 re
+51.0236220472441033 415.5592913385825682 493.2327559055117376 -19.8425196850393704 re
 f
 BT
 /F1 7.5 Tf
 8.625 TL
 0.059 0.09 0.165 rg
-59.5275590551181182 392.0317322834644642 Td
+59.5275590551181182 402.5199212598424765 Td
 (Verano en Mallorca) Tj
 ET
 BT
 /F1 7.5 Tf
 8.625 TL
 0.059 0.09 0.165 rg
-293.5150000000000432 392.0317322834644642 Td
+293.5150000000000432 402.5199212598424765 Td
 (78) Tj
 ET
 BT
 /F1 7.5 Tf
 8.625 TL
 0.059 0.09 0.165 rg
-390.0990511811023111 392.0317322834644642 Td
+390.0990511811023111 402.5199212598424765 Td
 (105) Tj
 ET
 BT
 /F2 7.5 Tf
 8.625 TL
 0.086 0.639 0.29 rg
-478.7331023622047041 392.0317322834644642 Td
-(SEGURO) Tj
+484.9956023622047496 402.5199212598424765 Td
+(SAFE) Tj
 ET
 0.95 0.96 0.98 rg
-51.0236220472441033 385.2285826771652069 493.2327559055117376 -19.8425196850393704 re
+51.0236220472441033 395.7167716535432191 493.2327559055117376 -19.8425196850393704 re
 f
 BT
 /F1 7.5 Tf
 8.625 TL
 0.059 0.09 0.165 rg
-59.5275590551181182 372.1892125984250583 Td
+59.5275590551181182 382.6774015748030706 Td
 (Puente de diciembre) Tj
 ET
 BT
 /F1 7.5 Tf
 8.625 TL
 0.059 0.09 0.165 rg
-293.5150000000000432 372.1892125984250583 Td
+293.5150000000000432 382.6774015748030706 Td
 (67) Tj
 ET
 BT
 /F1 7.5 Tf
 8.625 TL
 0.059 0.09 0.165 rg
-390.0990511811023111 372.1892125984250583 Td
+390.0990511811023111 382.6774015748030706 Td
 (116) Tj
 ET
 BT
 /F2 7.5 Tf
 8.625 TL
 0.086 0.639 0.29 rg
-478.7331023622047041 372.1892125984250583 Td
-(SEGURO) Tj
+484.9956023622047496 382.6774015748030706 Td
+(SAFE) Tj
 ET
 0.95 0.96 0.98 RG
-51.0236220472441033 351.2128346456691474 m
-544.2563779527558836 351.2128346456691474 l
+51.0236220472441033 361.7010236220471597 m
+544.2563779527558836 361.7010236220471597 l
 S
 BT
 /F2 8.5 Tf
 9.7749999999999986 TL
 0.278 0.392 0.62 rg
-51.0236220472441033 331.3703149606297984 Td
-(CONCLUSIÓN) Tj
+51.0236220472441033 341.8585039370078107 Td
+(CONCLUSION) Tj
 ET
 BT
 /F1 7.7 Tf
 8.8549999999999986 TL
 0.059 0.09 0.165 rg
-51.0236220472441033 317.1970866141731449 Td
-(A la fecha actual, Alex Rivera ha registrado un total de 57 días de presencia física en territorio español durante el ejercicio fiscal 2026.) Tj
-T* (Esta duración representa el 31.1% del límite estatutario de 183 días establecido por el artículo 9 de la Ley 35/2006 del Impuesto sobre la) Tj
-T* (Renta de las Personas Físicas. Tras la consolidación de los períodos solapados, se confirma que el sujeto no supera el umbral para la) Tj
-T* (residencia fiscal conforme al criterio de presencia física.) Tj
+51.0236220472441033 327.6852755905511003 Td
+(As of the current date, Alex Rivera has recorded a total of 57 days of physical presence in Spanish territory during the 2026 fiscal year.) Tj
+T* (This duration accounts for 31.1% of the 183-day statutory limit prescribed by Article 9 of the Spanish Personal Income Tax Act \(Law) Tj
+T* (35/2006\). Following the consolidation of overlapping periods, it is confirmed that the subject does not exceed the threshold for tax) Tj
+T* (residency under the physical presence test.) Tj
 ET
 0.95 0.96 0.98 rg
-59.5275590551181182 252.5671653543305126 m
-535.7524409448818687 252.5671653543305126 l
-540.4490356678522858 252.5671653543305126 544.2563779527558836 248.7598230694270001 544.2563779527558836 244.0632283464564978 c
-544.2563779527558836 198.7088976377950758 l
-544.2563779527558836 194.0123029148246019 539.5597832297853529 190.2049606299210609 535.7524409448818687 190.2049606299210609 c
-59.5275590551181182 190.2049606299210609 l
-54.8309643321475875 190.2049606299210609 51.0236220472441033 194.9015553528915632 51.0236220472441033 198.7088976377950758 c
-51.0236220472441033 244.0632283464564978 l
-51.0236220472441033 248.7598230694270001 55.7202167702146269 252.5671653543305126 59.5275590551181182 252.5671653543305126 c
+59.5275590551181182 263.0553543307085533 m
+535.7524409448818687 263.0553543307085533 l
+540.4490356678522858 263.0553543307085533 544.2563779527558836 259.2480120458050123 544.2563779527558836 254.5514173228345101 c
+544.2563779527558836 209.197086614173088 l
+544.2563779527558836 204.5004918912025857 539.5597832297853529 200.6931496062990732 535.7524409448818687 200.6931496062990732 c
+59.5275590551181182 200.6931496062990732 l
+54.8309643321475875 200.6931496062990732 51.0236220472441033 205.3897443292695755 51.0236220472441033 209.197086614173088 c
+51.0236220472441033 254.5514173228345101 l
+51.0236220472441033 259.2480120458050123 55.7202167702146269 263.0553543307085533 59.5275590551181182 263.0553543307085533 c
 h
 f
 BT
 /F2 7.5 Tf
 8.625 TL
 0.392 0.455 0.545 rg
-62.3622047244094517 238.3939370078738875 Td
-(AVISO LEGAL) Tj
+62.3622047244094517 248.882125984251843 Td
+(LEGAL NOTICE) Tj
 ET
 BT
 /F1 7.5 Tf
 8.625 TL
 0.392 0.455 0.545 rg
-62.3622047244094517 224.2207086614171203 Td
-(Este documento es un resumen de datos generado automáticamente por TaxNomad y no constituye asesoramiento legal ni fiscal oficial. Se) Tj
-T* (recomienda validar este informe con un asesor fiscal colegiado antes de realizar cualquier trámite administrativo o declaración tributaria.) Tj
+62.3622047244094517 234.7088976377951894 Td
+(This document is an automatically generated data summary by TaxNomad and does not constitute official legal or tax advice. Validate this) Tj
+T* (report with a qualified tax advisor before any administrative procedure or tax filing.) Tj
 ET
 0.95 0.96 0.98 RG
 51.0236220472441033 45.354330708661422 m
@@ -836,21 +835,21 @@ BT
 7.589999999999999 TL
 0.392 0.455 0.545 rg
 51.0236220472441033 31.1811023622046832 Td
-(TaxNomad · Calculadora de Residencia Fiscal · regla183.com) Tj
+(TaxNomad · Fiscal Residency Calculator · regla183.com) Tj
 ET
 BT
 /F1 6.6 Tf
 7.589999999999999 TL
 0.392 0.455 0.545 rg
 51.0236220472441033 20.4094488188976584 Td
-(Contacto: hola@regla183.com) Tj
+(Contact: hola@regla183.com) Tj
 ET
 BT
 /F1 6.6 Tf
 7.589999999999999 TL
 0.392 0.455 0.545 rg
 487.5623779527558099 31.1811023622046832 Td
-(TN-20260731-7437) Tj
+(TN-20260731-2672) Tj
 ET
 endstream
 endobj
@@ -864,7 +863,7 @@ endobj
 endobj
 8 0 obj
 <<
-/Length 6755
+/Length 6484
 >>
 stream
 0.8503937007874016 w
@@ -874,21 +873,21 @@ BT
 13.7999999999999989 TL
 0.278 0.392 0.62 rg
 51.0236220472441033 773.8585039370078675 Td
-(METODOLOGÍA Y FUENTES) Tj
+(METHODOLOGY AND SOURCES) Tj
 ET
 BT
 /F2 8.5 Tf
 9.7749999999999986 TL
 0.059 0.09 0.165 rg
 51.0236220472441033 748.346692913385823 Td
-(Metodología de cómputo de días) Tj
+(Day-counting methodology) Tj
 ET
 BT
 /F1 7.4 Tf
 8.5099999999999998 TL
 0.392 0.455 0.545 rg
 51.0236220472441033 734.1734645669291695 Td
-(La presencia física en España se computa a partir de las estancias registradas por el usuario, aplicando estas reglas:) Tj
+(Physical presence in Spain is computed from the stays recorded by the user, applying these rules:) Tj
 ET
 BT
 /F1 7.4 Tf
@@ -902,7 +901,7 @@ BT
 8.5099999999999998 TL
 0.059 0.09 0.165 rg
 68.031496062992133 715.4648031496062686 Td
-(Cada estancia computa todos los días naturales entre su fecha de inicio y su fecha de fin, ambas inclusive.) Tj
+(Each stay counts every calendar day between its start and end dates, both inclusive.) Tj
 ET
 BT
 /F1 7.4 Tf
@@ -916,7 +915,7 @@ BT
 8.5099999999999998 TL
 0.059 0.09 0.165 rg
 68.031496062992133 698.1734645669290558 Td
-(Las estancias solapadas se consolidan: los días duplicados computan una sola vez en el total único.) Tj
+(Overlapping stays are consolidated: duplicated days are counted only once in the unique total.) Tj
 ET
 BT
 /F1 7.4 Tf
@@ -930,29 +929,29 @@ BT
 8.5099999999999998 TL
 0.059 0.09 0.165 rg
 68.031496062992133 680.8821259842519567 Td
-(Siguiendo el criterio de la DGT sobre ausencias esporádicas, la herramienta computa las estancias tal como se declaran; las ausencias) Tj
-T* (temporales no se descuentan automáticamente.) Tj
+(Following the DGT criterion on sporadic absences, the tool counts the stays exactly as declared; temporary absences are not deducted) Tj
+T* (automatically.) Tj
 ET
 BT
 /F2 8.5 Tf
 9.7749999999999986 TL
 0.059 0.09 0.165 rg
 51.0236220472441033 644.8821259842519567 Td
-(Fuentes oficiales) Tj
+(Official sources) Tj
 ET
 BT
 /F1 7.4 Tf
 8.5099999999999998 TL
 0.392 0.455 0.545 rg
 51.0236220472441033 630.7088976377951894 Td
-(El informe se basa en la siguiente normativa y criterios interpretativos:) Tj
+(The report is based on the following regulations and interpretative criteria:) Tj
 ET
 BT
 /F2 7.4 Tf
 8.5099999999999998 TL
 0.059 0.09 0.165 rg
 62.3622047244094517 612.0002362204724022 Td
-(Art. 9 de la Ley 35/2006 \(LIRPF\)) Tj
+(Article 9 of Law 35/2006 \(PIT Act\)) Tj
 ET
 BT
 /F1 6.8 Tf
@@ -966,15 +965,15 @@ BT
 7.8199999999999994 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 590.4569291338582389 Td
-(Se considera residente fiscal en España quien permanezca más de 183 días, durante el año natural, en territorio español. Las ausencias) Tj
-T* (temporales se computan como permanencia salvo que se acredite la residencia fiscal en otro país.) Tj
+(A person is considered tax resident in Spain if they spend more than 183 days in Spanish territory during the calendar year. Temporary) Tj
+T* (absences count as presence unless tax residency in another country is proven.) Tj
 ET
 BT
 /F2 7.4 Tf
 8.5099999999999998 TL
 0.059 0.09 0.165 rg
 62.3622047244094517 563.2443307086614368 Td
-(DGT · Ausencias esporádicas \(consultas vinculantes\)) Tj
+(DGT · Sporadic absences \(binding rulings\)) Tj
 ET
 BT
 /F1 6.8 Tf
@@ -988,15 +987,15 @@ BT
 7.8199999999999994 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 541.7010236220472734 Td
-(La Dirección General de Tributos interpreta que las ausencias esporádicas se computan como días de permanencia en España, salvo que el contribuyente) Tj
-T* (acredite su residencia fiscal en otro país. Criterio recogido en sus consultas vinculantes.) Tj
+(The Directorate-General for Taxes \(DGT\) interprets that sporadic absences count as days of presence in Spain, unless the taxpayer proves tax residency in) Tj
+T* (another country. Criterion set out in its binding rulings.) Tj
 ET
 BT
 /F2 7.4 Tf
 8.5099999999999998 TL
 0.059 0.09 0.165 rg
 62.3622047244094517 514.4884251968503577 Td
-(DGT · Centro de intereses económicos \(consultas vinculantes\)) Tj
+(DGT · Centre of economic interests \(binding rulings\)) Tj
 ET
 BT
 /F1 6.8 Tf
@@ -1010,15 +1009,15 @@ BT
 7.8199999999999994 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 492.9451181102362511 Td
-(La DGT entiende que el núcleo principal o la base de los intereses económicos se sitúa en España cuando en España se genera la mayor parte de la base) Tj
-T* (imponible del IRPF del contribuyente. Criterio recogido en sus consultas vinculantes.) Tj
+(The DGT considers that the main nucleus or base of economic interests lies in Spain when most of the taxpayer’s personal income tax base is generated) Tj
+T* (there. Criterion set out in its binding rulings.) Tj
 ET
 BT
 /F2 7.4 Tf
 8.5099999999999998 TL
 0.059 0.09 0.165 rg
 62.3622047244094517 465.7325196850394491 Td
-(DGT · Convenios de doble imposición \(doctrina\)) Tj
+(DGT · Double taxation treaties \(doctrine\)) Tj
 ET
 BT
 /F1 6.8 Tf
@@ -1032,8 +1031,8 @@ BT
 7.8199999999999994 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 444.189212598425172 Td
-(La Dirección General de Tributos aplica los convenios de doble imposición \(CDI\) con prevalencia sobre la normativa interna: los criterios de desempate) Tj
-T* (\(domicilio permanente, centro de intereses vitales, residencia habitual, nacionalidad\) resuelven los conflictos de doble residencia.) Tj
+(The Directorate-General for Taxes \(DGT\) applies double taxation treaties \(DTTs\) with precedence over domestic law: tie-breaker criteria \(permanent home,) Tj
+T* (centre of vital interests, habitual abode, nationality\) resolve dual-residency conflicts.) Tj
 ET
 0.95 0.96 0.98 rg
 59.5275590551181182 411.3073228346456744 m
@@ -1052,16 +1051,16 @@ BT
 8.625 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 397.1340944881889641 Td
-(DESCARGO PROFESIONAL) Tj
+(PROFESSIONAL DISCLAIMER) Tj
 ET
 BT
 /F1 6.8 Tf
 7.8199999999999994 TL
 0.392 0.455 0.545 rg
 62.3622047244094517 382.9608661417323106 Td
-(Este informe es un resumen automatizado de datos aportados por el usuario basado en las fuentes anteriores. No constituye asesoramiento legal ni fiscal, ni) Tj
-T* (siquiera en su versión personalizada para despachos. La residencia fiscal la determina la administración caso por caso; valida siempre este documento con) Tj
-T* (un asesor fiscal cualificado antes de cualquier trámite administrativo o declaración tributaria.) Tj
+(This report is an automated summary of user-provided data based on the sources listed above. It does not constitute legal or tax advice, not even in its) Tj
+T* (advisor-branded version. Tax residency is determined by the tax authority on a case-by-case basis; always validate this document with a qualified tax advisor) Tj
+T* (before any administrative procedure or tax filing.) Tj
 ET
 0.95 0.96 0.98 RG
 51.0236220472441033 45.354330708661422 m
@@ -1072,21 +1071,21 @@ BT
 7.589999999999999 TL
 0.392 0.455 0.545 rg
 51.0236220472441033 31.1811023622046832 Td
-(TaxNomad · Calculadora de Residencia Fiscal · regla183.com) Tj
+(TaxNomad · Fiscal Residency Calculator · regla183.com) Tj
 ET
 BT
 /F1 6.6 Tf
 7.589999999999999 TL
 0.392 0.455 0.545 rg
 51.0236220472441033 20.4094488188976584 Td
-(Contacto: hola@regla183.com) Tj
+(Contact: hola@regla183.com) Tj
 ET
 BT
 /F1 6.6 Tf
 7.589999999999999 TL
 0.392 0.455 0.545 rg
 487.5623779527558099 31.1811023622046832 Td
-(TN-20260731-7437) Tj
+(TN-20260731-2672) Tj
 ET
 endstream
 endobj
@@ -1895,39 +1894,39 @@ endobj
 xref
 0 27
 0000000000 65535 f 
-0000029192 00000 n 
-0000293563 00000 n 
+0000028603 00000 n 
+0000292974 00000 n 
 0000000015 00000 n 
 0000000152 00000 n 
-0000012618 00000 n 
-0000012755 00000 n 
-0000022248 00000 n 
-0000022385 00000 n 
-0000029261 00000 n 
-0000029386 00000 n 
-0000029517 00000 n 
-0000029651 00000 n 
-0000029789 00000 n 
-0000029913 00000 n 
-0000030042 00000 n 
-0000030174 00000 n 
-0000030310 00000 n 
-0000030438 00000 n 
-0000030565 00000 n 
-0000030694 00000 n 
-0000030827 00000 n 
-0000030929 00000 n 
-0000031025 00000 n 
-0000227799 00000 n 
-0000293826 00000 n 
-0000293912 00000 n 
+0000012555 00000 n 
+0000012692 00000 n 
+0000021930 00000 n 
+0000022067 00000 n 
+0000028672 00000 n 
+0000028797 00000 n 
+0000028928 00000 n 
+0000029062 00000 n 
+0000029200 00000 n 
+0000029324 00000 n 
+0000029453 00000 n 
+0000029585 00000 n 
+0000029721 00000 n 
+0000029849 00000 n 
+0000029976 00000 n 
+0000030105 00000 n 
+0000030238 00000 n 
+0000030340 00000 n 
+0000030436 00000 n 
+0000227210 00000 n 
+0000293237 00000 n 
+0000293323 00000 n 
 trailer
 <<
 /Size 27
 /Root 26 0 R
 /Info 25 0 R
-/ID [ <6A1DD869ECDFBD669905D38691D78536> <6A1DD869ECDFBD669905D38691D78536> ]
+/ID [ <38D753F8B8906F92C15E74296BB1D1DE> <38D753F8B8906F92C15E74296BB1D1DE> ]
 >>
 startxref
-294016
+293427
 %%EOF

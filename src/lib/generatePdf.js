@@ -297,7 +297,7 @@ function getPdfCopy(language) {
       ref: 'Ref',
       exampleBadge: 'EXAMPLE',
       exampleTitle: 'Example report with fictional data',
-      exampleDescription: 'Overlapping days are automatically deducted from the unique total.',
+      exampleDescription: 'All figures and dates are fictional and only illustrate the report contents.',
       title: 'FISCAL RESIDENCY REPORT',
       fiscalSubtitle: (year) => `Fiscal Year ${year} · Art. 9 Spanish Personal Income Tax Law 35/2006 · 183-Day Rule`,
       taxpayerSection: 'TAXPAYER DETAILS',
@@ -400,7 +400,7 @@ function getPdfCopy(language) {
     ref: 'Ref',
     exampleBadge: 'EJEMPLO',
     exampleTitle: 'Informe de ejemplo con datos ficticios',
-    exampleDescription: 'Los días solapados se descuentan automáticamente del total único.',
+    exampleDescription: 'Las cifras y fechas son ficticias y solo ilustran el contenido del informe.',
     title: 'INFORME DE RESIDENCIA FISCAL',
     fiscalSubtitle: (year) => `Ejercicio Fiscal ${year} · Art. 9 Ley 35/2006 IRPF · Regla de los 183 Días`,
     taxpayerSection: 'DATOS DEL CONTRIBUYENTE',
@@ -527,7 +527,7 @@ export async function generateTaxReport({
   const sortedRanges = [...summary.annotatedRanges].sort((a, b) => a.start.getTime() - b.start.getTime());
   const rawDays = sortedRanges.reduce((sum, range) => sum + range.days, 0);
   const overlapDeduction = Math.max(rawDays - verifiedTotalDays, 0);
-  const overlapSummaryDays = exampleMode ? 5 : overlapDeduction;
+  const overlapSummaryDays = overlapDeduction;
   const identifierLabel = documentType === 'nie' ? copy.nieLabel.replace(':', '') : copy.passportLabel.replace(':', '');
   const contactLabel = language === 'en' ? 'Contact' : 'Contacto';
   const fileOwnerLine = `${contactLabel}: ${reportOwner.email}`;
