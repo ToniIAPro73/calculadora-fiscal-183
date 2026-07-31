@@ -341,7 +341,7 @@
       "destination": "/index.html"
     },
     {
-      "source": "/((?!api/|assets/|.*\\..*$).*)",
+      "source": "/((?!api/|assets/|@|.*\\..*$).*)",
       "destination": "/index.html"
     }
   ]
