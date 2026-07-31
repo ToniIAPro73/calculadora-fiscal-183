@@ -231,6 +231,8 @@ export const translations = {
     userDetails: {
       title: "Report Details",
       description: "Enter your details to personalize the official PDF.",
+      sectionPersonal: "Your details",
+      sectionAdvisor: "For professional firms",
       nameLabel: "Full name",
       emailLabel: "Delivery email",
       emailPlaceholder: "e.g. alex@example.com",
@@ -714,6 +716,8 @@ export const translations = {
     userDetails: {
       title: "Datos del Informe",
       description: "Introduce tus datos para personalizar el PDF oficial.",
+      sectionPersonal: "Tus datos",
+      sectionAdvisor: "Para despachos",
       nameLabel: "Nombre completo",
       emailLabel: "Email de entrega",
       emailPlaceholder: "Ej. alex@example.com",
