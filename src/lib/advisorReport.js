@@ -5,8 +5,8 @@
 // server-only STRIPE_ADVISOR_PRICE_ID variable.
 
 export const ADVISOR_LOGO_MAX_BYTES = 500 * 1024; // 500 KB
-export const ADVISOR_LOGO_ACCEPTED_TYPES = ['image/png', 'image/jpeg'];
-export const ADVISOR_LOGO_ACCEPT_ATTR = 'image/png,image/jpeg';
+export const ADVISOR_LOGO_ACCEPTED_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+export const ADVISOR_LOGO_ACCEPT_ATTR = 'image/png,image/jpeg,image/webp';
 
 /**
  * The advisor option is only usable when the feature flag is enabled AND an

@@ -28,13 +28,13 @@ describe('isAdvisorCheckoutAvailable', () => {
 });
 
 describe('validateAdvisorLogo', () => {
-  it('accepts PNG and JPEG within the size limit', () => {
+  it('accepts PNG, JPEG and WebP within the size limit', () => {
     expect(validateAdvisorLogo({ type: 'image/png', size: 1024 })).toBeNull();
     expect(validateAdvisorLogo({ type: 'image/jpeg', size: ADVISOR_LOGO_MAX_BYTES })).toBeNull();
+    expect(validateAdvisorLogo({ type: 'image/webp', size: 1024 })).toBeNull();
   });
 
   it('rejects other mime types', () => {
-    expect(validateAdvisorLogo({ type: 'image/webp', size: 1024 })).toBe('invalidType');
     expect(validateAdvisorLogo({ type: 'image/svg+xml', size: 1024 })).toBe('invalidType');
     expect(validateAdvisorLogo({ type: 'application/pdf', size: 1024 })).toBe('invalidType');
   });

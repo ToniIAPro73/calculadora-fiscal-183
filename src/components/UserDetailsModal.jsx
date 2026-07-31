@@ -91,7 +91,10 @@ const UserDetailsModal = ({ isOpen, onClose, onConfirm, userData, setUserData, i
               {t('userDetails.sectionPersonal')}
             </h3>
             <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase opacity-60">{t('userDetails.nameLabel')}</Label>
+              <Label className="text-xs font-bold uppercase opacity-60">
+                {t('userDetails.nameLabel')}
+                <span aria-hidden="true" className="text-destructive"> *</span>
+              </Label>
               <Input
                 placeholder="Ej. Juan Pérez García"
                 value={userData.name}
@@ -101,7 +104,10 @@ const UserDetailsModal = ({ isOpen, onClose, onConfirm, userData, setUserData, i
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase opacity-60">{t('userDetails.emailLabel')}</Label>
+              <Label className="text-xs font-bold uppercase opacity-60">
+                {t('userDetails.emailLabel')}
+                <span aria-hidden="true" className="text-destructive"> *</span>
+              </Label>
               <Input
                 type="email"
                 inputMode="email"
@@ -140,6 +146,7 @@ const UserDetailsModal = ({ isOpen, onClose, onConfirm, userData, setUserData, i
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase opacity-60">
                 {language === 'es' ? `Número de ${selectedDocumentLabel}` : `${selectedDocumentLabel} number`}
+                <span aria-hidden="true" className="text-destructive"> *</span>
               </Label>
               <Input
                 placeholder={t('userDetails.taxIdPlaceholder')}
@@ -201,6 +208,7 @@ const UserDetailsModal = ({ isOpen, onClose, onConfirm, userData, setUserData, i
                   <div className="space-y-2">
                     <Label htmlFor="advisor-name" className="text-xs font-bold uppercase opacity-60">
                       {t('userDetails.advisorNameLabel')}
+                      <span aria-hidden="true" className="text-destructive"> *</span>
                     </Label>
                     <Input
                       id="advisor-name"
