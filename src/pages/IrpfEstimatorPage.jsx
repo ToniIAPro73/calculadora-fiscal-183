@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet';
-import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router';
 import { ArrowRight, Warning } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import Header from '@/components/Header.jsx';

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
-import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';

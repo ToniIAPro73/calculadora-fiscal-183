@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { BookOpen, FilePdf } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage.js';
 import LegalRef from '@/components/LegalRef.jsx';

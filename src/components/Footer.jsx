@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { ArrowUpRight, EnvelopeSimple, Question, ShieldCheck } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { requestOnboardingReplay } from '@/lib/onboarding';

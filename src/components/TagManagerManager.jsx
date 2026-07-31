@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import { COOKIE_CONSENT_UPDATED_EVENT } from '@/lib/cookieConsent';
 import { syncStoredConsentToTagManager, trackVirtualPageView, updateTagManagerConsent } from '@/lib/tagManager';

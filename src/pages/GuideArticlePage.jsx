@@ -1,6 +1,6 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { Link, Navigate, useParams } from 'react-router';
 import { ArrowRight } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import Header from '@/components/Header.jsx';

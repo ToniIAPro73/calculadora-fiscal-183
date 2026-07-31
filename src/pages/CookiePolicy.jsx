@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { Cookie, ShieldCheck, SlidersHorizontal, Clock3 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';

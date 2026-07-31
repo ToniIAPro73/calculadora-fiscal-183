@@ -1,6 +1,6 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
-import { Helmet } from 'react-helmet';
-import { useNavigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { useNavigate, Link } from 'react-router';
 import { toast } from 'sonner';
 import {
   ArrowSquareOut,
