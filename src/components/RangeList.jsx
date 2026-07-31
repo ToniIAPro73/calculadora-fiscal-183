@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/useLanguage.js';
 
-const RangeList = ({ ranges, onRemoveRange, onEditRange, variant = 'default', title }) => {
+const RangeList = ({ ranges, onRemoveRange, onEditRange, variant = 'default', title, rangeNotes }) => {
   const { t } = useLanguage();
 
   if (ranges.length === 0) return null;
@@ -81,9 +81,16 @@ const RangeList = ({ ranges, onRemoveRange, onEditRange, variant = 'default', ti
                 </div>
 
                 {isScenario && (
-                  <span className="inline-flex w-fit items-center rounded-full border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.1)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[hsl(var(--warning-strong))]">
-                    {t('scenario.badge')}
-                  </span>
+                  <div className="flex w-fit flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center rounded-full border border-dashed border-[hsl(var(--warning)/0.45)] bg-[hsl(var(--warning)/0.1)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[hsl(var(--warning-strong))]">
+                      {t('scenario.badge')}
+                    </span>
+                    {rangeNotes?.[index] && (
+                      <span className="inline-flex items-center rounded-full border border-dashed border-[hsl(var(--warning)/0.45)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                        {rangeNotes[index]}
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
 

@@ -4,6 +4,7 @@ import {
   calculateRangeDays,
   calculateScenarioComparison,
   calculateUniqueDays,
+  countDaysNotCoveredBy,
   getFiscalStatus,
   getRiskLevel,
   mergeDateRanges,
@@ -173,5 +174,30 @@ describe('calculateScenarioComparison', () => {
     expect(comparison.projected.totalDays).toBe(comparison.current.totalDays);
     expect(comparison.addedDays).toBe(0);
     expect(comparison.statusChanged).toBe(false);
+  });
+});
+
+describe('countDaysNotCoveredBy', () => {
+  const realRanges = [
+    { start: '2026-06-14', end: '2026-07-03' },
+    { start: '2026-07-04', end: '2026-07-28' },
+    { start: '2026-07-29', end: '2026-07-31' },
+  ];
+
+  it('returns 0 when the range is fully covered by the base ranges', () => {
+    expect(countDaysNotCoveredBy({ start: '2026-07-01', end: '2026-07-31' }, realRanges)).toBe(0);
+  });
+
+  it('counts only the days outside the base ranges', () => {
+    // Aug 1-31 adds 31 new days on top of the real stays.
+    expect(countDaysNotCoveredBy({ start: '2026-07-15', end: '2026-08-15' }, realRanges)).toBe(15);
+  });
+
+  it('returns the whole range length when there is no overlap at all', () => {
+    expect(countDaysNotCoveredBy({ start: '2026-08-01', end: '2026-08-10' }, realRanges)).toBe(10);
+  });
+
+  it('treats an empty base as everything new', () => {
+    expect(countDaysNotCoveredBy({ start: '2026-01-01', end: '2026-01-05' }, [])).toBe(5);
   });
 });

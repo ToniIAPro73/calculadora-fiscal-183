@@ -146,3 +146,25 @@ export function calculateScenarioComparison(currentRanges = [], scenarioRanges =
     statusChanged: current.status !== projected.status,
   };
 }
+
+/**
+ * Counts the unique days of `range` that are NOT already covered by
+ * `baseRanges`. Used to show what a hypothetical stay actually adds on top
+ * of the recorded real stays (a fully overlapped scenario range adds 0).
+ */
+export function countDaysNotCoveredBy(range, baseRanges = []) {
+  const { start, end } = normalizeDateRange(range);
+
+  const coveredDayKeys = new Set();
+  baseRanges.forEach((baseRange) => {
+    const base = normalizeDateRange(baseRange);
+    eachDayOfInterval({ start: base.start, end: base.end }).forEach((day) => {
+      coveredDayKeys.add(toDayKey(day));
+    });
+  });
+
+  return eachDayOfInterval({ start, end }).reduce(
+    (count, day) => (coveredDayKeys.has(toDayKey(day)) ? count : count + 1),
+    0,
+  );
+}

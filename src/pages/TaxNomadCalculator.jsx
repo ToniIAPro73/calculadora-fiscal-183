@@ -37,7 +37,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage.js';
 import { mergeDateRanges, calculateUniqueDays } from '@/lib/dateRangeMerger.js';
-import { calculateScenarioComparison, getRiskLevel } from '@/lib/fiscalSummary.js';
+import { calculateScenarioComparison, countDaysNotCoveredBy, getRiskLevel } from '@/lib/fiscalSummary.js';
 import {
   clearEconomicInterests,
   evaluateEconomicInterests,
@@ -725,6 +725,9 @@ const TaxNomadCalculator = () => {
                         onEditRange={handleEditScenarioRange}
                         variant="scenario"
                         title={t('scenario.title')}
+                        rangeNotes={scenarioRanges.map(
+                          (range) => `+${countDaysNotCoveredBy(range, selectedRanges)} ${t('scenario.newOverReal')}`
+                        )}
                       />
 
                       {scenarioActive && (
