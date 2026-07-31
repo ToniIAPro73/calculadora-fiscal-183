@@ -32,6 +32,21 @@ export function validateAdvisorLogo(file) {
   return null;
 }
 
+const DATA_URL_PDF_FORMATS = { png: 'PNG', jpeg: 'JPEG', jpg: 'JPEG', webp: 'WEBP' };
+
+/**
+ * Maps an image data URL to the jsPDF addImage format token. Returns null for
+ * unsupported or malformed sources so callers skip rendering instead of
+ * throwing inside jsPDF.
+ *
+ * @param {string | null | undefined} dataUrl
+ * @returns {null | 'PNG' | 'JPEG' | 'WEBP'}
+ */
+export function logoDataUrlToPdfFormat(dataUrl) {
+  const match = /^data:image\/([a-z0-9+.-]+);/i.exec(String(dataUrl || ''));
+  return match ? (DATA_URL_PDF_FORMATS[match[1].toLowerCase()] ?? null) : null;
+}
+
 /**
  * Sanitizes the advisor branding payload that travels in sessionStorage
  * (never to any server) and into the premium PDF header. Returns null when

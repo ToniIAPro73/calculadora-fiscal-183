@@ -4,6 +4,9 @@ import { generateTaxReport } from './generatePdf.js';
 const transparentPng =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAFgwJ/luzZkwAAAABJRU5ErkJggg==';
 
+const tinyWebp =
+  'data:image/webp;base64,UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA';
+
 function buildManyShortRanges(count) {
   return Array.from({ length: count }, (_, index) => ({
     start: new Date(2026, 0, index + 1),
@@ -245,6 +248,22 @@ describe('generateTaxReport', () => {
       ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
       brandLogoDataUrl: transparentPng,
       advisor: { name: 'Asesoría López', logo: transparentPng },
+    });
+
+    const output = doc.output();
+
+    expect(output).toContain('Informe preparado por');
+    expect(output).toContain('Asesoría López');
+  });
+
+  it('renders an advisor logo in WebP without distorting it', async () => {
+    const doc = await generateTaxReport({
+      name: 'Alex Rivera',
+      taxId: 'X1234567Z',
+      fiscalYear: 2026,
+      ranges: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 10) }],
+      brandLogoDataUrl: transparentPng,
+      advisor: { name: 'Asesoría López', logo: tinyWebp },
     });
 
     const output = doc.output();

@@ -6,7 +6,7 @@ import { calculateFiscalSummary } from './fiscalSummary.js';
 import { evaluateEconomicInterests } from './economicInterests.js';
 import { buildScenarioComparison } from './savedScenarios.js';
 import { getLocalizedLegalRef } from './legalRefs.js';
-import { sanitizeAdvisorBranding } from './advisorReport.js';
+import { logoDataUrlToPdfFormat, sanitizeAdvisorBranding } from './advisorReport.js';
 
 // Official sources cited on the final "Methodology and sources" page.
 const METHODOLOGY_REF_IDS = [
@@ -581,9 +581,17 @@ export async function generateTaxReport({
     let textX = M + 4;
     if (advisorBranding.logo) {
       try {
-        const logoFormat = advisorBranding.logo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
-        doc.addImage(advisorBranding.logo, logoFormat, M + 2.5, bandTop + 1.5, 9, 9);
-        textX = M + 15;
+        const logoFormat = logoDataUrlToPdfFormat(advisorBranding.logo);
+        if (logoFormat) {
+          // Preserve the logo's aspect ratio: fit it inside a 24 x 9 mm box
+          // and center it vertically within the band.
+          const props = doc.getImageProperties(advisorBranding.logo);
+          const scale = Math.min(24 / props.width, (bandHeight - 3) / props.height);
+          const logoW = props.width * scale;
+          const logoH = props.height * scale;
+          doc.addImage(advisorBranding.logo, logoFormat, M + 2.5, bandTop + (bandHeight - logoH) / 2, logoW, logoH);
+          textX = M + 2.5 + logoW + 3;
+        }
       } catch (error) {
         console.warn('PDF advisor logo rendering skipped:', error.message);
       }

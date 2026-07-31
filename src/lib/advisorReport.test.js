@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   ADVISOR_LOGO_MAX_BYTES,
   isAdvisorCheckoutAvailable,
+  logoDataUrlToPdfFormat,
   sanitizeAdvisorBranding,
   validateAdvisorLogo,
 } from './advisorReport.js';
@@ -69,5 +70,22 @@ describe('sanitizeAdvisorBranding', () => {
   it('caps the firm name length', () => {
     const result = sanitizeAdvisorBranding({ name: 'x'.repeat(200) });
     expect(result.name).toHaveLength(120);
+  });
+});
+
+describe('logoDataUrlToPdfFormat', () => {
+  it('maps supported image data urls to jsPDF format tokens', () => {
+    expect(logoDataUrlToPdfFormat('data:image/png;base64,AAAA')).toBe('PNG');
+    expect(logoDataUrlToPdfFormat('data:image/jpeg;base64,AAAA')).toBe('JPEG');
+    expect(logoDataUrlToPdfFormat('data:image/jpg;base64,AAAA')).toBe('JPEG');
+    expect(logoDataUrlToPdfFormat('data:image/webp;base64,AAAA')).toBe('WEBP');
+  });
+
+  it('returns null for unsupported types and malformed input', () => {
+    expect(logoDataUrlToPdfFormat('data:image/svg+xml;base64,AAAA')).toBeNull();
+    expect(logoDataUrlToPdfFormat('https://example.com/logo.png')).toBeNull();
+    expect(logoDataUrlToPdfFormat('')).toBeNull();
+    expect(logoDataUrlToPdfFormat(null)).toBeNull();
+    expect(logoDataUrlToPdfFormat(undefined)).toBeNull();
   });
 });
