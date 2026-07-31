@@ -36,3 +36,5 @@ desktop.ini
 *.timestamp-*
 .vercel
 .codex
+# Estado en runtime del MCP agentmemory (no pertenece al proyecto)
+/data/
