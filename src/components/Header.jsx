@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router';
 import {
   ArrowUpRight,
   BookOpen,
@@ -85,12 +85,14 @@ const Header = ({ totalDays = 0, onOpenModal, onOpenExample }) => {
             <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
-                size="icon"
                 onClick={() => setLanguage(language === 'es' ? 'en' : 'es')}
-                className="h-10 w-10 rounded-md border border-border bg-card"
+                className="h-10 gap-1.5 rounded-md border border-border bg-card px-3"
                 aria-label={language === 'es' ? 'Switch language to English' : 'Cambiar idioma a español'}
               >
                 <GlobeHemisphereWest size={18} weight="light" />
+                <span className="text-xs font-semibold uppercase tracking-widest">
+                  {language === 'es' ? 'ES' : 'EN'}
+                </span>
               </Button>
 
               <Button
