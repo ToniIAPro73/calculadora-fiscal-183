@@ -65,92 +65,12 @@
       "statusCode": 308
     },
     {
-      "source": "/es/",
-      "destination": "/",
-      "statusCode": 308
-    },
-    {
-      "source": "/en/",
-      "destination": "/en",
-      "statusCode": 308
-    },
-    {
-      "source": "/es/terms/",
-      "destination": "/es/terms",
-      "statusCode": 301
-    },
-    {
-      "source": "/es/privacy/",
-      "destination": "/es/privacy",
-      "statusCode": 301
-    },
-    {
-      "source": "/es/legal/",
-      "destination": "/es/legal",
-      "statusCode": 301
-    },
-    {
-      "source": "/es/cookies/",
-      "destination": "/es/cookies",
-      "statusCode": 301
-    },
-    {
-      "source": "/es/guide/",
-      "destination": "/es/guide",
-      "statusCode": 301
-    },
-    {
-      "source": "/es/about/",
-      "destination": "/es/about",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/terms/",
-      "destination": "/en/terms",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/privacy/",
-      "destination": "/en/privacy",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/legal/",
-      "destination": "/en/legal",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/cookies/",
-      "destination": "/en/cookies",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/guide/",
-      "destination": "/en/guide",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/about/",
-      "destination": "/en/about",
-      "statusCode": 301
-    },
-    {
       "source": "/es/legal-notice",
       "destination": "/es/legal",
       "statusCode": 301
     },
     {
-      "source": "/es/legal-notice/",
-      "destination": "/es/legal",
-      "statusCode": 301
-    },
-    {
       "source": "/en/legal-notice",
-      "destination": "/en/legal",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/legal-notice/",
       "destination": "/en/legal",
       "statusCode": 301
     }
