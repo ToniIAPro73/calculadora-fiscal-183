@@ -7,14 +7,28 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { buildFaqSchema, getLocalizedFaq } from '../src/lib/faqData.js';
+import {
+  GUIDES,
+  buildArticleSchema,
+  buildBreadcrumbSchema,
+  getGuidePath,
+  getLocalizedGuide,
+} from '../src/lib/guideContent/index.js';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const distDir = join(__dirname, '..', 'dist');
 const BASE_URL = 'https://www.regla183.com';
+
+// Build date: feeds sitemap <lastmod> and the Article JSON-LD dateModified
+// of the profile guides (freshness signal on every deploy).
+const today = new Date().toISOString().slice(0, 10);
 
 const routes = [
   {
     distPath: 'index.html',
     lang: 'es',
+    faqPage: 'home',
     canonical: `${BASE_URL}/`,
     title: 'Calculadora Regla 183 España | Residencia Fiscal',
     description: 'Calcula si eres residente fiscal en España según la regla de los 183 días. Herramienta gratuita para nómadas digitales y expatriados.',
@@ -75,6 +89,7 @@ const routes = [
   {
     distPath: 'es/guide/index.html',
     lang: 'es',
+    faqPage: 'guide',
     canonical: `${BASE_URL}/es/guide`,
     title: 'Guía Completa de la Regla de los 183 Días en España · TaxNomad',
     description: 'Todo lo que necesitas saber sobre la regla de los 183 días para determinar tu residencia fiscal en España. Explicación detallada con ejemplos y fuentes oficiales.',
@@ -97,8 +112,33 @@ const routes = [
     ],
   },
   {
+    distPath: 'es/irpf-estimator/index.html',
+    lang: 'es',
+    canonical: `${BASE_URL}/es/irpf-estimator`,
+    title: 'Estimador de IRPF para nuevos residentes fiscales · TaxNomad',
+    description: 'Estima tu IRPF en España tramo a tramo con la escala estatal vigente y una escala autonómica orientativa. Herramienta gratuita para nuevos residentes fiscales.',
+    hreflang: [
+      { lang: 'es', href: `${BASE_URL}/es/irpf-estimator` },
+      { lang: 'en', href: `${BASE_URL}/en/irpf-estimator` },
+      { lang: 'x-default', href: `${BASE_URL}/es/irpf-estimator` },
+    ],
+  },
+  {
+    distPath: 'es/premium-report/index.html',
+    lang: 'es',
+    canonical: `${BASE_URL}/es/premium-report`,
+    title: 'Qué incluye el informe premium de residencia fiscal · TaxNomad',
+    description: 'Descubre exactamente qué incluye el informe PDF premium de la regla de los 183 días: índice de contenidos, vista previa visual y un informe de ejemplo descargable con datos ficticios.',
+    hreflang: [
+      { lang: 'es', href: `${BASE_URL}/es/premium-report` },
+      { lang: 'en', href: `${BASE_URL}/en/premium-report` },
+      { lang: 'x-default', href: `${BASE_URL}/es/premium-report` },
+    ],
+  },
+  {
     distPath: 'en/index.html',
     lang: 'en',
+    faqPage: 'home',
     canonical: `${BASE_URL}/en`,
     title: '183-Day Rule Calculator Spain | Tax Residency',
     description: 'Calculate if you are a tax resident in Spain under the 183-day rule. Free tool for digital nomads and expats.',
@@ -159,6 +199,7 @@ const routes = [
   {
     distPath: 'en/guide/index.html',
     lang: 'en',
+    faqPage: 'guide',
     canonical: `${BASE_URL}/en/guide`,
     title: 'Complete Guide to the 183-Day Rule in Spain · TaxNomad',
     description: 'Everything you need to know about the 183-day rule to determine your tax residency in Spain. Detailed explanation with examples and official sources.',
@@ -180,12 +221,61 @@ const routes = [
       { lang: 'x-default', href: `${BASE_URL}/es/about` },
     ],
   },
+  {
+    distPath: 'en/irpf-estimator/index.html',
+    lang: 'en',
+    canonical: `${BASE_URL}/en/irpf-estimator`,
+    title: 'IRPF Estimator for New Tax Residents in Spain · TaxNomad',
+    description: 'Estimate your Spanish personal income tax (IRPF) bracket by bracket with the current state scale and an orientative regional scale. Free tool for new tax residents.',
+    hreflang: [
+      { lang: 'es', href: `${BASE_URL}/es/irpf-estimator` },
+      { lang: 'en', href: `${BASE_URL}/en/irpf-estimator` },
+      { lang: 'x-default', href: `${BASE_URL}/es/irpf-estimator` },
+    ],
+  },
+  {
+    distPath: 'en/premium-report/index.html',
+    lang: 'en',
+    canonical: `${BASE_URL}/en/premium-report`,
+    title: 'What the Premium Tax Residency Report Includes · TaxNomad',
+    description: 'See exactly what the premium 183-day rule PDF report includes: table of contents, visual preview and a downloadable example report with fictional data.',
+    hreflang: [
+      { lang: 'es', href: `${BASE_URL}/es/premium-report` },
+      { lang: 'en', href: `${BASE_URL}/en/premium-report` },
+      { lang: 'x-default', href: `${BASE_URL}/es/premium-report` },
+    ],
+  },
 ];
+
+// Content hub: one pre-rendered route per profile guide and language
+// (/es/guide/<slug> and /en/guide/<slug>, same slug in both locales).
+// `articleSlug` marks the route so the loop below injects the Article and
+// BreadcrumbList JSON-LD matching the visible content of GuideArticlePage.
+for (const lang of ['es', 'en']) {
+  for (const { slug } of GUIDES) {
+    const guide = getLocalizedGuide(slug, lang);
+    routes.push({
+      distPath: `${lang}/guide/${slug}/index.html`,
+      lang,
+      articleSlug: slug,
+      canonical: `${BASE_URL}${getGuidePath(lang, slug)}`,
+      title: `${guide.title} · TaxNomad`,
+      description: guide.description,
+      hreflang: [
+        { lang: 'es', href: `${BASE_URL}${getGuidePath('es', slug)}` },
+        { lang: 'en', href: `${BASE_URL}${getGuidePath('en', slug)}` },
+        { lang: 'x-default', href: `${BASE_URL}${getGuidePath('es', slug)}` },
+      ],
+    });
+  }
+}
 
 const NAV_LINKS = {
   es: [
     { href: '/', label: 'Inicio' },
     { href: '/es/guide', label: 'Guía de la regla de los 183 días' },
+    { href: '/es/irpf-estimator', label: 'Estimador de IRPF' },
+    { href: '/es/premium-report', label: 'Qué incluye el informe premium' },
     { href: '/es/about', label: 'Sobre TaxNomad' },
     { href: '/es/legal', label: 'Aviso legal' },
     { href: '/es/privacy', label: 'Política de privacidad' },
@@ -195,6 +285,8 @@ const NAV_LINKS = {
   en: [
     { href: '/en', label: 'Home' },
     { href: '/en/guide', label: '183-day rule guide' },
+    { href: '/en/irpf-estimator', label: 'IRPF estimator' },
+    { href: '/en/premium-report', label: 'What the premium report includes' },
     { href: '/en/about', label: 'About TaxNomad' },
     { href: '/en/legal', label: 'Legal notice' },
     { href: '/en/privacy', label: 'Privacy policy' },
@@ -202,6 +294,15 @@ const NAV_LINKS = {
     { href: '/en/cookies', label: 'Cookie policy' },
   ],
 };
+
+// The static #seo-content nav is also the crawler discovery path for the
+// profile guides: every pre-rendered page links to all of them.
+for (const lang of ['es', 'en']) {
+  for (const { slug } of GUIDES) {
+    const guide = getLocalizedGuide(slug, lang);
+    NAV_LINKS[lang].push({ href: getGuidePath(lang, slug), label: guide.shortTitle });
+  }
+}
 
 const baseHtml = readFileSync(join(distDir, 'index.html'), 'utf-8');
 
@@ -225,7 +326,7 @@ for (const route of routes) {
   const ogUrl = route.canonical;
   const ogType = route.distPath === 'index.html' ? 'website' : 'article';
 
-  const seoBlock = [
+  const seoParts = [
     `  <title>${route.title}</title>`,
     `  <meta name="description" content="${route.description}">`,
     `  <meta name="robots" content="index, follow">`,
@@ -239,7 +340,27 @@ for (const route of routes) {
     `  <meta name="twitter:title" content="${route.title}">`,
     `  <meta name="twitter:description" content="${route.description}">`,
     hreflangTags,
-  ].join('\n');
+  ];
+
+  // FAQ structured data for the routes that render a FAQ block. The answers
+  // are the same plain-text strings shown in the visible accordion (Google
+  // requires parity between structured data and visible content).
+  if (route.faqPage) {
+    const faqSchema = buildFaqSchema(getLocalizedFaq(route.lang, route.faqPage));
+    seoParts.push(`  <script type="application/ld+json">${JSON.stringify(faqSchema)}</script>`);
+  }
+
+  // Profile guides: Article + BreadcrumbList JSON-LD. dateModified uses the
+  // build date; the visible breadcrumbs on GuideArticlePage mirror the
+  // BreadcrumbList (Inicio/Home > Guía/Guide > guide).
+  if (route.articleSlug) {
+    const articleSchema = buildArticleSchema(route.articleSlug, route.lang, { dateModified: today });
+    const breadcrumbSchema = buildBreadcrumbSchema(route.articleSlug, route.lang);
+    seoParts.push(`  <script type="application/ld+json">${JSON.stringify(articleSchema)}</script>`);
+    seoParts.push(`  <script type="application/ld+json">${JSON.stringify(breadcrumbSchema)}</script>`);
+  }
+
+  const seoBlock = seoParts.join('\n');
 
   html = html.replace('</head>', `${seoBlock}\n</head>`);
 
@@ -272,7 +393,6 @@ for (const route of routes) {
 }
 
 // Keep sitemap <lastmod> in sync with the real deploy date on every build.
-const today = new Date().toISOString().slice(0, 10);
 const sitemapPath = join(distDir, 'sitemap.xml');
 try {
   const sitemap = readFileSync(sitemapPath, 'utf-8');

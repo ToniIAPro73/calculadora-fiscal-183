@@ -6,12 +6,14 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { GUIDE_SLUGS } from '../src/lib/guideContent/index.js';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
 const distDir = join(rootDir, 'dist');
 const BASE_URL = 'https://www.regla183.com';
 
-const SECTIONS = ['terms', 'privacy', 'legal', 'cookies', 'guide', 'about'];
+const SECTIONS = ['terms', 'privacy', 'legal', 'cookies', 'guide', 'about', 'irpf-estimator', 'premium-report'];
 
 const publicRoutes = [
   { distPath: 'index.html', canonical: `${BASE_URL}/` },
@@ -19,6 +21,11 @@ const publicRoutes = [
   ...SECTIONS.flatMap((section) => [
     { distPath: `es/${section}/index.html`, canonical: `${BASE_URL}/es/${section}` },
     { distPath: `en/${section}/index.html`, canonical: `${BASE_URL}/en/${section}` },
+  ]),
+  // Content hub: profile guides, same slug in both languages.
+  ...GUIDE_SLUGS.flatMap((slug) => [
+    { distPath: `es/guide/${slug}/index.html`, canonical: `${BASE_URL}/es/guide/${slug}` },
+    { distPath: `en/guide/${slug}/index.html`, canonical: `${BASE_URL}/en/guide/${slug}` },
   ]),
 ];
 

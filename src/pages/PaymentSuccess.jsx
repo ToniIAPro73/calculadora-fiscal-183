@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet';
-import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router';
 import { CheckCircle2, Download, ArrowLeft, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import BrandLogo from '@/components/BrandLogo';
@@ -164,6 +164,10 @@ const PaymentSuccess = () => {
         ranges: data.ranges || [],
         fiscalYear: data.fiscalYear || new Date().getFullYear(),
         language: data.language || language,
+        economicInterests: data.economicInterests || null,
+        secondCountry: data.secondCountry || null,
+        savedScenarios: data.savedScenarios || null,
+        advisor: data.advisor || null,
       });
       const safeName = (data.name || 'informe').replace(/\s+/g, '_');
       doc.save(`TaxNomad_Informe_${safeName}_${data.fiscalYear || new Date().getFullYear()}.pdf`);
@@ -218,10 +222,10 @@ const PaymentSuccess = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-[hsl(var(--success)/0.22)] bg-[hsl(var(--success)/0.1)]">
-                <CheckCircle2 className="h-7 w-7 text-[hsl(var(--success))]" />
+                <CheckCircle2 className="h-7 w-7 text-[hsl(var(--success-strong))]" />
               </div>
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--success)/0.2)] bg-[hsl(var(--success)/0.1)] px-3 py-1 text-xs font-semibold text-[hsl(var(--success))]">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--success)/0.2)] bg-[hsl(var(--success)/0.1)] px-3 py-1 text-xs font-semibold text-[hsl(var(--success-strong))]">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   {t('payment.verified')}
                 </div>
@@ -291,7 +295,7 @@ const PaymentSuccess = () => {
             </div>
 
             {downloaded && (
-              <div className="flex items-center gap-2 rounded-xl border border-[hsl(var(--success)/0.2)] bg-[hsl(var(--success)/0.1)] p-3 text-sm font-medium text-[hsl(var(--success))]">
+              <div className="flex items-center gap-2 rounded-xl border border-[hsl(var(--success)/0.2)] bg-[hsl(var(--success)/0.1)] p-3 text-sm font-medium text-[hsl(var(--success-strong))]">
                 <CheckCircle2 className="h-4 w-4 shrink-0" />
                 {statusMessage}
               </div>

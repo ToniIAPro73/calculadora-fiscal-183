@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet';
-import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router';
 import { Lock, ShieldCheck, FileText, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import BrandLogo from '@/components/BrandLogo';
@@ -8,7 +8,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 
 const PaymentMock = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [session, setSession] = useState(null);
   const [paying, setPaying] = useState(false);
 
@@ -22,7 +22,7 @@ const PaymentMock = () => {
   const handlePay = () => {
     setPaying(true);
     // Simulate a brief network delay, then redirect to success
-    setTimeout(() => navigate('/payment-success'), 1200);
+    setTimeout(() => navigate(`/${language}/payment-success`), 1200);
   };
 
   return (

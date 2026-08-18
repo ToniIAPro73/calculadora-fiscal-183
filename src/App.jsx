@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import { Toaster } from '@/components/ui/sonner';
 import ScrollToTop from './components/ScrollToTop';
 import TagManagerManager from './components/TagManagerManager';
@@ -16,7 +16,10 @@ const CookiePolicy = lazy(() => import('./pages/CookiePolicy'));
 const PaymentMock = lazy(() => import('./pages/PaymentMock'));
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
 const GuidePage = lazy(() => import('./pages/GuidePage'));
+const GuideArticlePage = lazy(() => import('./pages/GuideArticlePage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
+const IrpfEstimatorPage = lazy(() => import('./pages/IrpfEstimatorPage'));
+const PremiumReportPage = lazy(() => import('./pages/PremiumReportPage'));
 
 function App() {
   return (
@@ -57,9 +60,21 @@ function App() {
               <Route path="/es/guide" element={<GuidePage />} />
               <Route path="/en/guide" element={<GuidePage />} />
 
+              {/* Hub de contenido: guías por perfil (mismo slug en ES/EN) */}
+              <Route path="/es/guide/:slug" element={<GuideArticlePage />} />
+              <Route path="/en/guide/:slug" element={<GuideArticlePage />} />
+
               {/* Sobre Nosotros - E-E-A-T para Google */}
               <Route path="/es/about" element={<AboutPage />} />
               <Route path="/en/about" element={<AboutPage />} />
+
+              {/* Mini-herramienta: estimador de IRPF para nuevos residentes */}
+              <Route path="/es/irpf-estimator" element={<IrpfEstimatorPage />} />
+              <Route path="/en/irpf-estimator" element={<IrpfEstimatorPage />} />
+
+              {/* Contenido del informe premium: índice, preview y PDF de ejemplo */}
+              <Route path="/es/premium-report" element={<PremiumReportPage />} />
+              <Route path="/en/premium-report" element={<PremiumReportPage />} />
               
               {/* Ruta de respaldo segura hacia la raíz */}
               <Route path="*" element={<Navigate to="/" replace />} />

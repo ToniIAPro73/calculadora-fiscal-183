@@ -2,11 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/useLanguage.js';
+import { getRiskLevel } from '@/lib/fiscalSummary.js';
 
-const ProgressBar = ({ totalDays }) => {
+const ProgressBar = ({ totalDays, projectedDays }) => {
   const { t } = useLanguage();
   const limit = 183;
   const percentage = Math.min((totalDays / limit) * 100, 100);
+  const hasProjection = typeof projectedDays === 'number' && projectedDays > totalDays;
+  const projectedPercentage = hasProjection ? Math.min((projectedDays / limit) * 100, 100) : null;
   const [isPulsing, setIsPulsing] = useState(false);
   
   useEffect(() => {
@@ -18,8 +21,9 @@ const ProgressBar = ({ totalDays }) => {
   }, [totalDays]);
 
   const getStatus = () => {
-    if (totalDays <= 150) return { color: 'success', label: t('progress.safe') };
-    if (totalDays <= 183) return { color: 'warning', label: t('progress.approaching') };
+    const level = getRiskLevel(totalDays);
+    if (level === 'safe') return { color: 'success', label: t('progress.safe') };
+    if (level === 'warning') return { color: 'warning', label: t('progress.approaching') };
     return { color: 'destructive', label: t('progress.over') };
   };
 
@@ -27,9 +31,9 @@ const ProgressBar = ({ totalDays }) => {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between text-sm">
-        <span className="field-label">{t('progress.title')}</span>
-        <span className="font-semibold text-foreground">
+      <div className="space-y-1">
+        <span className="field-label block">{t('progress.title')}</span>
+        <span className="block text-xl font-bold tracking-tight text-foreground">
           {totalDays} / {limit} {t('dateSelector.days')}
         </span>
       </div>
@@ -53,14 +57,28 @@ const ProgressBar = ({ totalDays }) => {
           aria-valuemax="100"
           aria-label={t('progress.title')}
         />
-        
+
+        {hasProjection && (
+          <div
+            aria-hidden="true"
+            className="absolute inset-y-0 border-y border-dashed border-[hsl(var(--warning)/0.7)]"
+            style={{
+              left: `${percentage}%`,
+              width: `${projectedPercentage - percentage}%`,
+              background:
+                'repeating-linear-gradient(45deg, hsl(var(--warning) / 0.35) 0 6px, hsl(var(--warning) / 0.12) 6px 12px)',
+              transition: 'left 800ms cubic-bezier(0.32,0.72,0,1), width 800ms cubic-bezier(0.32,0.72,0,1)',
+            }}
+          />
+        )}
+
         <div className="absolute inset-0 flex items-center justify-center">
           <span className={cn(
             "text-xs font-semibold transition-colors duration-300",
-            percentage > 50 
-              ? status.color === 'warning' 
+            percentage > 50
+              ? status.color === 'warning'
                 ? "text-[hsl(var(--warning-foreground))]"
-                : "text-white"
+                : "text-[hsl(0_0%_10%)]"
               : "text-foreground"
           )}>
             {percentage.toFixed(1)}%
@@ -68,12 +86,18 @@ const ProgressBar = ({ totalDays }) => {
         </div>
       </div>
 
+      {hasProjection && (
+        <p className="text-xs font-medium text-[hsl(var(--warning-strong))]">
+          {t('scenario.withScenario')}: {projectedDays} / {limit} {t('dateSelector.days')} ({projectedPercentage.toFixed(1)}%)
+        </p>
+      )}
+
       <div className="flex items-center justify-between text-xs">
         <span className={cn(
           "rounded-full px-3 py-1.5 font-medium uppercase tracking-wide transition-all duration-300",
           status.color === 'success' && "bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))]",
-          status.color === 'warning' && "bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning-foreground))]",
-          status.color === 'destructive' && "bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))]"
+          status.color === 'warning' && "bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning-strong))]",
+          status.color === 'destructive' && "bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive-strong))]"
         )}>
           {status.label}
         </span>

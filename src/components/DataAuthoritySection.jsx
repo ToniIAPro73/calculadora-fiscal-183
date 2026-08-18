@@ -2,6 +2,7 @@
 import React from 'react';
 import { ArrowSquareOut, ShieldCheck, WarningCircle } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage.js';
+import LegalRef from '@/components/LegalRef.jsx';
 
 const DataAuthoritySection = () => {
   const { t } = useLanguage();
@@ -25,6 +26,9 @@ const DataAuthoritySection = () => {
             <p className="text-muted-foreground">
               {t('authority.whatIsDesc')}
             </p>
+            <p className="mt-2 text-xs">
+              <LegalRef refId="lirpf-art9" />
+            </p>
           </section>
 
           <section>
@@ -38,6 +42,9 @@ const DataAuthoritySection = () => {
               <li>{t('authority.whatCountsList3')}</li>
               <li>{t('authority.whatCountsList4')}</li>
             </ul>
+            <p className="mt-2 text-xs">
+              <LegalRef refId="dgt-ausencias-esporadicas" />
+            </p>
           </section>
 
           <section className="lg:col-span-2">
@@ -54,6 +61,9 @@ const DataAuthoritySection = () => {
               <li>{t('authority.exceptionsList4')}</li>
               <li>{t('authority.exceptionsList5')}</li>
             </ul>
+            <p className="mt-2 text-xs">
+              <LegalRef refId="dgt-intereses-economicos" />
+            </p>
             </div>
 
             <div className="rounded-xl border border-border bg-muted/35 p-5">
@@ -83,10 +93,10 @@ const DataAuthoritySection = () => {
           </section>
         </div>
 
-          <div className="rounded-xl border border-[hsl(var(--warning)/0.18)] bg-[hsl(var(--warning)/0.08)] p-5">
+          <div className="rounded-xl border border-[hsl(var(--warning)/0.3)] bg-[hsl(var(--warning)/0.08)] p-5">
             <div className="flex gap-3">
-              <WarningCircle size={20} weight="fill" className="mt-0.5 shrink-0 text-[hsl(var(--warning-foreground))]" />
-              <div className="text-xs text-muted-foreground">
+              <WarningCircle size={20} weight="fill" className="mt-0.5 shrink-0 text-[hsl(var(--warning-strong))]" />
+              <div className="text-xs leading-5 text-foreground/80">
                 <span className="font-semibold block mb-1 text-foreground">{t('authority.disclaimerTitle')}</span>
                 {t('authority.disclaimerDesc')}
               </div>

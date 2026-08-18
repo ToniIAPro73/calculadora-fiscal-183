@@ -1,9 +1,10 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
-import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
+import LegalRef from '@/components/LegalRef.jsx';
 import { getCanonicalUrl } from '@/lib/seo';
 
 const AboutPage = () => {
@@ -79,8 +80,11 @@ const AboutPage = () => {
             </h2>
             <p className="mb-4 leading-7 text-muted-foreground">
               {isEs
-                ? 'La calculadora de TaxNomad se basa en el artículo 9 de la Ley 35/2007 del Impuesto sobre la Renta de las Personas Físicas (LIRPF), que establece el criterio de los 183 días como determinante principal de la residencia fiscal en España. Nuestro algoritmo de cálculo funciona de la siguiente manera:'
-                : 'The TaxNomad calculator is based on Article 9 of Law 35/2007 on Personal Income Tax (LIRPF), which establishes the 183-day criterion as the main determinant of tax residency in Spain. Our calculation algorithm works as follows:'}
+                ? 'La calculadora de TaxNomad se basa en el artículo 9 de la Ley 35/2006 del Impuesto sobre la Renta de las Personas Físicas (LIRPF), que establece el criterio de los 183 días como determinante principal de la residencia fiscal en España. Nuestro algoritmo de cálculo funciona de la siguiente manera:'
+                : 'The TaxNomad calculator is based on Article 9 of Law 35/2006 on Personal Income Tax (LIRPF), which establishes the 183-day criterion as the main determinant of tax residency in Spain. Our calculation algorithm works as follows:'}
+            </p>
+            <p className="mb-4 text-xs">
+              <LegalRef refId="lirpf-art9" />
             </p>
             <ol className="mb-4 space-y-3">
               {(isEs ? [
@@ -118,8 +122,8 @@ const AboutPage = () => {
             </p>
             <p className="leading-7 text-muted-foreground">
               {isEs
-                ? 'Las fuentes oficiales en las que nos basamos incluyen la Agencia Tributaria española (AEAT), la legislación vigente (Ley 35/2007 y modificaciones posteriores), y los convenios de doble imposición publicados por el Ministerio de Asuntos Exteriores. Todos los cálculos se realizan del lado del cliente o mediante una API pública documentada, garantizando la trazabilidad y auditabilidad del proceso.'
-                : 'The official sources we rely on include the Spanish Tax Authority (AEAT), current legislation (Law 35/2007 and subsequent amendments), and double taxation treaties published by the Ministry of Foreign Affairs. All calculations are performed on the client side or through a documented public API, ensuring the traceability and auditability of the process.'}
+                ? 'Las fuentes oficiales en las que nos basamos incluyen la Agencia Tributaria española (AEAT), la legislación vigente (Ley 35/2006 y modificaciones posteriores), y los convenios de doble imposición publicados por el Ministerio de Asuntos Exteriores. Todos los cálculos se realizan del lado del cliente o mediante una API pública documentada, garantizando la trazabilidad y auditabilidad del proceso.'
+                : 'The official sources we rely on include the Spanish Tax Authority (AEAT), current legislation (Law 35/2006 and subsequent amendments), and double taxation treaties published by the Ministry of Foreign Affairs. All calculations are performed on the client side or through a documented public API, ensuring the traceability and auditability of the process.'}
             </p>
           </section>
 

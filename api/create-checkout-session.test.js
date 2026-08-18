@@ -43,6 +43,7 @@ describe('create-checkout-session', () => {
     vi.clearAllMocks();
     process.env.STRIPE_SECRET_KEY = 'sk_test_valid';
     process.env.STRIPE_PRICE_ID = 'price_123';
+    delete process.env.STRIPE_ADVISOR_PRICE_ID;
     process.env.APP_URL = 'https://example.com/';
     process.env.DATABASE_URL = 'postgres://example';
     process.env.NODE_ENV = 'test';
@@ -123,6 +124,110 @@ describe('create-checkout-session', () => {
 
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual({ error: 'Invalid date ranges' });
+    expect(mocks.stripeSessionCreate).not.toHaveBeenCalled();
+  });
+
+  it('uses the standard price by default and adds no advisor metadata', async () => {
+    const { default: handler } = await import('./create-checkout-session.js');
+    const res = createResponse();
+
+    await handler(
+      {
+        method: 'POST',
+        body: {
+          name: 'Alex Rivera',
+          email: 'alex@example.com',
+          taxId: 'X1234567Z',
+          ranges: [{ start: '2026-01-01', end: '2026-01-10' }],
+        },
+      },
+      res,
+    );
+
+    expect(res.statusCode).toBe(200);
+    expect(mocks.stripeSessionCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        line_items: [{ price: 'price_123', quantity: 1 }],
+        metadata: expect.not.objectContaining({ advisor_report: 'true' }),
+      }),
+    );
+  });
+
+  it('uses the advisor price only when the advisor flag is set', async () => {
+    process.env.STRIPE_ADVISOR_PRICE_ID = 'price_advisor_123';
+    const { default: handler } = await import('./create-checkout-session.js');
+    const res = createResponse();
+
+    await handler(
+      {
+        method: 'POST',
+        body: {
+          name: 'Alex Rivera',
+          email: 'alex@example.com',
+          taxId: 'X1234567Z',
+          advisor: true,
+          ranges: [{ start: '2026-01-01', end: '2026-01-10' }],
+        },
+      },
+      res,
+    );
+
+    expect(res.statusCode).toBe(200);
+    expect(mocks.stripeSessionCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        line_items: [{ price: 'price_advisor_123', quantity: 1 }],
+        metadata: expect.objectContaining({ advisor_report: 'true' }),
+      }),
+    );
+  });
+
+  it('keeps the standard price when advisor is explicitly false', async () => {
+    process.env.STRIPE_ADVISOR_PRICE_ID = 'price_advisor_123';
+    const { default: handler } = await import('./create-checkout-session.js');
+    const res = createResponse();
+
+    await handler(
+      {
+        method: 'POST',
+        body: {
+          name: 'Alex Rivera',
+          email: 'alex@example.com',
+          taxId: 'X1234567Z',
+          advisor: false,
+          ranges: [{ start: '2026-01-01', end: '2026-01-10' }],
+        },
+      },
+      res,
+    );
+
+    expect(res.statusCode).toBe(200);
+    expect(mocks.stripeSessionCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        line_items: [{ price: 'price_123', quantity: 1 }],
+      }),
+    );
+  });
+
+  it('fails cleanly when the advisor price is not configured', async () => {
+    const { default: handler } = await import('./create-checkout-session.js');
+    const res = createResponse();
+
+    await handler(
+      {
+        method: 'POST',
+        body: {
+          name: 'Alex Rivera',
+          email: 'alex@example.com',
+          taxId: 'X1234567Z',
+          advisor: true,
+          ranges: [{ start: '2026-01-01', end: '2026-01-10' }],
+        },
+      },
+      res,
+    );
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body).toEqual({ error: 'STRIPE_ADVISOR_PRICE_ID not configured' });
     expect(mocks.stripeSessionCreate).not.toHaveBeenCalled();
   });
 });

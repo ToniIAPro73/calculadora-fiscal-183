@@ -105,8 +105,32 @@
       "destination": "/es/guide/index.html"
     },
     {
+      "source": "/es/guide/digital-nomad-visa-183-days",
+      "destination": "/es/guide/digital-nomad-visa-183-days/index.html"
+    },
+    {
+      "source": "/es/guide/beckham-law-vs-183-days",
+      "destination": "/es/guide/beckham-law-vs-183-days/index.html"
+    },
+    {
+      "source": "/es/guide/counting-days-arrival-departure",
+      "destination": "/es/guide/counting-days-arrival-departure/index.html"
+    },
+    {
+      "source": "/es/guide/sporadic-absences-tax-treaties",
+      "destination": "/es/guide/sporadic-absences-tax-treaties/index.html"
+    },
+    {
       "source": "/es/about",
       "destination": "/es/about/index.html"
+    },
+    {
+      "source": "/es/irpf-estimator",
+      "destination": "/es/irpf-estimator/index.html"
+    },
+    {
+      "source": "/es/premium-report",
+      "destination": "/es/premium-report/index.html"
     },
     {
       "source": "/en/terms",
@@ -129,8 +153,32 @@
       "destination": "/en/guide/index.html"
     },
     {
+      "source": "/en/guide/digital-nomad-visa-183-days",
+      "destination": "/en/guide/digital-nomad-visa-183-days/index.html"
+    },
+    {
+      "source": "/en/guide/beckham-law-vs-183-days",
+      "destination": "/en/guide/beckham-law-vs-183-days/index.html"
+    },
+    {
+      "source": "/en/guide/counting-days-arrival-departure",
+      "destination": "/en/guide/counting-days-arrival-departure/index.html"
+    },
+    {
+      "source": "/en/guide/sporadic-absences-tax-treaties",
+      "destination": "/en/guide/sporadic-absences-tax-treaties/index.html"
+    },
+    {
       "source": "/en/about",
       "destination": "/en/about/index.html"
+    },
+    {
+      "source": "/en/irpf-estimator",
+      "destination": "/en/irpf-estimator/index.html"
+    },
+    {
+      "source": "/en/premium-report",
+      "destination": "/en/premium-report/index.html"
     },
     {
       "source": "/es/payment-success",
@@ -153,7 +201,7 @@
       "destination": "/index.html"
     },
     {
-      "source": "/((?!api/|assets/|.*\\..*$).*)",
+      "source": "/((?!api/|assets/|@|.*\\..*$).*)",
       "destination": "/index.html"
     }
   ]

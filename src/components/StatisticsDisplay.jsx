@@ -4,18 +4,19 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/useLanguage.js';
 
-const StatisticsDisplay = ({ totalDays }) => {
+const StatisticsDisplay = ({ totalDays, projectedDays }) => {
   const { t } = useLanguage();
   const shouldReduceMotion = useReducedMotion();
-  
+
   const limit = 183;
   const remaining = Math.max(limit - totalDays, 0);
   const percentage = Math.min((totalDays / limit) * 100, 100);
+  const hasProjection = typeof projectedDays === 'number' && projectedDays !== totalDays;
   
   const getStatus = () => {
     if (totalDays <= 150) return { color: 'success', label: t('progress.safe'), textColor: 'text-[hsl(var(--primary))]' };
-    if (totalDays <= 183) return { color: 'warning', label: t('progress.approaching'), textColor: 'text-[hsl(var(--warning-foreground))]' };
-    return { color: 'destructive', label: t('progress.over'), textColor: 'text-[hsl(var(--destructive))]' };
+    if (totalDays <= 183) return { color: 'warning', label: t('progress.approaching'), textColor: 'text-[hsl(var(--warning-strong))]' };
+    return { color: 'destructive', label: t('progress.over'), textColor: 'text-[hsl(var(--destructive-strong))]' };
   };
 
   const status = getStatus();
@@ -93,6 +94,17 @@ const StatisticsDisplay = ({ totalDays }) => {
             {status.label}
           </motion.span>
         </div>
+
+        {hasProjection && (
+          <div className="mt-3 flex items-center justify-between border-t border-dashed border-[hsl(var(--warning)/0.4)] pt-3">
+            <span className="text-sm font-medium text-[hsl(var(--warning-strong))]">
+              {t('scenario.withScenario')}
+            </span>
+            <span className="text-sm font-bold text-[hsl(var(--warning-strong))]">
+              {projectedDays} / {limit} {t('dateSelector.days')}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

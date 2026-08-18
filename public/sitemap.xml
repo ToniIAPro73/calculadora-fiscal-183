@@ -141,4 +141,117 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/about"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/about"/>
   </url>
+  <!-- Estimador IRPF - Espanol -->
+  <url>
+    <loc>https://www.regla183.com/es/irpf-estimator</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/irpf-estimator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/irpf-estimator"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/irpf-estimator"/>
+  </url>
+  <!-- Estimador IRPF - Ingles -->
+  <url>
+    <loc>https://www.regla183.com/en/irpf-estimator</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/irpf-estimator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/irpf-estimator"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/irpf-estimator"/>
+  </url>
+  <!-- Informe premium - Espanol -->
+  <url>
+    <loc>https://www.regla183.com/es/premium-report</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/premium-report"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/premium-report"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/premium-report"/>
+  </url>
+  <!-- Informe premium - Ingles -->
+  <url>
+    <loc>https://www.regla183.com/en/premium-report</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/premium-report"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/premium-report"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/premium-report"/>
+  </url>
+  <!-- Hub de contenido: guias por perfil (mismo slug en ES/EN) -->
+  <url>
+    <loc>https://www.regla183.com/es/guide/digital-nomad-visa-183-days</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/guide/digital-nomad-visa-183-days"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/guide/digital-nomad-visa-183-days"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/guide/digital-nomad-visa-183-days"/>
+  </url>
+  <url>
+    <loc>https://www.regla183.com/en/guide/digital-nomad-visa-183-days</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/guide/digital-nomad-visa-183-days"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/guide/digital-nomad-visa-183-days"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/guide/digital-nomad-visa-183-days"/>
+  </url>
+  <url>
+    <loc>https://www.regla183.com/es/guide/beckham-law-vs-183-days</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/guide/beckham-law-vs-183-days"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/guide/beckham-law-vs-183-days"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/guide/beckham-law-vs-183-days"/>
+  </url>
+  <url>
+    <loc>https://www.regla183.com/en/guide/beckham-law-vs-183-days</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/guide/beckham-law-vs-183-days"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/guide/beckham-law-vs-183-days"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/guide/beckham-law-vs-183-days"/>
+  </url>
+  <url>
+    <loc>https://www.regla183.com/es/guide/counting-days-arrival-departure</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/guide/counting-days-arrival-departure"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/guide/counting-days-arrival-departure"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/guide/counting-days-arrival-departure"/>
+  </url>
+  <url>
+    <loc>https://www.regla183.com/en/guide/counting-days-arrival-departure</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/guide/counting-days-arrival-departure"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/guide/counting-days-arrival-departure"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/guide/counting-days-arrival-departure"/>
+  </url>
+  <url>
+    <loc>https://www.regla183.com/es/guide/sporadic-absences-tax-treaties</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/guide/sporadic-absences-tax-treaties"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/guide/sporadic-absences-tax-treaties"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/guide/sporadic-absences-tax-treaties"/>
+  </url>
+  <url>
+    <loc>https://www.regla183.com/en/guide/sporadic-absences-tax-treaties</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.regla183.com/es/guide/sporadic-absences-tax-treaties"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.regla183.com/en/guide/sporadic-absences-tax-treaties"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.regla183.com/es/guide/sporadic-absences-tax-treaties"/>
+  </url>
 </urlset>

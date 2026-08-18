@@ -271,6 +271,36 @@ const addTransformIndexHtml = {
 	},
 };
 
+// Vite's static middleware serves text files without a charset, so browsers
+// fall back to windows-1252 and UTF-8 accents render as mojibake (NÃ³mada).
+// Serve /llms.txt and /openapi.json with the same explicit charset as Vercel
+// (see vercel.json headers) in dev and preview.
+const UTF8_STATIC_FILES = {
+	'/llms.txt': 'text/plain; charset=utf-8',
+	'/openapi.json': 'application/json; charset=utf-8',
+};
+
+const serveUtf8StaticFiles = (req, res, next) => {
+	const contentType = UTF8_STATIC_FILES[req.url?.split('?')[0]];
+	if (!contentType) {
+		next();
+		return;
+	}
+	const filePath = path.resolve(__dirname, 'public', req.url.split('?')[0].slice(1));
+	res.setHeader('Content-Type', contentType);
+	res.end(readFileSync(filePath));
+};
+
+const utf8StaticFilesPlugin = {
+	name: 'utf8-static-files',
+	configureServer(server) {
+		server.middlewares.use(serveUtf8StaticFiles);
+	},
+	configurePreviewServer(server) {
+		server.middlewares.use(serveUtf8StaticFiles);
+	},
+};
+
 console.warn = () => { };
 
 const logger = createLogger()
@@ -292,7 +322,8 @@ export default defineConfig({
 	plugins: [
 		...(isDev ? [inlineEditPlugin(), editModeDevPlugin(), selectionModePlugin(), iframeRouteRestorationPlugin(), pocketbaseAuthPlugin()] : []),
 		react(),
-		addTransformIndexHtml
+		addTransformIndexHtml,
+		utf8StaticFilesPlugin
 	],
 	server: {
 		port: 3000,

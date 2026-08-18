@@ -5,9 +5,9 @@ import { cn } from '@/lib/utils';
 
 const SummaryCard = ({ title, value, percentage, status }) => {
   const statusColorMap = {
-    safe: 'text-[hsl(var(--success))] bg-[hsl(var(--success)/0.1)] border-[hsl(var(--success)/0.16)]',
-    warning: 'text-[hsl(var(--warning-foreground))] bg-[hsl(var(--warning)/0.12)] border-[hsl(var(--warning)/0.18)]',
-    destructive: 'text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.12)] border-[hsl(var(--destructive)/0.18)]'
+    safe: 'text-[hsl(var(--success-strong))] bg-[hsl(var(--success)/0.1)] border-[hsl(var(--success)/0.16)]',
+    warning: 'text-[hsl(var(--warning-strong))] bg-[hsl(var(--warning)/0.12)] border-[hsl(var(--warning)/0.18)]',
+    destructive: 'text-[hsl(var(--destructive-strong))] bg-[hsl(var(--destructive)/0.12)] border-[hsl(var(--destructive)/0.18)]'
   };
 
   const currentStatusColor = statusColorMap[status?.color] || 'text-foreground bg-card border-border';

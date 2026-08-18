@@ -59,6 +59,10 @@ const DateRangeSelector = ({
   onEditingHandled,
   isOpen,
   setIsOpen,
+  allowFutureDates = false,
+  modalTitle,
+  modalDescription,
+  editRangeTitle,
 }) => {
   const { t, language } = useLanguage();
   const [draftStart, setDraftStart] = useState(null);
@@ -79,7 +83,10 @@ const DateRangeSelector = ({
   }, [fiscalYear, today]);
   const exerciseStart = useMemo(() => startOfYear(new Date(fiscalYear, 0, 1)), [fiscalYear]);
   const exerciseEnd = useMemo(() => endOfYear(new Date(fiscalYear, 0, 1)), [fiscalYear]);
-  const maxAllowedDate = useMemo(() => (isBefore(exerciseEnd, today) ? exerciseEnd : today), [exerciseEnd, today]);
+  const maxAllowedDate = useMemo(
+    () => (allowFutureDates || isBefore(exerciseEnd, today) ? exerciseEnd : today),
+    [allowFutureDates, exerciseEnd, today],
+  );
   
   const premiumCopy = useMemo(() => (
     language === 'es'
@@ -103,6 +110,10 @@ const DateRangeSelector = ({
 
   const isEditing = editingRangeIndex !== null && editingRangeIndex !== undefined;
   const currentEditingRange = isEditing ? ranges[editingRangeIndex] : null;
+  const dialogTitle = isEditing
+    ? (editRangeTitle ?? t('dateSelector.editRange'))
+    : (modalTitle ?? t('dateSelector.modalTitle'));
+  const dialogDescription = modalDescription ?? t('dateSelector.modalDescription');
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(min-width: 1024px)');
@@ -310,13 +321,13 @@ const DateRangeSelector = ({
               <div className="space-y-1 text-left">
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-primary">
                   <CalendarDots size={14} weight="fill" />
-                  {isEditing ? t('dateSelector.editRange') : t('dateSelector.modalTitle')}
+                  {dialogTitle}
                 </div>
                 <DialogTitle className="text-2xl font-[700] tracking-tight text-foreground sm:text-3xl">
-                  {isEditing ? t('dateSelector.editRange') : t('dateSelector.modalTitle')}
+                  {dialogTitle}
                 </DialogTitle>
                 <DialogDescription className="text-sm text-muted-foreground sm:text-base">
-                  {t('dateSelector.modalDescription')}
+                  {dialogDescription}
                 </DialogDescription>
               </div>
 

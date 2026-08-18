@@ -99,6 +99,17 @@ export function getFiscalStatus(totalDays, warningThreshold = DEFAULT_WARNING_TH
   return 'safe';
 }
 
+/**
+ * Single source of truth for the visual risk level ("semáforo de riesgo")
+ * shared by the countdown card and the risk gauge:
+ * 'safe' up to 150 days, 'warning' 151-183, 'destructive' over 183.
+ * The 150-day warning threshold keeps ~1 month of planning margin and is
+ * the criterion already shipped and tested across the app.
+ */
+export function getRiskLevel(totalDays, warningThreshold = DEFAULT_WARNING_THRESHOLD, limit = DEFAULT_FISCAL_LIMIT) {
+  return getFiscalStatus(totalDays, warningThreshold, limit);
+}
+
 export function calculateFiscalSummary(ranges = [], options = {}) {
   const limit = options.limit ?? DEFAULT_FISCAL_LIMIT;
   const warningThreshold = options.warningThreshold ?? DEFAULT_WARNING_THRESHOLD;
@@ -117,4 +128,43 @@ export function calculateFiscalSummary(ranges = [], options = {}) {
     mergedRanges: merged,
     annotatedRanges,
   };
+}
+
+/**
+ * Compares the current situation (real stays) against a hypothetical scenario
+ * (real + planned stays merged). Overlapping days are counted only once, so
+ * `addedDays` can be lower than the raw sum of the scenario ranges.
+ */
+export function calculateScenarioComparison(currentRanges = [], scenarioRanges = [], options = {}) {
+  const current = calculateFiscalSummary(currentRanges, options);
+  const projected = calculateFiscalSummary([...currentRanges, ...scenarioRanges], options);
+
+  return {
+    current,
+    projected,
+    addedDays: projected.totalDays - current.totalDays,
+    statusChanged: current.status !== projected.status,
+  };
+}
+
+/**
+ * Counts the unique days of `range` that are NOT already covered by
+ * `baseRanges`. Used to show what a hypothetical stay actually adds on top
+ * of the recorded real stays (a fully overlapped scenario range adds 0).
+ */
+export function countDaysNotCoveredBy(range, baseRanges = []) {
+  const { start, end } = normalizeDateRange(range);
+
+  const coveredDayKeys = new Set();
+  baseRanges.forEach((baseRange) => {
+    const base = normalizeDateRange(baseRange);
+    eachDayOfInterval({ start: base.start, end: base.end }).forEach((day) => {
+      coveredDayKeys.add(toDayKey(day));
+    });
+  });
+
+  return eachDayOfInterval({ start, end }).reduce(
+    (count, day) => (coveredDayKeys.has(toDayKey(day)) ? count : count + 1),
+    0,
+  );
 }

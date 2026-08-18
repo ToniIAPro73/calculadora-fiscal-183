@@ -3,7 +3,24 @@ import { format } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { reportOwner } from './reportMetadata.js';
 import { calculateFiscalSummary } from './fiscalSummary.js';
-import logoSource from '@/assets/logo.png';
+import { evaluateEconomicInterests } from './economicInterests.js';
+import { buildScenarioComparison } from './savedScenarios.js';
+import { getLocalizedLegalRef } from './legalRefs.js';
+import { logoDataUrlToPdfFormat, sanitizeAdvisorBranding } from './advisorReport.js';
+import {
+  AEAT_TREATY_LIST_URL,
+  OTHER_COUNTRY_OPTION,
+  TIE_BREAKER_RULES,
+  getTaxTreatyCountry,
+} from './taxTreaties.js';
+
+// Official sources cited on the final "Methodology and sources" page.
+const METHODOLOGY_REF_IDS = [
+  'lirpf-art9',
+  'dgt-ausencias-esporadicas',
+  'dgt-intereses-economicos',
+  'dgt-convenios-cdi',
+];
 
 const C = {
   blue: [71, 100, 158],
@@ -36,9 +53,13 @@ function buildDataUrlFromBlob(blob) {
 
 let brandLogoDataUrlPromise;
 
+// Lazy import: keeps `generateTaxReport` usable from plain Node scripts
+// (tools/regenerate-*.mjs) that provide their own brandLogoDataUrl and
+// cannot resolve the Vite '@' alias.
 function loadBrandLogoDataUrl() {
   if (!brandLogoDataUrlPromise) {
-    brandLogoDataUrlPromise = fetch(logoSource)
+    brandLogoDataUrlPromise = import('@/assets/logo.png')
+      .then((module) => fetch(module.default))
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Unable to load logo asset: ${response.status}`);
@@ -94,6 +115,277 @@ function addReportPage(doc, pageWidth, pageHeight, margin, fileOwnerLine, refNum
   return 24;
 }
 
+const ECONOMIC_INTEREST_LEVEL_COLORS = {
+  low: C.green,
+  medium: C.orange,
+  high: C.red,
+};
+
+/**
+ * Draws the "centre of economic interests" section (art. 9 Law 35/2006):
+ * the questionnaire answers plus the qualitative evaluation. Only called
+ * when the user completed the questionnaire.
+ */
+function drawEconomicInterestsSection(doc, { copy, evaluation, startY, W, H, M, CW, footerReserveY, fileOwnerLine, refNum }) {
+  const ei = copy.economicInterests;
+  let y = startY;
+
+  const ensureSpace = (needed) => {
+    if (y + needed > footerReserveY) {
+      y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+    }
+  };
+
+  const introLines = doc.splitTextToSize(ei.intro, CW);
+  ensureSpace(16 + introLines.length * 3.4);
+
+  doc.setDrawColor(...C.lightGray);
+  doc.setLineWidth(0.3);
+  doc.line(M, y, W - M, y);
+  y += 7;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.blue);
+  doc.text(ei.sectionTitle, M, y);
+  y += 4.5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.9);
+  doc.setTextColor(...C.gray);
+  doc.text(introLines, M, y);
+  y += introLines.length * 3.4 + 3;
+
+  evaluation.perQuestion.forEach((item, index) => {
+    const questionText = `${index + 1}. ${ei.questions[item.questionId]}`;
+    const answerText = `— ${ei.options[item.questionId][item.optionId]}`;
+    const qLines = doc.splitTextToSize(questionText, CW);
+    const aLines = doc.splitTextToSize(answerText, CW - 4);
+    ensureSpace(qLines.length * 3.7 + aLines.length * 3.5 + 2);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.4);
+    doc.setTextColor(...C.dark);
+    doc.text(qLines, M, y);
+    y += qLines.length * 3.7;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.2);
+    doc.setTextColor(...C.gray);
+    doc.text(aLines, M + 4, y);
+    y += aLines.length * 3.5 + 2;
+  });
+
+  const levelColor = ECONOMIC_INTEREST_LEVEL_COLORS[evaluation.level] ?? C.gray;
+  const descriptionLines = doc.splitTextToSize(ei.levelDescriptions[evaluation.level], CW);
+  const disclaimerLines = doc.splitTextToSize(ei.disclaimer, CW - 8);
+  ensureSpace(17 + descriptionLines.length * 3.7 + disclaimerLines.length * 3.3 + 6);
+
+  y += 2;
+  drawPill(doc, M, y, ei.levels[evaluation.level], levelColor, C.white, 42);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.4);
+  doc.setTextColor(...C.dark);
+  doc.text(ei.evaluationLabel, M + 47, y + 5.2);
+  y += 12;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.2);
+  doc.text(descriptionLines, M, y);
+  y += descriptionLines.length * 3.7 + 4;
+
+  doc.setFillColor(...C.lightGray);
+  doc.roundedRect(M, y - 3.5, CW, disclaimerLines.length * 3.3 + 6, 2, 2, 'F');
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.setTextColor(...C.gray);
+  doc.text(disclaimerLines, M + 4, y + 0.5);
+  y += disclaimerLines.length * 3.3 + 8;
+
+  return y;
+}
+
+/**
+ * Draws the double taxation treaty section: the user's selected second
+ * country of residence plus the Art. 4 (OECD Model) tie-breaker rules with
+ * the official AEAT source. Only called when the user picked a country
+ * (or the explicit "other country" option, which points to the AEAT listing).
+ */
+function drawTreatySection(doc, { copy, secondCountry, language, startY, W, H, M, CW, footerReserveY, fileOwnerLine, refNum }) {
+  const tr = copy.treaty;
+  const country = getTaxTreatyCountry(secondCountry);
+  const isOther = secondCountry === OTHER_COUNTRY_OPTION;
+  if (!country && !isOther) return startY;
+
+  const lang = language === 'en' ? 'en' : 'es';
+  const countryName = country ? (country.name[lang] ?? country.name.es) : tr.otherCountryName;
+  const sourceUrl = country ? country.sourceUrl : AEAT_TREATY_LIST_URL;
+
+  let y = startY;
+
+  const ensureSpace = (needed) => {
+    if (y + needed > footerReserveY) {
+      y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+    }
+  };
+
+  const introLines = doc.splitTextToSize(tr.intro, CW);
+  ensureSpace(16 + introLines.length * 3.4);
+
+  doc.setDrawColor(...C.lightGray);
+  doc.setLineWidth(0.3);
+  doc.line(M, y, W - M, y);
+  y += 7;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.blue);
+  doc.text(tr.sectionTitle, M, y);
+  y += 4.5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.9);
+  doc.setTextColor(...C.gray);
+  doc.text(introLines, M, y);
+  y += introLines.length * 3.4 + 3;
+
+  const countryLines = doc.splitTextToSize(`${tr.countryLabel}: ${countryName}`, CW);
+  ensureSpace(countryLines.length * 3.7 + 6);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.4);
+  doc.setTextColor(...C.dark);
+  doc.text(countryLines, M, y);
+  y += countryLines.length * 3.7 + 3;
+
+  const rulesTitleLines = doc.splitTextToSize(tr.rulesTitle, CW);
+  ensureSpace(rulesTitleLines.length * 3.7 + 2);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.2);
+  doc.setTextColor(...C.dark);
+  doc.text(rulesTitleLines, M, y);
+  y += rulesTitleLines.length * 3.7 + 1.5;
+
+  TIE_BREAKER_RULES.forEach((rule, index) => {
+    const ruleText = `${index + 1}. ${rule[lang] ?? rule.es}`;
+    const ruleLines = doc.splitTextToSize(ruleText, CW - 4);
+    ensureSpace(ruleLines.length * 3.5 + 1.5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.2);
+    doc.setTextColor(...C.gray);
+    doc.text(ruleLines, M + 4, y);
+    y += ruleLines.length * 3.5 + 1.5;
+  });
+
+  const sourceLines = doc.splitTextToSize(`${tr.sourceLabel}: ${sourceUrl}`, CW - 4);
+  const disclaimerLines = doc.splitTextToSize(tr.disclaimer, CW - 8);
+  ensureSpace(sourceLines.length * 3.3 + disclaimerLines.length * 3.3 + 12);
+
+  y += 1.5;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.setTextColor(...C.blue);
+  doc.text(sourceLines, M + 4, y);
+  y += sourceLines.length * 3.3 + 4;
+
+  doc.setFillColor(...C.lightGray);
+  doc.roundedRect(M, y - 3.5, CW, disclaimerLines.length * 3.3 + 6, 2, 2, 'F');
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.setTextColor(...C.gray);
+  doc.text(disclaimerLines, M + 4, y + 0.5);
+  y += disclaimerLines.length * 3.3 + 8;
+
+  return y;
+}
+
+/**
+ * Draws the hypothetical scenario comparison table: the current situation
+ * plus each saved scenario projected on top of the real stays. Only called
+ * when the user saved at least two scenarios.
+ */
+function drawScenarioComparisonSection(doc, { copy, comparison, startY, W, H, M, CW, footerReserveY, fileOwnerLine, refNum }) {
+  const sc = copy.scenarioComparison;
+  let y = startY;
+
+  const colW = [CW * 0.4, CW * 0.2, CW * 0.2, CW * 0.2];
+  const colX = [M, M + colW[0], M + colW[0] + colW[1], M + colW[0] + colW[1] + colW[2]];
+
+  const drawHeader = () => {
+    doc.setFillColor(...C.blue);
+    doc.rect(M, y, CW, 7, 'F');
+    doc.setTextColor(...C.white);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.text(sc.scenarioColumn, colX[0] + 3, y + 4.5);
+    doc.text(sc.daysColumn, colX[1] + colW[1] / 2, y + 4.5, { align: 'center' });
+    doc.text(sc.remainingColumn, colX[2] + colW[2] / 2, y + 4.5, { align: 'center' });
+    doc.text(sc.riskColumn, colX[3] + colW[3] / 2, y + 4.5, { align: 'center' });
+    y += 7;
+  };
+
+  const ensureSpace = (needed) => {
+    if (y + needed > footerReserveY) {
+      y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+    }
+  };
+
+  const introLines = doc.splitTextToSize(sc.intro, CW);
+  ensureSpace(16 + introLines.length * 3.4);
+
+  doc.setDrawColor(...C.lightGray);
+  doc.setLineWidth(0.3);
+  doc.line(M, y, W - M, y);
+  y += 7;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.blue);
+  doc.text(sc.sectionTitle, M, y);
+  y += 4.5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.9);
+  doc.setTextColor(...C.gray);
+  doc.text(introLines, M, y);
+  y += introLines.length * 3.4 + 3;
+
+  drawHeader();
+
+  const drawRow = (name, totalDays, remainingDays, fill, bold) => {
+    if (y + 7 > footerReserveY) {
+      y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+      drawHeader();
+    }
+
+    const nameLines = doc.splitTextToSize(name, colW[0] - 6);
+    const displayName = nameLines.length > 1 ? `${nameLines[0].slice(0, -1)}…` : nameLines[0];
+    const status = statusInfo(totalDays, copy);
+
+    doc.setFillColor(...fill);
+    doc.rect(M, y, CW, 7, 'F');
+    doc.setFont('helvetica', bold ? 'bold' : 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(...C.dark);
+    doc.text(displayName, colX[0] + 3, y + 4.6);
+    doc.text(String(totalDays), colX[1] + colW[1] / 2, y + 4.6, { align: 'center' });
+    doc.text(String(remainingDays), colX[2] + colW[2] / 2, y + 4.6, { align: 'center' });
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...status.color);
+    doc.text(status.text, colX[3] + colW[3] / 2, y + 4.6, { align: 'center' });
+    y += 7;
+  };
+
+  drawRow(sc.currentRow, comparison.current.totalDays, comparison.current.remainingDays, C.blueBg, true);
+  comparison.rows.forEach((row, index) => {
+    drawRow(row.name, row.totalDays, row.remainingDays, index % 2 === 0 ? C.white : C.lightGray, false);
+  });
+
+  y += 5;
+
+  return y;
+}
+
 function getPdfCopy(language) {
   if (language === 'en') {
     return {
@@ -105,7 +397,7 @@ function getPdfCopy(language) {
       ref: 'Ref',
       exampleBadge: 'EXAMPLE',
       exampleTitle: 'Example report with fictional data',
-      exampleDescription: 'Overlapping days are automatically deducted from the unique total.',
+      exampleDescription: 'All figures and dates are fictional and only illustrate the report contents.',
       title: 'FISCAL RESIDENCY REPORT',
       fiscalSubtitle: (year) => `Fiscal Year ${year} · Art. 9 Spanish Personal Income Tax Law 35/2006 · 183-Day Rule`,
       taxpayerSection: 'TAXPAYER DETAILS',
@@ -142,6 +434,69 @@ function getPdfCopy(language) {
         warning: 'ATTENTION',
         safe: 'SAFE',
       },
+      scenarioComparison: {
+        sectionTitle: 'HYPOTHETICAL SCENARIO COMPARISON',
+        intro: 'Scenarios saved by the user: hypothetical stays projected on top of the recorded real stays. Overlapping days are counted only once.',
+        scenarioColumn: 'Scenario',
+        daysColumn: 'Days in Spain',
+        remainingColumn: 'Days left',
+        riskColumn: 'Risk',
+        currentRow: 'Current situation (no scenario)',
+      },
+      economicInterests: {
+        sectionTitle: 'CENTRE OF ECONOMIC INTERESTS (ART. 9 LAW 35/2006)',
+        intro: 'Self-assessment questionnaire completed by the user. Article 9 of the Spanish Personal Income Tax Act (Law 35/2006) also takes into account the centre of economic interests: the place where the main nucleus or base of the taxpayer\'s activities or economic interests is located, regardless of the 183-day count.',
+        evaluationLabel: 'INDICATIVE ASSESSMENT',
+        levels: {
+          low: 'WEAK TIES',
+          medium: 'MIXED TIES',
+          high: 'STRONG TIES',
+        },
+        levelDescriptions: {
+          low: 'The answers suggest that the centre of economic interests points mostly outside Spain. Even so, the tax authority assesses every case individually.',
+          medium: 'The answers show ties split between Spain and abroad. If the tax authority disagrees with this position, documentary evidence will be key.',
+          high: 'The answers suggest a centre of economic interests close to Spain. The Spanish Tax Agency could treat the subject as tax resident even below 183 days of physical presence.',
+        },
+        disclaimer: 'Indicative assessment based solely on the user\'s answers. It does not constitute nor replace professional tax advice.',
+        questions: {
+          family: 'Where does your close family (spouse or children) live?',
+          income: 'Where do you generate most of your income?',
+          home: 'Where is your habitual residence?',
+          activity: 'From where do you run your professional activity or businesses?',
+        },
+        options: {
+          family: { spain: 'In Spain', mixed: 'Split between Spain and abroad', abroad: 'Abroad' },
+          income: { spain: 'Mainly in Spain', mixed: 'Split between Spain and abroad', abroad: 'Mainly abroad' },
+          home: { spain: 'In Spain', mixed: 'No fixed habitual residence', abroad: 'Abroad' },
+          activity: { spain: 'From Spain', mixed: 'From several countries equally', abroad: 'From abroad' },
+        },
+      },
+      treaty: {
+        sectionTitle: 'DOUBLE TAXATION TREATY',
+        intro: 'The user has indicated that they also reside in another country. If both countries treat them as tax resident, the double taxation treaty (DTT) prevails over domestic law and the tie-breaker rules of its Article 4 (OECD Model) determine a single residence for treaty purposes.',
+        countryLabel: 'Country indicated by the user',
+        otherCountryName: 'Another country (check the applicable treaty)',
+        rulesTitle: 'Tie-breaker rules (Art. 4, OECD Model), in the order they are applied:',
+        sourceLabel: 'Official source (Spanish Tax Agency)',
+        disclaimer: 'Indicative information that does not replace professional advice. How the treaty applies depends on the facts and circumstances of each case.',
+      },
+      advisor: {
+        preparedBy: 'Report prepared by',
+      },
+      methodology: {
+        heading: 'METHODOLOGY AND SOURCES',
+        countingTitle: 'Day-counting methodology',
+        countingIntro: 'Physical presence in Spain is computed from the stays recorded by the user, applying these rules:',
+        countingBullets: [
+          'Each stay counts every calendar day between its start and end dates, both inclusive.',
+          'Overlapping stays are consolidated: duplicated days are counted only once in the unique total.',
+          'Following the DGT criterion on sporadic absences, the tool counts the stays exactly as declared; temporary absences are not deducted automatically.',
+        ],
+        sourcesTitle: 'Official sources',
+        sourcesIntro: 'The report is based on the following regulations and interpretative criteria:',
+        disclaimerHeading: 'PROFESSIONAL DISCLAIMER',
+        disclaimer: 'This report is an automated summary of user-provided data based on the sources listed above. It does not constitute legal or tax advice, not even in its advisor-branded version. Tax residency is determined by the tax authority on a case-by-case basis; always validate this document with a qualified tax advisor before any administrative procedure or tax filing.',
+      },
     };
   }
 
@@ -154,7 +509,7 @@ function getPdfCopy(language) {
     ref: 'Ref',
     exampleBadge: 'EJEMPLO',
     exampleTitle: 'Informe de ejemplo con datos ficticios',
-    exampleDescription: 'Los días solapados se descuentan automáticamente del total único.',
+    exampleDescription: 'Las cifras y fechas son ficticias y solo ilustran el contenido del informe.',
     title: 'INFORME DE RESIDENCIA FISCAL',
     fiscalSubtitle: (year) => `Ejercicio Fiscal ${year} · Art. 9 Ley 35/2006 IRPF · Regla de los 183 Días`,
     taxpayerSection: 'DATOS DEL CONTRIBUYENTE',
@@ -191,6 +546,69 @@ function getPdfCopy(language) {
       warning: 'ATENCIÓN',
       safe: 'SEGURO',
     },
+    scenarioComparison: {
+      sectionTitle: 'COMPARATIVA DE ESCENARIOS HIPOTÉTICOS',
+      intro: 'Escenarios guardados por el usuario: estancias hipotéticas proyectadas sobre las presencias reales registradas. Los días solapados computan una sola vez.',
+      scenarioColumn: 'Escenario',
+      daysColumn: 'Días en España',
+      remainingColumn: 'Días restantes',
+      riskColumn: 'Riesgo',
+      currentRow: 'Situación actual (sin escenario)',
+    },
+    economicInterests: {
+      sectionTitle: 'CENTRO DE INTERESES ECONÓMICOS (ART. 9 LEY 35/2006)',
+      intro: 'Cuestionario de autoevaluación cumplimentado por el usuario. El artículo 9 de la Ley 35/2006 del Impuesto sobre la Renta de las Personas Físicas también tiene en cuenta el centro de intereses económicos: el lugar donde radica el núcleo principal o la base de las actividades o intereses económicos del contribuyente, con independencia del cómputo de 183 días.',
+      evaluationLabel: 'EVALUACIÓN ORIENTATIVA',
+      levels: {
+        low: 'VÍNCULOS DÉBILES',
+        medium: 'VÍNCULOS MIXTOS',
+        high: 'VÍNCULOS FUERTES',
+      },
+      levelDescriptions: {
+        low: 'Las respuestas sugieren que el centro de intereses económicos apunta mayoritariamente fuera de España. Aun así, la administración valora cada caso de forma individual.',
+        medium: 'Las respuestas muestran vínculos repartidos entre España y el extranjero. En caso de discrepancia con la administración, la prueba documental será clave.',
+        high: 'Las respuestas sugieren un centro de intereses económicos próximo a España. La Agencia Tributaria podría considerar al sujeto residente fiscal aunque no supere los 183 días de presencia física.',
+      },
+      disclaimer: 'Evaluación orientativa basada únicamente en las respuestas del usuario. No constituye ni sustituye el asesoramiento fiscal profesional.',
+      questions: {
+        family: '¿Dónde reside tu núcleo familiar (pareja o hijos)?',
+        income: '¿Dónde generas la mayor parte de tus ingresos?',
+        home: '¿Dónde está tu vivienda habitual?',
+        activity: '¿Desde dónde diriges tu actividad profesional o negocios?',
+      },
+      options: {
+        family: { spain: 'En España', mixed: 'Repartido entre España y el extranjero', abroad: 'En el extranjero' },
+        income: { spain: 'Principalmente en España', mixed: 'Repartidos entre España y el extranjero', abroad: 'Principalmente en el extranjero' },
+        home: { spain: 'En España', mixed: 'Sin vivienda habitual fija', abroad: 'En el extranjero' },
+        activity: { spain: 'Desde España', mixed: 'Desde varios países por igual', abroad: 'Desde el extranjero' },
+      },
+    },
+    treaty: {
+      sectionTitle: 'CONVENIO DE DOBLE IMPOSICIÓN',
+      intro: 'El usuario ha indicado que también reside en otro país. Si ambos países le consideran residente fiscal, el convenio de doble imposición (CDI) prevalece sobre la normativa interna y las reglas de desempate de su art. 4 (Modelo OCDE) determinan una única residencia a efectos del convenio.',
+      countryLabel: 'País indicado por el usuario',
+      otherCountryName: 'Otro país (consultar el convenio aplicable)',
+      rulesTitle: 'Reglas de desempate (art. 4, Modelo OCDE), en orden de aplicación:',
+      sourceLabel: 'Fuente oficial (AEAT)',
+      disclaimer: 'Información orientativa que no sustituye el asesoramiento profesional. La aplicación del convenio depende de los hechos y circunstancias de cada caso concreto.',
+    },
+    advisor: {
+      preparedBy: 'Informe preparado por',
+    },
+    methodology: {
+      heading: 'METODOLOGÍA Y FUENTES',
+      countingTitle: 'Metodología de cómputo de días',
+      countingIntro: 'La presencia física en España se computa a partir de las estancias registradas por el usuario, aplicando estas reglas:',
+      countingBullets: [
+        'Cada estancia computa todos los días naturales entre su fecha de inicio y su fecha de fin, ambas inclusive.',
+        'Las estancias solapadas se consolidan: los días duplicados computan una sola vez en el total único.',
+        'Siguiendo el criterio de la DGT sobre ausencias esporádicas, la herramienta computa las estancias tal como se declaran; las ausencias temporales no se descuentan automáticamente.',
+      ],
+      sourcesTitle: 'Fuentes oficiales',
+      sourcesIntro: 'El informe se basa en la siguiente normativa y criterios interpretativos:',
+      disclaimerHeading: 'DESCARGO PROFESIONAL',
+      disclaimer: 'Este informe es un resumen automatizado de datos aportados por el usuario basado en las fuentes anteriores. No constituye asesoramiento legal ni fiscal, ni siquiera en su versión personalizada para despachos. La residencia fiscal la determina la administración caso por caso; valida siempre este documento con un asesor fiscal cualificado antes de cualquier trámite administrativo o declaración tributaria.',
+    },
   };
 }
 
@@ -204,8 +622,13 @@ export async function generateTaxReport({
   language = 'es',
   exampleMode = false,
   brandLogoDataUrl: providedBrandLogoDataUrl,
+  economicInterests = null,
+  secondCountry = null,
+  savedScenarios = null,
+  advisor = null,
 }) {
   const copy = getPdfCopy(language);
+  const advisorBranding = sanitizeAdvisorBranding(advisor);
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const brandLogoDataUrl = providedBrandLogoDataUrl ?? await loadBrandLogoDataUrl();
   const summary = calculateFiscalSummary(ranges);
@@ -223,7 +646,7 @@ export async function generateTaxReport({
   const sortedRanges = [...summary.annotatedRanges].sort((a, b) => a.start.getTime() - b.start.getTime());
   const rawDays = sortedRanges.reduce((sum, range) => sum + range.days, 0);
   const overlapDeduction = Math.max(rawDays - verifiedTotalDays, 0);
-  const overlapSummaryDays = exampleMode ? 5 : overlapDeduction;
+  const overlapSummaryDays = overlapDeduction;
   const identifierLabel = documentType === 'nie' ? copy.nieLabel.replace(':', '') : copy.passportLabel.replace(':', '');
   const contactLabel = language === 'en' ? 'Contact' : 'Contacto';
   const fileOwnerLine = `${contactLabel}: ${reportOwner.email}`;
@@ -263,6 +686,51 @@ export async function generateTaxReport({
   doc.text(`${copy.ref}: ${refNum}`, W - M, exampleMode ? 20.4 : 21.8, { align: 'right' });
 
   y = headerHeight + 10;
+
+  // Advisor branding band (Mejora 15): only when the advisor option was
+  // selected; never in the fictional example report.
+  if (advisorBranding && !exampleMode) {
+    const bandTop = y - 6;
+    const bandHeight = 12;
+
+    doc.setFillColor(...C.lightGray);
+    doc.setDrawColor(...C.gold);
+    doc.roundedRect(M, bandTop, CW, bandHeight, 3, 3, 'FD');
+
+    let textX = M + 4;
+    if (advisorBranding.logo) {
+      try {
+        const logoFormat = logoDataUrlToPdfFormat(advisorBranding.logo);
+        if (logoFormat) {
+          // Preserve the logo's aspect ratio: fit it inside a 24 x 9 mm box
+          // and center it vertically within the band.
+          const props = doc.getImageProperties(advisorBranding.logo);
+          const scale = Math.min(24 / props.width, (bandHeight - 3) / props.height);
+          const logoW = props.width * scale;
+          const logoH = props.height * scale;
+          doc.addImage(advisorBranding.logo, logoFormat, M + 2.5, bandTop + (bandHeight - logoH) / 2, logoW, logoH);
+          textX = M + 2.5 + logoW + 3;
+        }
+      } catch (error) {
+        console.warn('PDF advisor logo rendering skipped:', error.message);
+      }
+    }
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(...C.gray);
+    doc.text(copy.advisor.preparedBy, textX, bandTop + 7.6);
+    const preparedByWidth = doc.getTextWidth(copy.advisor.preparedBy);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...C.dark);
+    const nameMaxWidth = W - M - 4 - (textX + preparedByWidth + 3);
+    const advisorNameLines = doc.splitTextToSize(advisorBranding.name, Math.max(nameMaxWidth, 20));
+    doc.text(advisorNameLines[0], textX + preparedByWidth + 3, bandTop + 7.6);
+
+    y = bandTop + bandHeight + 8;
+  }
 
   if (exampleMode) {
     doc.setFillColor(255, 247, 237);
@@ -474,6 +942,63 @@ export async function generateTaxReport({
 
   const conclusion = copy.conclusion({ name, verifiedTotalDays, fiscalYear, pct });
 
+  // Optional qualitative section: only when the questionnaire was completed.
+  const economicInterestsEvaluation = economicInterests
+    ? evaluateEconomicInterests(economicInterests)
+    : null;
+
+  if (economicInterestsEvaluation?.complete) {
+    y = drawEconomicInterestsSection(doc, {
+      copy,
+      evaluation: economicInterestsEvaluation,
+      startY: y,
+      W,
+      H,
+      M,
+      CW,
+      footerReserveY,
+      fileOwnerLine,
+      refNum,
+    });
+  }
+
+  // Optional treaty section: only when the user picked a second country.
+  if (secondCountry) {
+    y = drawTreatySection(doc, {
+      copy,
+      secondCountry,
+      language,
+      startY: y,
+      W,
+      H,
+      M,
+      CW,
+      footerReserveY,
+      fileOwnerLine,
+      refNum,
+    });
+  }
+
+  // Optional comparison table: only with at least two saved scenarios.
+  const scenarioComparisonData = Array.isArray(savedScenarios) && savedScenarios.length >= 2
+    ? buildScenarioComparison(ranges, savedScenarios)
+    : null;
+
+  if (scenarioComparisonData) {
+    y = drawScenarioComparisonSection(doc, {
+      copy,
+      comparison: scenarioComparisonData,
+      startY: y,
+      W,
+      H,
+      M,
+      CW,
+      footerReserveY,
+      fileOwnerLine,
+      refNum,
+    });
+  }
+
   const cLines = doc.splitTextToSize(conclusion, CW);
   const legalBlockHeight = 26;
   const conclusionHeadingHeight = 12;
@@ -510,6 +1035,98 @@ export async function generateTaxReport({
   const dLines = doc.splitTextToSize(disc, CW - 8);
   doc.text(dLines, M + 4, y + 10);
   y += 26;
+
+  // Final page: methodology and official sources (always included).
+  y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+
+  const met = copy.methodology;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(...C.blue);
+  doc.text(met.heading, M, y);
+  y += 9;
+
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.dark);
+  doc.text(met.countingTitle, M, y);
+  y += 5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.4);
+  doc.setTextColor(...C.gray);
+  const countingIntroLines = doc.splitTextToSize(met.countingIntro, CW);
+  doc.text(countingIntroLines, M, y);
+  y += countingIntroLines.length * 3.6 + 3;
+
+  met.countingBullets.forEach((bullet) => {
+    const bulletLines = doc.splitTextToSize(bullet, CW - 6);
+    if (y + bulletLines.length * 3.6 > footerReserveY) {
+      y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+    }
+    doc.setTextColor(...C.blue);
+    doc.text('•', M + 2, y);
+    doc.setTextColor(...C.dark);
+    doc.text(bulletLines, M + 6, y);
+    y += bulletLines.length * 3.6 + 2.5;
+  });
+
+  y += 3;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.dark);
+  doc.text(met.sourcesTitle, M, y);
+  y += 5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.4);
+  doc.setTextColor(...C.gray);
+  const sourcesIntroLines = doc.splitTextToSize(met.sourcesIntro, CW);
+  doc.text(sourcesIntroLines, M, y);
+  y += sourcesIntroLines.length * 3.6 + 3;
+
+  METHODOLOGY_REF_IDS.forEach((refId) => {
+    const ref = getLocalizedLegalRef(refId, language);
+    if (!ref) return;
+
+    const excerptLines = doc.splitTextToSize(ref.excerpt, CW - 8);
+    if (y + 11 + excerptLines.length * 3.3 > footerReserveY) {
+      y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+    }
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.4);
+    doc.setTextColor(...C.dark);
+    doc.text(ref.title, M + 4, y);
+    y += 3.8;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.8);
+    doc.setTextColor(...C.blue);
+    doc.text(ref.url, M + 4, y);
+    y += 3.8;
+
+    doc.setTextColor(...C.gray);
+    doc.text(excerptLines, M + 4, y);
+    y += excerptLines.length * 3.3 + 3;
+  });
+
+  const metDisclaimerLines = doc.splitTextToSize(met.disclaimer, CW - 8);
+  const metDisclaimerHeight = metDisclaimerLines.length * 3.3 + 11;
+  if (y + metDisclaimerHeight + 2 > footerReserveY) {
+    y = addReportPage(doc, W, H, M, fileOwnerLine, refNum, copy);
+  }
+  y += 2;
+
+  doc.setFillColor(...C.lightGray);
+  doc.roundedRect(M, y, CW, metDisclaimerHeight, 3, 3, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...C.gray);
+  doc.text(met.disclaimerHeading, M + 4, y + 5);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.text(metDisclaimerLines, M + 4, y + 10);
 
   drawFooter(doc, W, H, M, fileOwnerLine, refNum, copy);
 

@@ -2,8 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   calculateFiscalSummary,
   calculateRangeDays,
+  calculateScenarioComparison,
   calculateUniqueDays,
+  countDaysNotCoveredBy,
   getFiscalStatus,
+  getRiskLevel,
   mergeDateRanges,
 } from './fiscalSummary.js';
 
@@ -95,5 +98,106 @@ describe('fiscalSummary', () => {
 
       expect(calculateUniqueDays(result.merged)).toBe(calculateUniqueDaysWithOracle(ranges));
     }
+  });
+});
+
+describe('getRiskLevel', () => {
+  it('maps day counts to the visual risk zones on the unified thresholds', () => {
+    expect(getRiskLevel(0)).toBe('safe');
+    expect(getRiskLevel(150)).toBe('safe');
+    expect(getRiskLevel(151)).toBe('warning');
+    expect(getRiskLevel(183)).toBe('warning');
+    expect(getRiskLevel(184)).toBe('destructive');
+    expect(getRiskLevel(365)).toBe('destructive');
+  });
+
+  it('stays aligned with getFiscalStatus as the single source of truth', () => {
+    [0, 1, 149, 150, 151, 182, 183, 184, 300].forEach((days) => {
+      expect(getRiskLevel(days)).toBe(getFiscalStatus(days));
+    });
+  });
+
+  it('honours custom warning thresholds and limits', () => {
+    expect(getRiskLevel(90, 90, 120)).toBe('safe');
+    expect(getRiskLevel(91, 90, 120)).toBe('warning');
+    expect(getRiskLevel(121, 90, 120)).toBe('destructive');
+  });
+});
+
+describe('calculateScenarioComparison', () => {
+  it('keeps the current summary untouched and projects real + scenario ranges merged', () => {
+    const current = [{ start: '2026-01-01', end: '2026-01-10' }];
+    const scenario = [{ start: '2026-02-01', end: '2026-02-15' }];
+
+    const comparison = calculateScenarioComparison(current, scenario);
+
+    expect(comparison.current.totalDays).toBe(10);
+    expect(comparison.projected.totalDays).toBe(25);
+    expect(comparison.addedDays).toBe(15);
+    expect(comparison.current.status).toBe('safe');
+    expect(comparison.projected.status).toBe('safe');
+    expect(comparison.statusChanged).toBe(false);
+  });
+
+  it('counts overlapping hypothetical days only once', () => {
+    const current = [{ start: '2026-03-01', end: '2026-03-10' }];
+    const scenario = [{ start: '2026-03-05', end: '2026-03-20' }];
+
+    const comparison = calculateScenarioComparison(current, scenario);
+
+    expect(comparison.projected.totalDays).toBe(20);
+    expect(comparison.addedDays).toBe(10);
+  });
+
+  it('detects status changes when the scenario crosses a threshold', () => {
+    const current = [{ start: '2026-01-01', end: '2026-05-30' }]; // 150 days
+    const scenario = [{ start: '2026-06-01', end: '2026-07-03' }]; // +33 days -> 183 total
+
+    const comparison = calculateScenarioComparison(current, scenario);
+
+    expect(comparison.current.status).toBe('safe');
+    expect(comparison.projected.status).toBe('warning');
+    expect(comparison.statusChanged).toBe(true);
+
+    const overLimit = calculateScenarioComparison(current, [
+      { start: '2026-06-01', end: '2026-07-04' },
+    ]);
+    expect(overLimit.projected.status).toBe('destructive');
+    expect(overLimit.projected.exceededDays).toBe(1);
+  });
+
+  it('treats an empty scenario as a no-op', () => {
+    const current = [{ start: '2026-01-01', end: '2026-01-05' }];
+
+    const comparison = calculateScenarioComparison(current, []);
+
+    expect(comparison.projected.totalDays).toBe(comparison.current.totalDays);
+    expect(comparison.addedDays).toBe(0);
+    expect(comparison.statusChanged).toBe(false);
+  });
+});
+
+describe('countDaysNotCoveredBy', () => {
+  const realRanges = [
+    { start: '2026-06-14', end: '2026-07-03' },
+    { start: '2026-07-04', end: '2026-07-28' },
+    { start: '2026-07-29', end: '2026-07-31' },
+  ];
+
+  it('returns 0 when the range is fully covered by the base ranges', () => {
+    expect(countDaysNotCoveredBy({ start: '2026-07-01', end: '2026-07-31' }, realRanges)).toBe(0);
+  });
+
+  it('counts only the days outside the base ranges', () => {
+    // Aug 1-31 adds 31 new days on top of the real stays.
+    expect(countDaysNotCoveredBy({ start: '2026-07-15', end: '2026-08-15' }, realRanges)).toBe(15);
+  });
+
+  it('returns the whole range length when there is no overlap at all', () => {
+    expect(countDaysNotCoveredBy({ start: '2026-08-01', end: '2026-08-10' }, realRanges)).toBe(10);
+  });
+
+  it('treats an empty base as everything new', () => {
+    expect(countDaysNotCoveredBy({ start: '2026-01-01', end: '2026-01-05' }, [])).toBe(5);
   });
 });
