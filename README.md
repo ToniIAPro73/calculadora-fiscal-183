@@ -6,7 +6,7 @@
 
 # Anclora Calculadora Fiscal 183
 
-### Producto del ecosistema Anclora documentado como repositorio publico de familia independent_product
+### Calculadora de residencia fiscal en España por la regla de los 183 días
 
 **Español** · [English](./README.en.md)
 
@@ -21,55 +21,38 @@
 ---
 
 > [!IMPORTANT]
-> Repositorio publico reducido. Describe el producto y su arquitectura conceptual; no expone logica operativa, secretos ni datos reales.
+> Repositorio público reducido. Describe el producto y su arquitectura conceptual; no expone lógica operativa, secretos ni datos reales.
 
-## Vista rapida
+## Qué es
 
-| Problema | Respuesta de producto |
+Una calculadora web para personas que pasan tiempo dentro y fuera de España y necesitan saber si superan (o están cerca de superar) los **183 días de permanencia** que la Agencia Tributaria usa como criterio principal de residencia fiscal. El usuario introduce sus rangos de estancia y la aplicación calcula los días acumulados, el riesgo de considerarse residente fiscal y una cuenta atrás de días restantes.
+
+## Funcionalidades principales
+
+- **Selector de rangos de fechas** y calendario anual en mapa de calor para visualizar la estancia.
+- **Cuenta atrás de días restantes** antes de alcanzar el umbral de 183 días.
+- **Indicador de riesgo** de residencia fiscal según los días acumulados.
+- **Panel de intereses económicos** y **convenios de doble imposición** aplicables.
+- **Estimador de IRPF** orientativo.
+- **Informe premium** de pago (vía Stripe) con el detalle completo del cálculo.
+- **Guías** explicativas sobre la normativa de residencia fiscal.
+
+## Tecnología
+
+| Área | Detalle |
 | --- | --- |
-| Contexto disperso | Experiencia guiada y trazable |
-| Datos sensibles | Privacidad por diseno y minimizacion |
-| Decision compleja | Flujo conceptual claro y revisable |
-| Operacion profesional | Arquitectura modular y controles de calidad |
+| Frontend | React + Tailwind CSS |
+| Validación | Zod |
+| Pagos | Stripe |
+| Tests | Vitest |
 
-## Flujo conceptual
+## Documentación
 
-```text
-Entrada de usuario / evidencia
-        ↓
-Validacion y normalizacion
-        ↓
-Flujo de producto
-        ↓
-Revision o resultado explicable
-        ↓
-Salida profesional / siguiente accion
-```
-
-## Que muestra este repositorio
-
-Producto del ecosistema Anclora documentado como repositorio publico de familia independent_product.
-
-El README presenta el alcance publico del producto, su posicionamiento dentro del ecosistema
-Anclora y los limites de exposicion adecuados para un repositorio abierto.
-
-## Tecnologia
-
-| Area | Detalle |
-| --- | --- |
-| React | Presente en el repositorio |
-| Tailwind CSS | Presente en el repositorio |
-| Zod | Presente en el repositorio |
-| Stripe | Presente en el repositorio |
-| Vitest | Presente en el repositorio |
-
-## Documentacion
-
-- [Documentacion](./docs)
+- [Documentación](./docs)
 
 ## Marca
 
-- Producto canonico: `anclora-calculadora-fiscal-183`
+- Producto canónico: `anclora-calculadora-fiscal-183`
 - Familia: `independent_product`
 - Visibilidad objetivo: `public`
 - Asset de marca: `presente`
@@ -80,6 +63,6 @@ Anclora y los limites de exposicion adecuados para un repositorio abierto.
 
 ### Antonio Ballesteros · Anclora Group
 
-Software, IA generativa y automatizacion para productos digitales trazables.
+Software, IA generativa y automatización para productos digitales trazables.
 
 </div>

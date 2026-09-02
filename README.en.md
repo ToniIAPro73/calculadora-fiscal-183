@@ -6,7 +6,7 @@
 
 # Anclora Calculadora Fiscal 183
 
-### Producto del ecosistema Anclora documentado como repositorio publico de familia independent_product
+### Spanish tax-residency calculator based on the 183-day rule
 
 [Español](./README.md) · **English**
 
@@ -21,51 +21,34 @@
 ---
 
 > [!IMPORTANT]
-> Reduced public repository. It describes the product and conceptual architecture; it does not expose operational logic, secrets or real data.
+> Reduced public repository. Describes the product and its conceptual architecture; it does not expose operational logic, secrets or real data.
 
-## At a glance
+## What this is
 
-| Product challenge | Product response |
-| --- | --- |
-| Fragmented context | Guided and traceable experience |
-| Sensitive data | Privacy by design and minimisation |
-| Complex decision | Clear and reviewable conceptual flow |
-| Professional operation | Modular architecture and quality controls |
+A web calculator for people who split their time inside and outside Spain and need to know whether they exceed (or are close to exceeding) the **183 days of presence** that the Spanish tax authority (Agencia Tributaria) uses as its main tax-residency criterion. The user enters their stay date ranges and the app computes accumulated days, tax-residency risk, and a countdown of remaining days.
 
-## Conceptual workflow
+## Main features
 
-```text
-User input / evidence
-        ↓
-Validation and normalisation
-        ↓
-Product workflow
-        ↓
-Review or explainable result
-        ↓
-Professional output / next action
-```
-
-## What this repository shows
-
-Producto del ecosistema Anclora documentado como repositorio publico de familia independent_product.
-
-This README documents the public scope of the product, its position in the Anclora ecosystem
-and the right exposure limits for an open repository.
+- **Date range selector** and an annual heatmap calendar to visualize time spent in the country.
+- **Remaining-days countdown** before hitting the 183-day threshold.
+- **Risk gauge** for tax residency based on accumulated days.
+- **Economic interests panel** and applicable **double-taxation treaties**.
+- **Indicative IRPF (income tax) estimator**.
+- **Paid premium report** (via Stripe) with the full calculation breakdown.
+- **Guides** explaining the tax-residency regulations.
 
 ## Technology
 
 | Area | Detail |
 | --- | --- |
-| React | Present in repository |
-| Tailwind CSS | Present in repository |
-| Zod | Present in repository |
-| Stripe | Present in repository |
-| Vitest | Present in repository |
+| Frontend | React + Tailwind CSS |
+| Validation | Zod |
+| Payments | Stripe |
+| Tests | Vitest |
 
 ## Documentation
 
-- [Documentacion](./docs)
+- [Documentation](./docs)
 
 ## Brand
 
