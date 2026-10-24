@@ -70,8 +70,28 @@
       "statusCode": 301
     },
     {
+      "source": "/es/legal-notice/",
+      "destination": "/es/legal",
+      "statusCode": 301
+    },
+    {
       "source": "/en/legal-notice",
       "destination": "/en/legal",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/legal-notice/",
+      "destination": "/en/legal",
+      "statusCode": 301
+    },
+    {
+      "source": "/privacy",
+      "destination": "/es/privacy",
+      "statusCode": 301
+    },
+    {
+      "source": "/privacy/",
+      "destination": "/es/privacy",
       "statusCode": 301
     }
   ],

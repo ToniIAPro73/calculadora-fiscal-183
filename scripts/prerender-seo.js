@@ -8,6 +8,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { buildFaqSchema, getLocalizedFaq } from '../src/lib/faqData.js';
+import { contentByLanguage as privacyPolicyContent } from '../src/lib/privacyPolicyContent.js';
 import {
   GUIDES,
   buildArticleSchema,
@@ -54,6 +55,7 @@ const routes = [
     distPath: 'es/privacy/index.html',
     lang: 'es',
     canonical: `${BASE_URL}/es/privacy`,
+    seoContent: 'privacy',
     title: 'Política de Privacidad · TaxNomad',
     description: 'Política de privacidad de TaxNomad para la calculadora de la regla de 183 días y el informe premium.',
     hreflang: [
@@ -164,6 +166,7 @@ const routes = [
     distPath: 'en/privacy/index.html',
     lang: 'en',
     canonical: `${BASE_URL}/en/privacy`,
+    seoContent: 'privacy',
     title: 'Privacy Policy · TaxNomad',
     description: 'Privacy policy for TaxNomad\'s 183-day rule calculator and premium report service.',
     hreflang: [
@@ -306,6 +309,48 @@ for (const lang of ['es', 'en']) {
 
 const baseHtml = readFileSync(join(distDir, 'index.html'), 'utf-8');
 
+const escapeHtml = (value) => String(value)
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#39;');
+
+function renderPrivacyPolicyContent(language) {
+  const content = privacyPolicyContent[language];
+  const sections = content.sections.map((section) => {
+    const parts = [`<section><h2>${escapeHtml(section.title)}</h2>`];
+    for (const paragraph of section.body ?? []) parts.push(`<p>${escapeHtml(paragraph)}</p>`);
+    if (section.list) {
+      parts.push(`<ul>${section.list.map(([label, value]) => `<li><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</li>`).join('')}</ul>`);
+    }
+    for (const block of section.blocks ?? []) {
+      parts.push(`<h3>${escapeHtml(block.title)}</h3><p>${escapeHtml(block.body)}</p>`);
+      if (block.note) parts.push(`<p><strong>${escapeHtml(block.note)}</strong></p>`);
+      if (block.link) parts.push(`<p><a href="${escapeHtml(block.link.href)}">${escapeHtml(block.link.label)}</a></p>`);
+    }
+    if (section.bulletList) {
+      parts.push(`<ul>${section.bulletList.map(([label, value]) => `<li><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</li>`).join('')}</ul>`);
+    }
+    if (section.plainList) parts.push(`<ul>${section.plainList.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`);
+    for (const paragraph of section.footer ?? []) parts.push(`<p>${escapeHtml(paragraph)}</p>`);
+    parts.push('</section>');
+    return parts.join('');
+  }).join('');
+
+  const summary = content.quickSummary
+    .map(({ title, description }) => `<li><strong>${escapeHtml(title)}:</strong> ${escapeHtml(description)}</li>`)
+    .join('');
+
+  return [
+    `<p>${escapeHtml(content.updatedAt)}</p>`,
+    `<p>${escapeHtml(content.intro)}</p>`,
+    `<h2>${escapeHtml(content.quickSummaryTitle)}</h2><ul>${summary}</ul>`,
+    sections,
+    `<section><h2>${escapeHtml(content.commitmentTitle)}</h2><p>${escapeHtml(content.commitment)}</p></section>`,
+  ].join('');
+}
+
 for (const route of routes) {
   let html = baseHtml;
 
@@ -377,6 +422,7 @@ for (const route of routes) {
     `  <main>`,
     `    <h1>${heading}</h1>`,
     `    <p>${route.description}</p>`,
+    route.seoContent === 'privacy' ? renderPrivacyPolicyContent(route.lang) : '',
     `    <nav>`,
     navLinks,
     `    </nav>`,

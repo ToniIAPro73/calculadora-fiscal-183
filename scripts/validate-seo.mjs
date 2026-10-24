@@ -57,6 +57,13 @@ for (const route of publicRoutes) {
       errors.push(`[c] Missing hreflang "${lang}" in dist/${route.distPath}`);
     }
   }
+
+  if (route.distPath === 'es/privacy/index.html' && !html.includes('Datos que tratamos')) {
+    errors.push('[f] Missing Spanish privacy body in static HTML');
+  }
+  if (route.distPath === 'en/privacy/index.html' && !html.includes('Data we process')) {
+    errors.push('[f] Missing English privacy body in static HTML');
+  }
 }
 
 // (d) #seo-root must not exist in any generated HTML file.
@@ -79,6 +86,22 @@ const vercelConfig = JSON.parse(readFileSync(join(rootDir, 'vercel.json'), 'utf-
 const redirectSources = new Set(
   (vercelConfig.redirects ?? []).map((redirect) => redirect.source),
 );
+const redirectDestinations = new Map(
+  (vercelConfig.redirects ?? []).map((redirect) => [redirect.source, redirect.destination]),
+);
+
+for (const [source, destination] of [
+  ['/privacy', '/es/privacy'],
+  ['/privacy/', '/es/privacy'],
+  ['/es/legal-notice', '/es/legal'],
+  ['/es/legal-notice/', '/es/legal'],
+  ['/en/legal-notice', '/en/legal'],
+  ['/en/legal-notice/', '/en/legal'],
+]) {
+  if (redirectDestinations.get(source) !== destination) {
+    errors.push(`[g] Missing or incorrect legacy redirect: ${source} → ${destination}`);
+  }
+}
 
 const sitemapPath = join(distDir, 'sitemap.xml');
 if (!existsSync(sitemapPath)) {
