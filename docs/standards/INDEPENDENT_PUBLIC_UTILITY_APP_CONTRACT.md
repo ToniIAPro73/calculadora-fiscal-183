@@ -12,8 +12,8 @@ Definir la base UX/UI y de producto para apps públicas ligeras fuera de `Anclor
 
 ## Autoridad
 
-- Registro operativo: `docs/governance/contracts-registry.json`
-- Inventario aplicable: `docs/governance/independent-products.json`
+- Registro operativo: `00-governance/registry/contracts-registry.json`
+- Inventario aplicable: `00-governance/registry/independent-products.json`
 - Fuente ejecutable relacionada: ninguna por defecto
 
 ## Tipo de producto
@@ -32,9 +32,9 @@ Este contrato aplica a productos que suelen ser:
 
 ## Sincronización con repos consumidores
 
-- Contrato fuente en la bóveda: `docs/standards/INDEPENDENT_PUBLIC_UTILITY_APP_CONTRACT.md`
-- Target normal de propagación: `docs/standards/`
-- Dependencia de auditoría y propagación desde `docs/governance/contracts-registry.json`
+- Contrato fuente en la bóveda: `00-governance/contracts/core/INDEPENDENT_PUBLIC_UTILITY_APP_CONTRACT.md`
+- Target normal de propagación: `10-group/brand/`
+- Dependencia de auditoría y propagación desde `00-governance/registry/contracts-registry.json`
 - Este contrato no hereda automáticamente branding ni contratos de `Anclora Group`
 
 ## Reglas obligatorias
@@ -79,3 +79,4 @@ Una app no cumple este contrato si:
 - prioriza Ads por encima de la tarea principal
 - rompe la experiencia móvil
 - usa branding de Anclora sin ser parte de `Anclora Group`
+
